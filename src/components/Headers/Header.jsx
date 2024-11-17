@@ -1,16 +1,15 @@
-// src/components/Header.jsx
 import React, { useState } from 'react';
-import { AiOutlineShoppingCart, AiOutlineHeart, AiOutlineUser } from 'react-icons/ai';
+import { AiOutlineShoppingCart, AiOutlineHeart } from 'react-icons/ai';
 import './Header.css';
 import { useCart } from '../../context/CartContext';
 import { Link } from 'react-router-dom';
+import categories from '../../Data/category-data';
 
 const Header = () => {
   const [isDropdownVisible, setDropdownVisible] = useState(false);
   const { state } = useCart();
   let timeoutId = null;
 
-  // Calculate total items in cart
   const cartItemsCount = state.items.reduce((sum, item) => sum + item.quantity, 0);
 
   const handleMouseEnter = () => {
@@ -20,7 +19,6 @@ const Header = () => {
 
   const handleMouseLeave = (event) => {
     timeoutId = setTimeout(() => {
-      // Check if mouse is within the expanded zone
       const dropdownElement = document.querySelector('.dropdown');
       const dropdownMenu = document.querySelector('.dropdown-menu');
       
@@ -35,7 +33,7 @@ const Header = () => {
           mouseX >= rect.left && 
           mouseX <= rect.right && 
           mouseY >= rect.top && 
-          mouseY <= menuRect.bottom + 50; // Add 50px to the bottom
+          mouseY <= menuRect.bottom + 50;
 
         if (!isInExpandedZone) {
           setDropdownVisible(false);
@@ -63,16 +61,21 @@ const Header = () => {
               onMouseEnter={handleMouseEnter}
               onMouseLeave={handleMouseLeave}
             >
-              <a href="#" onClick={handleShopClick}>Sklep &#x25BE;</a>
+              <a href="#" onClick={handleShopClick}>
+                Sklep
+              </a>
               <ul 
                 className={`dropdown-menu ${isDropdownVisible ? 'active' : ''}`}
                 onMouseEnter={handleMouseEnter}
                 onMouseLeave={handleMouseLeave}
               >
-                <li><Link to="/category/suplementy-diety">Suplementy diety</Link></li>
-                <li><Link to="/category/witaminy">Witaminy</Link></li>
-                <li><Link to="/category/oleje-i-kwasy-tluszczowe">Oleje i kwasy tłuszczowe</Link></li>
-                <li><Link to="/category/kwasy-omega">Kwasy Omega</Link></li>
+                {categories.map((category, index) => (
+                  <li key={index}>
+                    <Link to={`/category/${category.slug}`}>
+                      {category.title}
+                    </Link>
+                  </li>
+                ))}
               </ul>
             </li>
             <li><Link to="/orders">Zamówienie</Link></li>
