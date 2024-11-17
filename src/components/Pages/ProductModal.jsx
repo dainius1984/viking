@@ -1,7 +1,16 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { FaCheckCircle, FaHeart } from 'react-icons/fa';
+import { useCart } from '../../context/CartContext';
 import './ProductModal.css';
 
 const ProductModal = ({ product, onClose }) => {
+  const { dispatch } = useCart();
+  const [showModal, setShowModal] = useState(false);
+  const [isAddedToCart, setIsAddedToCart] = useState(false);
+  const [isAddedToWishlist, setIsAddedToWishlist] = useState(false);
+  const [successMessage, setSuccessMessage] = useState('');
+
   useEffect(() => {
     const handleEsc = (event) => {
       if (event.keyCode === 27) onClose();
@@ -14,6 +23,49 @@ const ProductModal = ({ product, onClose }) => {
       document.body.style.overflow = 'unset';
     };
   }, [onClose]);
+
+  const addToCart = () => {
+    const productToAdd = {
+      id: product.id,
+      name: product.name,
+      price: typeof product.price === 'string' 
+        ? parseFloat(product.price.replace(',', '.'))
+        : product.price,
+      image: product.image,
+      category: product.category,
+      quantity: 1
+    };
+    
+    dispatch({ 
+      type: 'ADD_TO_CART', 
+      payload: productToAdd
+    });
+
+    setIsAddedToCart(true);
+    setShowModal(true);
+    setSuccessMessage('Produkt dodany do koszyka!');
+
+    setTimeout(() => {
+      setShowModal(false);
+      setIsAddedToCart(false);
+    }, 2000);
+  };
+
+  const addToWishlist = () => {
+    dispatch({ 
+      type: 'ADD_TO_WISHLIST', 
+      payload: product
+    });
+
+    setIsAddedToWishlist(true);
+    setShowModal(true);
+    setSuccessMessage('Produkt dodany do ulubionych!');
+
+    setTimeout(() => {
+      setShowModal(false);
+      setIsAddedToWishlist(false);
+    }, 2000);
+  };
 
   return (
     <div className="modal-overlay" onClick={onClose}>
@@ -46,12 +98,55 @@ const ProductModal = ({ product, onClose }) => {
               </div>
             )}
 
-            <button className="modal-add-to-cart">
-              Dodaj do koszyka
-            </button>
+            <div className="modal-buttons">
+              <button 
+                className={`modal-add-to-cart ${isAddedToCart ? 'success' : ''}`}
+                onClick={addToCart}
+                disabled={isAddedToCart}
+              >
+                {isAddedToCart ? (
+                  <span className="success-text">
+                    <FaCheckCircle /> Dodano do koszyka
+                  </span>
+                ) : (
+                  'Dodaj do koszyka'
+                )}
+              </button>
+
+              <button 
+                className={`modal-add-to-wishlist ${isAddedToWishlist ? 'success' : ''}`}
+                onClick={addToWishlist}
+                disabled={isAddedToWishlist}
+              >
+                {isAddedToWishlist ? (
+                  <span className="success-text">
+                    <FaHeart /> Dodano do ulubionych
+                  </span>
+                ) : (
+                  <>
+                    <FaHeart className="heart-icon" />
+                    Dodaj do ulubionych
+                  </>
+                )}
+              </button>
+            </div>
           </div>
         </div>
       </div>
+
+      <AnimatePresence>
+        {showModal && (
+          <motion.div 
+            className="success-modal"
+            initial={{ opacity: 0, y: 50 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 50 }}
+          >
+            <FaCheckCircle className="success-icon" />
+            <p>{successMessage}</p>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };

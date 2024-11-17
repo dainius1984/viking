@@ -9,11 +9,15 @@ import { useCart } from '../../context/CartContext';
 import products from '../../Data/products-data';
 import categories from '../../Data/category-data'; 
 import './CategoryPage.css';
+import { FaCheckCircle } from 'react-icons/fa';
+import { motion, AnimatePresence } from 'framer-motion';
 
 const CategoryPage = () => {
   const { categorySlug } = useParams();
   const [selectedProduct, setSelectedProduct] = useState(null);
   const { dispatch } = useCart(); 
+  const [showModal, setShowModal] = useState(false);
+  const [activeButton, setActiveButton] = useState(null);
   
   const getMainCategory = (slug) => {
     if (!slug) return null;
@@ -57,6 +61,14 @@ const CategoryPage = () => {
       type: 'ADD_TO_CART', 
       payload: productToAdd
     });
+
+    setActiveButton(product.id);
+    setShowModal(true);
+
+    setTimeout(() => {
+      setShowModal(false);
+      setActiveButton(null);
+    }, 2000);
   };
 
   return (
@@ -104,8 +116,18 @@ const CategoryPage = () => {
                 <h3 className="product-name">{product.name}</h3>
                 <p className="product-price">{product.price} zł</p>
                 <div className="product-actions">
-                  <button className="add-to-cart" onClick={() => addToCart(product)}>
-                    Dodaj do koszyka
+                  <button 
+                    className={`add-to-cart ${activeButton === product.id ? 'success' : ''}`}
+                    onClick={() => addToCart(product)}
+                    disabled={activeButton === product.id}
+                  >
+                    {activeButton === product.id ? (
+                      <span className="success-text">
+                        <FaCheckCircle /> Dodano do koszyka
+                      </span>
+                    ) : (
+                      'Dodaj do koszyka'
+                    )}
                   </button>
                   <button className="read-more" onClick={() => setSelectedProduct(product)}>
                     Czytaj więcej
@@ -126,6 +148,20 @@ const CategoryPage = () => {
 
       <PreFooter />
       <Footer />
+
+      <AnimatePresence>
+        {showModal && (
+          <motion.div 
+            className="success-modal"
+            initial={{ opacity: 0, y: 50 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 50 }}
+          >
+            <FaCheckCircle className="success-icon" />
+            <p>Produkt dodany do koszyka!</p>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };

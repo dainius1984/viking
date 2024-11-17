@@ -3,7 +3,8 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { CartProvider } from './context/CartContext';
 import HomePage from './pages/HomePage';
 import CategoryPage from './components/Pages/CategoryPage';
-import Cart from './components/Pages/Cart'; // Add this import
+import Cart from './components/Pages/Cart'; // 
+import Wishlist from './components/Pages/Wishlist'; // Add this import
 
 const App = () => {
   return (
@@ -14,6 +15,7 @@ const App = () => {
           <Route path="/category" element={<CategoryPage />} />
           <Route path="/category/:categorySlug" element={<CategoryPage />} />
           <Route path="/koszyk" element={<Cart />} />
+          <Route path="/wishlist" element={<Wishlist />} /> {/* Add this route */}
         </Routes>
       </Router>
     </CartProvider>
