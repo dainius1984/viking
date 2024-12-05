@@ -1,77 +1,84 @@
 .link-section {
-    max-width: 1200px;
-    margin: 40px auto;
-    padding: 0 20px;
+    max-width: 1200px !important;
+    margin: 40px auto !important;
+    padding: 0 20px !important;
 }
 
 .link-section-title {
-    font-size: 28px;
-    margin-bottom: 30px;
-    font-weight: bold;
-    color: #000;
+    font-size: 28px !important;
+    margin-bottom: 30px !important;
+    font-weight: bold !important;
+    color: #000 !important;
 }
 
 .link-categories {
-    display: flex;
-    justify-content: space-between;
-    gap: 40px;
+    display: flex !important;
+    justify-content: space-between !important;
+    gap: 40px !important;
 }
 
 .link-category {
-    flex: 1;
+    flex: 1 !important;
 }
 
-.category-title {
-    color: #006400;
-    font-size: 24px;
-    margin-bottom: 20px;
-    font-weight: bold;
+.link-category h3.category-title {
+    color: #006400 !important;
+    font-size: 24px !important;
+    margin-bottom: 20px !important;
+    font-weight: bold !important;
 }
 
 .link-list {
-    list-style: none;
-    padding: 0;
-    margin: 0;
+    list-style: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
 }
 
 .link-list li {
-    margin-bottom: 15px;
+    margin-bottom: 15px !important;
 }
 
 .link-list a {
-    color: #333;
-    text-decoration: none;
-    font-size: 16px;
-    transition: color 0.2s ease;
-    display: inline-block;
+    color: #333 !important;
+    text-decoration: none !important;
+    font-size: 16px !important;
+    transition: color 0.2s ease !important;
+    display: inline-block !important;
 }
 
 .link-list a:hover {
-    color: #006400;
+    color: #006400 !important;
+}
+
+.custom-category-title {
+    color: #006400 !important;
+    font-size: 24px !important;
+    margin-bottom: 20px !important;
+    font-weight: bold !important;
 }
 
 @media (max-width: 768px) {
     .link-categories {
-        flex-direction: column;
-        gap: 30px;
+        flex-direction: column !important;
+        gap: 30px !important;
     }
 
     .link-category {
-        text-align: center;
+        text-align: center !important;
     }
 
     .category-title {
-        font-size: 22px;
+        font-size: 22px !important;
     }
 }
 
 @media (max-width: 480px) {
     .link-section {
-        margin: 30px auto;
+        margin: 30px auto !important;
     }
 
     .link-section-title {
-        font-size: 24px;
-        text-align: center;
+        font-size: 24px !important;
+        text-align: center !important;
     }
 }

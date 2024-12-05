@@ -1,30 +1,41 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import './LinkSection.css';
+import products from '../../Data/products-data';
+import ProductModal from '../Pages/ProductModal';
 
 const LinkSection = () => {
+  const [selectedProduct, setSelectedProduct] = React.useState(null);
+  const [showModal, setShowModal] = React.useState(false);
+
+  const openProductModal = (product) => {
+    setSelectedProduct(product);
+    setShowModal(true);
+  };
+
   const categoryLinks = {
-    'Suplementy diety': [
-      { name: 'Suplementy dla sportowców', path: '/category/suplementy-dla-sportowcow' },
-      { name: 'Suplementy na pamięć i koncentrację', path: '/category/suplementy-na-pamiec' },
-      { name: 'Suplementy na energię', path: '/category/suplementy-na-energie' },
-      { name: 'Suplementy na zmęczenie', path: '/category/suplementy-na-zmeczenie' },
-      { name: 'Suplementy na depresję', path: '/category/suplementy-na-depresje' }
+'Suplementy omega 3': [
+      { name: 'BalanceOil+300ml Cytrynowy', path: '/category/omega-3-supplements' },
+      { name: 'BalanceOil+300ml Grejpfrut, Cytryna i Limonka', path: '/category/omega-3-supplements' },
+      { name: 'BalanceOil+300ml Pomarańcza, Cytryna i Mięta', path: '/category/omega-3-supplements' },
+      { name: 'BalanceOil+300ml Tutti Frutti', path: '/category/omega-3-supplements' },
+      { name: 'BalanceOil+100ml Pomarańcza, Cytryna i Mięta', path: '/category/omega-3-supplements' }
     ],
-    'Suplementy diety 2': [
-      { name: 'Suplementy wegetariańskie', path: '/category/suplementy-wegetarianskie' },
-      { name: 'Suplementy wegańskie', path: '/category/suplementy-weganskie' },
-      { name: 'Suplementy na układ nerwowy', path: '/category/suplementy-uklad-nerwowy' },
-      { name: 'Suplementy na serce', path: '/category/suplementy-na-serce' },
-      { name: 'Suplementy na odporność', path: '/category/suplementy-na-odpornosc' }
+    'Suplementy na odporność': [
+      { name: 'Protect +', path: '/category/supplements-immunity' },
+      { name: 'Xtend', path: '/category/supplements-immunity' },
+      { name: 'Xtend +', path: '/category/supplements-immunity' }
     ],
-    'Witaminy': [
-      { name: 'Witaminy dla kobiet', path: '/category/witaminy-dla-kobiet' },
-      { name: 'Witaminy dla mężczyzn', path: '/category/witaminy-dla-mezczyzn' },
-      { name: 'Witaminy D3', path: '/category/witaminy-d3' },
-      { name: 'Oleje i kwasy tłuszczowe', path: '/category/oleje-i-kwasy' },
-      { name: 'Kwasy omega', path: '/category/kwasy-omega' }
-    ]
+    'Suplementy przywracające zdrowie': [
+      { name: 'Zinogene +', path: '/category/supplements-health-restoration' },
+      { name: 'Zinoshine +', path: '/category/supplements-health-restoration' }
+    ],
+    'Błonnik dla jelit': [
+      { name: 'Zinobiotic +', path: '/category/fiber-for-gut' }
+    ],
+    'Testy': [
+      { name: 'BalanceTest', path: '/category/tests' }
+    ],
   };
 
   return (
@@ -37,13 +48,29 @@ const LinkSection = () => {
             <ul className="link-list">
               {links.map((link, index) => (
                 <li key={index}>
-                  <Link to={link.path}>{link.name}</Link>
+                  <Link 
+                    to="#" 
+                    onClick={(e) => {
+                      e.preventDefault();
+                      const product = products.find(p => p.name === link.name);
+                      openProductModal(product);
+                    }}
+                  >
+                    {link.name}
+                  </Link>
                 </li>
               ))}
             </ul>
           </div>
         ))}
       </div>
+
+      {showModal && (
+        <ProductModal 
+          product={selectedProduct} 
+          onClose={() => setShowModal(false)} 
+        />
+      )}
     </div>
   );
 };

@@ -10,22 +10,6 @@ import InfoSection from '../components/Section/InfoSection';
 import PreFooter from '../components/Footer/PreFooter';
 import Footer from '../components/Footer/Footer';
 
-const products = [
-  {
-    id: 1,
-    name: 'Ekstrakt z pestek winogron 95% OPC',
-    price: '85,00',
-    image: '/path/to/product1.jpg'
-  },
-  {
-    id: 2,
-    name: 'Jodavit + selen 250ml',
-    price: '72,00',
-    image: '/path/to/product2.jpg'
-  },
-  // Add other products...
-];
-
 const HomePage = () => {
   return (
     <div>

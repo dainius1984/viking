@@ -17,8 +17,14 @@ const CategoryPage = () => {
   const [selectedProduct, setSelectedProduct] = useState(null);
   const { dispatch } = useCart(); 
   const [showModal, setShowModal] = useState(false);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [activeButton, setActiveButton] = useState(null);
   
+  const openProductModal = (product) => {
+    setSelectedProduct(product);
+    setShowModal(true);
+  };
+
   const getMainCategory = (slug) => {
     if (!slug) return null;
     
@@ -30,19 +36,8 @@ const CategoryPage = () => {
     );
   };
 
-  const categoryProducts = categorySlug 
-    ? products.filter(product => {
-        const mainCategory = getMainCategory(categorySlug);
-        if (!mainCategory) return false;
-
-        if (mainCategory.slug === categorySlug) {
-          return mainCategory.items.some(item => 
-            product.category === item.slug
-          );
-        }
-
-        return product.category === categorySlug;
-      })
+  const categoryProducts = categorySlug
+    ? products.filter(product => product.category === categorySlug)
     : products;
 
   const addToCart = (product) => {
@@ -63,10 +58,10 @@ const CategoryPage = () => {
     });
 
     setActiveButton(product.id);
-    setShowModal(true);
+    setShowSuccessModal(true);
 
     setTimeout(() => {
-      setShowModal(false);
+      setShowSuccessModal(false);
       setActiveButton(null);
     }, 2000);
   };
@@ -89,11 +84,23 @@ const CategoryPage = () => {
                 </Link>
               </h3>
               <ul className="category-list">
-                {category.items.map((item, itemIndex) => (
-                  <li key={itemIndex} className={categorySlug === item.slug ? 'active' : ''}>
-                    <Link to={`/category/${item.slug}`}>{item.name}</Link>
-                  </li>
-                ))}
+                {category.products.map((item, itemIndex) => {
+                  const product = products.find(p => p.name === item.name);
+                  return (
+                    <li key={itemIndex}>
+                      <Link 
+                        to="#"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          openProductModal(product);
+                        }}
+                        className={categorySlug === item.path.split('/').pop() ? 'active' : ''}
+                      >
+                        {item.name}
+                      </Link>
+                    </li>
+                  );
+                })}
               </ul>
             </div>
           ))}
@@ -118,7 +125,10 @@ const CategoryPage = () => {
                 <div className="product-actions">
                   <button 
                     className={`add-to-cart ${activeButton === product.id ? 'success' : ''}`}
-                    onClick={() => addToCart(product)}
+                    onClick={() => {
+                      addToCart(product);
+                      setShowModal(true);
+                    }}
                     disabled={activeButton === product.id}
                   >
                     {activeButton === product.id ? (
@@ -150,7 +160,7 @@ const CategoryPage = () => {
       <Footer />
 
       <AnimatePresence>
-        {showModal && (
+        {showSuccessModal && (
           <motion.div 
             className="success-modal"
             initial={{ opacity: 0, y: 50 }}
