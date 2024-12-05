@@ -1,74 +1,74 @@
 import React from 'react';
 import { Search } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import './Blog.css';
 import Header from '../Headers/Header';
 import Footer from '../Footer/Footer';
 import TopNavBar from '../Headers/TopNavBar';
+import { blogHeaderData, blogPosts } from '../../Data/blog-data';
+import { articlesContent } from '../../Data/articles-content'; // Add this import
 
 const Blog = () => {
-  const blogPosts = [
-    {
-      id: 1,
-      title: "Kiedy najlepiej brać witaminy – Rano czy wieczorem?",
-      excerpt: "By zapewnić funkcjonowanie prawidłowe, potrzebne nam składników odżywczych! Właśnie przez wiesieniu ludzi pytanie, kiedy się otrzymać ich.",
-      image: "/api/placeholder/600/400",
-      date: "2024-01-15",
-      category: "Zdrowie"
-    },
-    {
-      id: 2,
-      title: "Jakie witaminy na oczy i wzrok?",
-      excerpt: "W dzisiejszych czasach nasze oczy i wzrok są narażone na różne czynniki, które mogą na.",
-      image: "/api/placeholder/600/400",
-      date: "2024-01-10",
-      category: "Zdrowie"
-    },
-    {
-      id: 3,
-      title: "Jak wzmocnić odporność organizmu?",
-      excerpt: "Pierwszy krok odbudowy twojej odporności, czynników, które mogą powodować.",
-      image: "/api/placeholder/600/400",
-      date: "2024-01-05",
-      category: "Zdrowie"
-    }
-  ];
-
-  const recentPosts = [
-    "Jak witaminami wzmocnić odporność w czasie zimy?",
-    "Naturalne źródła witaminy D3",
-    "Kwasy Omega-3 – Działanie, Źródła, Dawkowanie",
-    "Witaminy dla kobiet w ciąży"
-  ];
+  const recentPosts = blogPosts
+    .sort((a, b) => new Date(b.date) - new Date(a.date))
+    .slice(0, 4);
 
   return (
     <>
-      <Header />
       <TopNavBar />
+      <Header />
       <div className="blog-container">
-        <div className="hero-section">
-          <h1>Blog</h1>
-          <p>Zdrowie i Witaminy</p>
+        <div className="blog-section">
+          <img 
+            src={blogHeaderData.heroImage} 
+            alt="Blog Hero" 
+          />
+          <div className="blog-section-content">
+            <h1>{blogHeaderData.title}</h1>
+            <p>{blogHeaderData.subtitle}</p>
+          </div>
         </div>
 
         <div className="blog-content">
           <div className="main-content">
-            {blogPosts.map(post => (
-              <div key={post.id} className="blog-card">
-                <img 
-                  src={post.image} 
-                  alt={post.title}
-                  className="blog-image"
-                />
-                <div className="blog-card-content">
-                  <div className="post-meta">
-                    {post.category} • {post.date}
+            {blogPosts.map(post => {
+              const articleMetadata = articlesContent[post.id];
+              return (
+                <div key={post.id} className="blog-card">
+                  <Link 
+                    to={`/article/${post.id}`} 
+                    className="blog-card-image-link"
+                    onClick={() => window.scrollTo(0, 0)}
+                  >
+                    <img 
+                      src={post.image} 
+                      alt={post.title}
+                      className="blog-image"
+                    />
+                  </Link>
+                  <div className="blog-card-content">
+                    <div className="post-meta">
+                      {post.category} • {post.date}
+                    </div>
+                    <Link 
+                      to={`/article/${post.id}`} 
+                      className="blog-card-title-link"
+                      onClick={() => window.scrollTo(0, 0)}
+                    >
+                      <h2>{post.title}</h2>
+                    </Link>
+                    <p>{articleMetadata.metaDescription}</p>
+                    <Link 
+                      to={`/article/${post.id}`} 
+                      className="read-more"
+                      onClick={() => window.scrollTo(0, 0)}
+                    >
+                      Czytaj więcej
+                    </Link>
                   </div>
-                  <h2>{post.title}</h2>
-                  <p>{post.excerpt}</p>
-                  <button className="read-more">Read more</button>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
 
           <div className="sidebar">
@@ -84,9 +84,11 @@ const Blog = () => {
             <div className="recent-posts">
               <h3>Ostatnie wpisy</h3>
               <ul>
-                {recentPosts.map((title, index) => (
-                  <li key={index}>
-                    <a href="#">{title}</a>
+                {recentPosts.map((post) => (
+                  <li key={post.id}>
+                    <Link to={`/article/${post.id}`}>
+                      {post.title}
+                    </Link>
                   </li>
                 ))}
               </ul>
