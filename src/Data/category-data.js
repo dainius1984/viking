@@ -1,48 +1,49 @@
 const categories = [
-    {
-      title: 'Suplementy diety',
-      slug: 'suplementy-diety',
-      items: [
-        { name: 'Suplementy dla sportowców', slug: 'suplementy-dla-sportowcow' },
-        { name: 'Suplementy na pamięć', slug: 'suplementy-na-pamiec' },
-        { name: 'Suplementy na energię', slug: 'suplementy-na-energie' },
-        { name: 'Suplementy na zmęczenie', slug: 'suplementy-na-zmeczenie' },
-        { name: 'Suplementy na depresję', slug: 'suplementy-na-depresje' }
-      ]
-    },
-    {
-      title: 'Witaminy',
-      slug: 'witaminy',
-      items: [
-        { name: 'Witaminy dla kobiet', slug: 'witaminy-dla-kobiet' },
-        { name: 'Witaminy dla mężczyzn', slug: 'witaminy-dla-mezczyzn' },
-        { name: 'Witaminy D3', slug: 'witaminy-d3' },
-        { name: 'Witaminy B12', slug: 'witaminy-b12' },
-        { name: 'Multiwitaminy', slug: 'multiwitaminy' }
-      ]
-    },
-    {
-      title: 'Oleje i kwasy tłuszczowe',
-      slug: 'oleje-i-kwasy-tluszczowe',
-      items: [
-        { name: 'Olej lniany', slug: 'olej-lniany' },
-        { name: 'Olej konopny', slug: 'olej-konopny' },
-        { name: 'Olej z czarnuszki', slug: 'olej-z-czarnuszki' },
-        { name: 'Olej kokosowy', slug: 'olej-kokosowy' },
-        { name: 'MCT', slug: 'mct' }
-      ]
-    },
-    {
-      title: 'Kwasy Omega',
-      slug: 'kwasy-omega',
-      items: [
-        { name: 'Omega 3', slug: 'omega-3' },
-        { name: 'Omega 6', slug: 'omega-6' },
-        { name: 'Omega 9', slug: 'omega-9' },
-        { name: 'DHA', slug: 'dha' },
-        { name: 'EPA', slug: 'epa' }
-      ]
-    }
-  ];
-  
-  export default categories;
+  {
+    title: 'Suplementy omega 3',
+    slug: 'suplementy-omega-3',
+    products: [
+      { name: 'BalanceOil+300ml Cytrynowy', path: '/category/omega-3-supplements' },
+      { name: 'BalanceOil+300ml Grejpfrut, Cytryna i Limonka', path: '/category/omega-3-supplements' },
+      { name: 'BalanceOil+300ml Pomarańcza, Cytryna i Mięta', path: '/category/omega-3-supplements' },
+      { name: 'BalanceOil+300ml Tutti Frutti', path: '/category/omega-3-supplements' },
+      { name: 'BalanceOil+100ml Pomarańcza, Cytryna i Mięta', path: '/category/omega-3-supplements' },
+      { name: 'BalanceOil+300ml AquaX', path: '/category/omega-3-supplements' },
+      { name: 'BalanceOil+Premium 300ml', path: '/category/omega-3-supplements' },
+      { name: 'Essent+Premium', path: '/category/omega-3-supplements' }
+    ]
+  },
+  {
+    title: 'Suplementy na odporność',
+    slug: 'suplementy-na-odpornosc',
+    products: [
+      { name: 'Protect +', path: '/category/supplements-immunity' },
+      { name: 'Xtend', path: '/category/supplements-immunity' },
+      { name: 'Xtend +', path: '/category/supplements-immunity' }
+    ]
+  },
+  {
+    title: 'Suplementy przywracające zdrowie',
+    slug: 'suplementy-przywracajace-zdrowie',
+    products: [
+      { name: 'Zinogene +', path: '/category/supplements-health-restoration' },
+      { name: 'Zinoshine +', path: '/category/supplements-health-restoration' }
+    ]
+  },
+  {
+    title: 'Błonnik dla jelit',
+    slug: 'blonnik-dla-jelit',
+    products: [
+      { name: 'Zinobiotic +', path: '/category/fiber-for-gut' }
+    ]
+  },
+  {
+    title: 'Testy',
+    slug: 'testy',
+    products: [
+      { name: 'BalanceTest', path: '/category/tests' }
+    ]
+  },
+];
+
+export default categories;
