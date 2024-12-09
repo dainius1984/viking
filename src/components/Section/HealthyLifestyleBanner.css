@@ -1,70 +1,142 @@
 .banner-section {
   max-width: 1200px;
-  margin: 0 auto;
-  padding: 40px 20px;
+  margin: 10px auto;
+  padding: 0 20px;
+  position: relative;
 }
 
 .banner-content {
   display: flex;
+  flex-direction: row;
   align-items: center;
-  gap: 40px;
+  gap: 50px;
+  padding: 25px;
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(10px);
+  border-radius: 20px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.06);
 }
 
 .banner-frame {
-  flex: 0 0 60%;
+  flex: 0 0 45%;
   position: relative;
-  padding: 15px;
-  background: #f5f5f5;
-  border-radius: 20px;
-  box-shadow: 0 6px 12px rgba(0,0,0,0.1);
-  transition: all 0.3s ease;
   overflow: hidden;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
+  transition: all 0.3s ease;
+  text-decoration: none; /* Remove link underline */
+  display: block; /* Ensure link takes full space */
+  cursor: pointer;
 }
 
 .banner-frame:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 12px 24px rgba(0,0,0,0.15);
+  transform: translateY(-3px);
+  box-shadow: 0 6px 25px rgba(0, 0, 0, 0.15);
 }
 
 .frame-image {
   width: 100%;
-  height: auto;
+  height: 100%;
+  object-fit: cover;
   display: block;
-  border-radius: 12px;
-  transition: all 0.3s ease;
+  transition: transform 0.5s ease;
 }
 
 .banner-frame:hover .frame-image {
-  transform: scale(1.02);
-  filter: brightness(1.05);
+  transform: scale(1.03);
 }
 
 .banner-heading {
-  flex: 0 0 35%;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
 }
 
 .banner-heading h2 {
-  font-size: 36px;
-  font-weight: 700;
-  margin: 5px 0;
-  color: #333;
-  transition: color 0.3s ease;
+  font-size: 38px;
+  font-weight: 800;
+  color: #1a1a1a;
+  line-height: 1.15;
+  margin: 0;
+  letter-spacing: -0.01em;
 }
 
-.banner-heading h2:hover {
-  color: #0a683f;
+.banner-heading .main-text {
+  font-size: 42px;
+  color: #006400;
+}
+
+.banner-heading .emphasis {
+  font-size: 44px;
+  background: linear-gradient(90deg, #006400, #0a8a0a);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.products-heading {
+  text-align: center;
+  font-size: 36px;
+  font-weight: 700;
+  color: #006400;
+  margin: 30px 0 20px;
+  letter-spacing: -0.01em;
+}
+
+/* Media Queries */
+@media (max-width: 1024px) {
+  .banner-content {
+    padding: 20px;
+    gap: 30px;
+  }
+
+  .banner-heading h2 {
+    font-size: 34px;
+  }
+
+  .banner-heading .main-text {
+    font-size: 36px;
+  }
+
+  .banner-heading .emphasis {
+    font-size: 38px;
+  }
 }
 
 @media (max-width: 768px) {
+  .banner-section {
+    margin: 10px auto;
+  }
+
   .banner-content {
     flex-direction: column;
+    gap: 20px;
+    padding: 15px;
   }
-  
-  .banner-frame, .banner-heading {
-    flex: 0 0 100%;
+
+  .banner-frame {
+    flex: 0 0 auto;
+    width: 100%;
   }
-  
+
   .banner-heading {
     text-align: center;
+  }
+
+  .banner-heading h2 {
+    font-size: 28px;
+  }
+
+  .banner-heading .main-text {
+    font-size: 32px;
+  }
+
+  .banner-heading .emphasis {
+    font-size: 34px;
+  }
+
+  .products-heading {
+    font-size: 28px;
+    margin: 20px 0 15px;
   }
 }

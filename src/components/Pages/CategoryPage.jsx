@@ -1,62 +1,29 @@
 import React, { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
+import { FaCheckCircle } from 'react-icons/fa';
 import TopNavBar from '../Headers/TopNavBar';
 import Header from '../Headers/Header';
 import PreFooter from '../Footer/PreFooter';
 import Footer from '../Footer/Footer';
 import ProductModal from './ProductModal';
-import { useCart } from '../../context/CartContext';
+import ProductCard from './ProductCard';
 import products from '../../Data/products-data';
-import categories from '../../Data/category-data'; 
+import categories from '../../Data/category-data';
 import './CategoryPage.css';
-import { FaCheckCircle } from 'react-icons/fa';
-import { motion, AnimatePresence } from 'framer-motion';
 
 const CategoryPage = () => {
   const { categorySlug } = useParams();
   const [selectedProduct, setSelectedProduct] = useState(null);
-  const { dispatch } = useCart(); 
   const [showModal, setShowModal] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [activeButton, setActiveButton] = useState(null);
-  
-  const openProductModal = (product) => {
-    setSelectedProduct(product);
-    setShowModal(true);
-  };
-
-  const getMainCategory = (slug) => {
-    if (!slug) return null;
-    
-    const mainCategory = categories.find(category => category.slug === slug);
-    if (mainCategory) return mainCategory;
-    
-    return categories.find(category => 
-      category.items.some(item => item.slug === slug)
-    );
-  };
 
   const categoryProducts = categorySlug
     ? products.filter(product => product.category === categorySlug)
     : products;
 
-  const addToCart = (product) => {
-    const productToAdd = {
-      id: product.id,
-      name: product.name,
-      price: typeof product.price === 'string' 
-        ? parseFloat(product.price.replace(',', '.'))
-        : product.price,
-      image: product.image,
-      category: product.category,
-      quantity: 1
-    };
-    
-    dispatch({ 
-      type: 'ADD_TO_CART', 
-      payload: productToAdd
-    });
-
+  const handleAddToCart = (product) => {
     setActiveButton(product.id);
     setShowSuccessModal(true);
 
@@ -92,7 +59,8 @@ const CategoryPage = () => {
                         to="#"
                         onClick={(e) => {
                           e.preventDefault();
-                          openProductModal(product);
+                          setSelectedProduct(product);
+                          setShowModal(true);
                         }}
                         className={categorySlug === item.path.split('/').pop() ? 'active' : ''}
                       >
@@ -116,43 +84,28 @@ const CategoryPage = () => {
 
           <div className="products-grid">
             {categoryProducts.map(product => (
-              <div key={product.id} className="product-card">
-                <div className="product-image">
-                  <img src={product.image} alt={product.name} />
-                </div>
-                <h3 className="product-name">{product.name}</h3>
-                <p className="product-price">{product.price} zł</p>
-                <div className="product-actions">
-                  <button 
-                    className={`add-to-cart ${activeButton === product.id ? 'success' : ''}`}
-                    onClick={() => {
-                      addToCart(product);
-                      setShowModal(true);
-                    }}
-                    disabled={activeButton === product.id}
-                  >
-                    {activeButton === product.id ? (
-                      <span className="success-text">
-                        <FaCheckCircle /> Dodano do koszyka
-                      </span>
-                    ) : (
-                      'Dodaj do koszyka'
-                    )}
-                  </button>
-                  <button className="read-more" onClick={() => setSelectedProduct(product)}>
-                    Czytaj więcej
-                  </button>
-                </div>
-              </div>
+              <ProductCard
+                key={product.id}
+                product={product}
+                activeButton={activeButton}
+                onAddToCart={handleAddToCart}
+                onReadMore={(product) => {
+                  setSelectedProduct(product);
+                  setShowModal(true);
+                }}
+              />
             ))}
           </div>
         </main>
       </div>
 
-      {selectedProduct && (
+      {selectedProduct && showModal && (
         <ProductModal 
           product={selectedProduct} 
-          onClose={() => setSelectedProduct(null)}
+          onClose={() => {
+            setSelectedProduct(null);
+            setShowModal(false);
+          }}
         />
       )}
 
@@ -176,6 +129,7 @@ const CategoryPage = () => {
   );
 };
 
+// Helper function to get category title
 const getCategoryTitle = (slug) => {
   if (!slug) return 'Wszystkie produkty';
 

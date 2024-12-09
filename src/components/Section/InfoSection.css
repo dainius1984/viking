@@ -1,33 +1,45 @@
 .header-section {
     display: flex;
-    align-items: center; /* Changed to center */
+    flex-direction: column;
+    align-items: center;
     justify-content: center;
-    gap: 15px; /* Reduced gap */
+    text-align: center;
     margin-bottom: 40px;
+    gap: 20px;
 }
 
 .logo {
-    width: 50px; /* Made smaller */
+    width: 120px;
     height: auto;
+    margin: 0 auto;
 }
 
 .title-container {
-    text-align: left;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
 }
 
 .title-container h1 {
     font-size: 32px;
-    color: #006400; /* Darker green */
+    color: #006400;
+    margin: 0;
+    padding: 0;
 }
 
 .title-container h2 {
     font-size: 22px;
+    margin: 0;
+    padding: 0;
+    font-weight: normal;
 }
 
 .content-section {
     text-align: center;
     margin-bottom: 30px;
-    padding: 0 50px; /* Added 50px padding on left and right */
+    padding: 0 50px;
 }
 
 .text-content {

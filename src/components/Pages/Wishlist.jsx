@@ -63,7 +63,7 @@ const Wishlist = () => {
               Zapraszamy do zapoznania się z naszą ofertą.
             </p>
             <button className="return-btn">
-              <Link to="/category/produkty">Przejdź Do Sklepu</Link>
+              <Link to="/category">Przejdź Do Sklepu</Link>
             </button>
           </div>
           <ProductGrid />

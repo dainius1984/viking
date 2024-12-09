@@ -7,7 +7,7 @@ const HeroSection = () => {
   return (
     <div 
       className="hero-section" 
-      style={{ backgroundImage: `url('/img/main.webp')` }}
+      style={{ backgroundImage: `url('/img/main.jpeg')` }}
     >
       <div className="hero-content">
         <h1>Wegański Suplement Diety</h1>

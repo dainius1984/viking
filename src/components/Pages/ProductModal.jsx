@@ -251,15 +251,20 @@ const ProductModal = ({ product, onClose }) => {
       </AnimatePresence>
 
       {/* Success Message Animation */}
-      <AnimatePresence>
+{/* Success Message Animation */}
+<AnimatePresence>
         {showModal && (
           <motion.div 
-            className="success-modal"
+            className={`success-modal ${isAddedToWishlist ? 'wishlist-success' : 'cart-success'}`}
             initial={{ opacity: 0, y: 50 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 50 }}
           >
-            <FaCheckCircle className="success-icon" />
+            {isAddedToWishlist ? (
+              <FaHeart className="success-icon" />
+            ) : (
+              <FaCheckCircle className="success-icon" />
+            )}
             <p>{successMessage}</p>
           </motion.div>
         )}

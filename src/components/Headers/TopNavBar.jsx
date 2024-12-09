@@ -1,7 +1,7 @@
-// src/components/TopNavBar.jsx
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { AiOutlineUser } from 'react-icons/ai';
-import { FiPhone, FiMail } from 'react-icons/fi'; // Adding icons for phone and email
+import { FiPhone, FiMail } from 'react-icons/fi';
 import './TopNavBar.css';
 
 const TopNavBar = () => {
@@ -10,12 +10,12 @@ const TopNavBar = () => {
       <div className="top-nav-container">
         <div className="top-nav-left">
           <span><FiPhone /> 660 695 776</span>
-          <span><FiMail /> sklep@vi-king.pl</span>
+          <span><FiMail /> sklep@healthfamily.pl</span>
         </div>
         <div className="top-nav-right">
-          <a href="/account" className="topnav-user-icon">
+          <Link to="/auth" className="topnav-user-icon">
             <AiOutlineUser />
-          </a>
+          </Link>
         </div>
       </div>
     </div>

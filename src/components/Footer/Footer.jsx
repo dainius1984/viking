@@ -7,11 +7,11 @@ const Footer = () => {
       <div className="footer-container">
         <div className="footer-content">
           <div className="footer-logo">
-            <img src="/images/viking-logo.svg" alt="Viking Nordic Healt" />
+            <img src="/img/logo.jpg" alt="HealthFamily" />
           </div>
           <div className="footer-info">
             <div className="company-info">
-              <p><strong>Viking Nordic Healt</strong></p>
+              <p><strong>Health family</strong></p>
               <p>ul. Przykładowa 123</p>
               <p>00-000 Warszawa</p>
               <p>NIP: 000-000-00-00</p>

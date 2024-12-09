@@ -23,7 +23,12 @@ const LinkSection = () => {
       <div className="link-categories">
         {categories.map((category) => (
           <div key={category.slug} className="link-category">
-            <h3 className="category-title">{category.title}</h3>
+            <Link 
+              to={`/category/${category.slug}`} 
+              className="category-title hover:text-green-800 transition-colors duration-200"
+            >
+              {category.title}
+            </Link>
             <ul className="link-list">
               {category.products.slice(0, 4).map((product, index) => (
                 <li key={index} className="link-item">

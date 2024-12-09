@@ -15,28 +15,36 @@ const InfoSection = () => {
     <div className="info-container">
       <div className="header-section">
         <div className="logo-container">
-          <img src="/img/logo.jpg" alt="Viking Nordic Healt Logo" className="logo" />
+          <img src="/img/logo.jpg" alt="HealthFamily logo" className="logo" />
         </div>
         <div className="title-container">
           <h1>Suplementy Diety</h1>
-          <h2>VIKING Nordic Healt</h2>
+          <h2>Health Family</h2>
         </div>
       </div>
 
       <div className="content-section">
-        <p className="text-content">Kwasy omega-3, witaminy i minerały to składniki odżywcze, na których niedobór cierpi wielu z nas. Przez ostatnie 100 lat żywność na świecie uległa drastycznemu pogorszeniu, jest wysoko przetworzona oraz nafaszerowana chemią. Coraz częściej dochodzi też do sztucznego zwiększania masy produktów mięsnych w celu obniżenia kosztów ich produkcji. W wyniku tych procesów <strong>dzisiejsza żywność jest pozbawiona wielu składników odżywczych</strong>, co przyczynia się do drastycznego wzrostu zachorowań na przestrzeni ostatnich kilkunastu lat.</p>
+  <p className="text-content">
+    Omega-3, witaminy i minerały to kluczowe składniki odżywcze, których braki odczuwamy coraz częściej. W ciągu ostatnich dziesięcioleci jakość żywności uległa znacznemu pogorszeniu – produkty są wysoko przetworzone i pełne sztucznych dodatków. Dodatkowo, coraz częściej stosowane są metody sztucznego zwiększania wagi mięsa, co odbija się na jego wartości odżywczej. W efekcie <strong>nasza codzienna dieta jest uboga w ważne składniki odżywcze</strong>, co prowadzi do wzrostu liczby schorzeń związanych z niedoborem witamin i minerałów.
+  </p>
 
-        <p className="text-content">Doskonale zdajemy sobie sprawę, że wysiłek fizyczny, dieta oraz odpowiednie uzupełnienie składników odżywczych są kluczowymi czynnikami dla naszego zdrowia. Dlatego <strong>Viking postanowił wyjść naprzeciw dzisiejszym problemom żywieniowym</strong> i oferuje suplementy diety zawierające: kwasy omega-3 6 9, kwasy DHA, EPA oraz wiele witamin i minerałów.</p>
+  <p className="text-content">
+    Zdrowy styl życia, zbilansowana dieta i odpowiednie suplementy są nieodzowne, by cieszyć się dobrym zdrowiem. Dlatego <strong>Health Family wychodzi naprzeciw wyzwaniom współczesnej diety</strong>, oferując suplementy diety bogate w omega-3, DHA, EPA oraz kluczowe witaminy i minerały, które wspierają Twoje zdrowie na co dzień.
+  </p>
 
-        <h3 className="section-title">Dlaczego Viking?</h3>
+  <h3 className="section-title">Dlaczego Health Family?</h3>
 
-        <p className="text-content">Tworząc nasz sklep z suplementami, <strong>inspirowaliśmy się legendarnymi wojownikami ze Skandynawii</strong>, którzy znani byli ze swojej siły i wytrzymalości. Cechy te zawdzięczali diecie składającej się z morskich ryb, bogatych w kwasy omega i witaminy. Wzorujemy się na tych dzielnych bohaterach i dlatego <strong>oferujemy Ci produkty, które uzupełnią Twoją dietę w ważne składniki odżywcze</strong>. Dzięki nim podołasz każdemu zadaniu, a nowy dzień będzie okazją do kolejnych wyzwań.</p>
-      </div>
+  <p className="text-content">
+    Tworząc nasze produkty, <strong>inspirowaliśmy się naturą i potrzebami współczesnych rodzin</strong>. Wierzymy, że każdy zasługuje na to, by czerpać z życia pełnymi garściami, bez obaw o niedobory składników odżywczych. Nasze suplementy zostały stworzone z myślą o dostarczeniu Twojemu organizmowi tego, co najlepsze, abyś każdego dnia mógł stawiać czoła nowym wyzwaniom.
+  </p>
+</div>
 
-      <div className="additional-content">
-        <h3 className="section-title">Viking Nordic Healt dla każdego</h3>
-        <p className="text-content">Suplementy diety w naszym sklepie to <strong>doskonały wybór dla każdego</strong>. Jeśli więc dbasz o zdrowie swoje i Twoich bliskich, zapoznaj się z naszą ofertą! Znajdziesz u nas rozwiązanie licznych problemów żywieniowych. Posiadamy: suplementy na koncentrację, zwiększające odporność i wpływające na prawidłową pracę serca, mózgu i układu krwionośnego. Produkty Zinzino to korzystna cena i pewny efekt.</p>
-        
+<div className="additional-content">
+  <h3 className="section-title">Health Family – wsparcie dla każdego</h3>
+  <p className="text-content">
+    Suplementy diety od Health Family to <strong>idealny wybór dla całej rodziny</strong>. Dbając o zdrowie swoje i swoich bliskich, warto sięgnąć po produkty, które wspierają koncentrację, wzmacniają odporność oraz korzystnie wpływają na serce, mózg i układ krwionośny. Poznaj naszą ofertę i znajdź rozwiązanie idealne dla Ciebie. Health Family to połączenie przystępnej ceny i skuteczności.
+  </p>
+
         <button onClick={handleClick} className="cta-button">
           Zobacz więcej
         </button>
