@@ -9,23 +9,32 @@
     margin-bottom: 30px !important;
     font-weight: bold !important;
     color: #000 !important;
+    padding-left: 20px !important;
 }
 
 .link-categories {
     display: flex !important;
-    justify-content: space-between !important;
-    gap: 40px !important;
+    justify-content: flex-start !important;
+    gap: 40px !important; /* Reduced from 80px to 40px */
+    padding: 0 20px !important;
 }
 
 .link-category {
-    flex: 1 !important;
+    flex: 0 1 auto !important;
+    min-width: 180px !important; /* Reduced from 200px to 180px */
 }
 
 .category-title {
     color: #006400 !important;
-    font-size: 24px !important;
-    margin-bottom: 20px !important;
+    font-size: 20px !important;
+    margin-bottom: 12px !important; /* Reduced from 16px to 12px */
     font-weight: bold !important;
+    text-decoration: none !important;
+    display: block !important;
+}
+
+.category-title:hover {
+    text-decoration: underline !important;
 }
 
 .link-list {
@@ -35,19 +44,20 @@
 }
 
 .link-item {
-    margin-bottom: 15px !important;
+    margin-bottom: 10px !important; /* Reduced from 12px to 10px */
 }
 
 .product-link {
     background: none !important;
     border: none !important;
-    color: #333 !important;
-    font-size: 16px !important;
+    color: #444 !important;
+    font-size: 15px !important;
     padding: 0 !important;
     cursor: pointer !important;
     text-align: left !important;
     width: 100% !important;
     transition: color 0.2s ease !important;
+    font-weight: normal !important;
 }
 
 .product-link:hover {
@@ -62,10 +72,16 @@
 
     .link-category {
         text-align: center !important;
+        min-width: unset !important;
     }
 
     .product-link {
         text-align: center !important;
+    }
+
+    .link-section-title {
+        text-align: center !important;
+        padding-left: 0 !important;
     }
 }
 
@@ -76,6 +92,9 @@
 
     .link-section-title {
         font-size: 24px !important;
-        text-align: center !important;
+    }
+
+    .link-categories {
+        padding: 0 !important;
     }
 }

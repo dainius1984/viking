@@ -5,9 +5,10 @@
 }
 
 .cart-content {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: 1fr 350px; /* Changed to grid with fixed right column */
   gap: 30px;
+  position: relative;
 }
 
 .cart-main {
@@ -77,7 +78,7 @@
 
 .cart-header {
   display: grid;
-  grid-template-columns: 2fr 1fr 1fr;
+  grid-template-columns: 2fr 100px 100px; /* Reduced width for quantity and total */
   padding: 15px;
   background: #f9f9f9;
   font-weight: bold;
@@ -86,12 +87,10 @@
 
 .cart-item {
   display: grid;
-  grid-template-columns: 2fr 1fr 1fr;
+  grid-template-columns: 2fr 100px 100px; /* Matching header columns */
   padding: 20px;
   border-bottom: 1px solid #eee;
   align-items: center;
-  animation: fadeIn 0.3s ease-in;
-  transition: all 0.3s ease-out;
 }
 
 .cart-item.removing {
@@ -135,12 +134,9 @@
 }
 
 .coupon-section {
-  width: 33%;
-  padding: 20px;
-  background: #f9f9f9;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-  margin-top: 20px;
+  width: 100%; /* Changed from 33% */
+  padding: 15px 0;
+  border-top: 1px solid #eee;
 }
 
 .coupon-input {
@@ -188,18 +184,67 @@
   background: #f5f5f5;
 }
 
-@media (max-width: 768px) {
-  .coupon-section {
-    width: 100%;
-  }
-  
-  .cart-item {
+.order-summary {
+  position: sticky;
+  top: 20px;
+  width: 100%;
+  padding: 20px;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  margin-top: 0; /* Remove top margin */
+  align-self: flex-start;
+  height: fit-content;
+}
+
+.summary-details {
+  margin-top: 15px;
+}
+
+.summary-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 0;
+  border-bottom: 1px solid #eee;
+}
+
+.summary-row.total {
+  font-weight: bold;
+  font-size: 1.1em;
+  border-bottom: none;
+}
+
+.place-order-btn {
+  width: 100%;
+  padding: 14px 32px;
+  background: #0a683f;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  margin-top: 20px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.place-order-btn:hover:not(:disabled) {
+  background: #085332;
+  transform: translateY(-2px);
+}
+
+.place-order-btn:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}
+
+@media (max-width: 1024px) {
+  .cart-content {
     grid-template-columns: 1fr;
-    gap: 15px;
   }
   
-  .cart-header {
-    display: none;
+  .order-summary {
+    position: relative;
+    top: 0;
   }
 }
 
@@ -264,5 +309,16 @@
   to {
     transform: translateX(100%);
     opacity: 0;
+  }
+}
+
+@media (max-width: 1024px) {
+  .cart-content {
+    grid-template-columns: 1fr;
+  }
+  
+  .order-summary {
+    position: relative;
+    top: 0;
   }
 }

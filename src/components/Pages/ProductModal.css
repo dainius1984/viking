@@ -336,12 +336,11 @@
   transition: 0s !important;
 }
 
-/* Success Modal */
 .success-modal {
   position: fixed;
   bottom: 20px;
-  left: 50%;
-  transform: translateX(-50%);
+  right: 20px;
+  transform: none;
   background: white;
   padding: 15px 25px;
   border-radius: 30px;
@@ -350,11 +349,32 @@
   align-items: center;
   gap: 10px;
   z-index: 1200;
+  max-width: 300px;
+  width: auto;
+  white-space: nowrap;
 }
 
 .success-modal .success-icon {
-  color: #0a683f;
   font-size: 20px;
+  flex-shrink: 0;
+}
+
+/* Cart success styles */
+.success-modal.cart-success .success-icon {
+  color: #0a683f;
+}
+
+/* Wishlist success styles */
+.success-modal.wishlist-success {
+  border: 1px solid #ff4b6e;
+}
+
+.success-modal.wishlist-success .success-icon {
+  color: #ff4b6e;
+}
+
+.success-modal.wishlist-success p {
+  color: #ff4b6e;
 }
 
 /* Responsive Design */

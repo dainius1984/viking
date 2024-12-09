@@ -62,9 +62,11 @@ const Header = () => {
   return (
     <div className="main-header">
       <div className="header-container">
-        <div className="logo">
-          <img src="/img/logo.jpg" alt="Viking Nordic Health" />
-        </div>
+      <div className="logo">
+    <Link to="/">
+      <img src="/img/logo.jpg" alt="Health Family" />
+    </Link>
+  </div>
         <nav className="navigation">
           <ul>
             <li><Link to="/">Strona główna</Link></li>
@@ -94,7 +96,7 @@ const Header = () => {
               <a href="#" onClick={handleOrderClick}>Zamówienie</a>
             </li>
             <li><Link to="/blog">Blog</Link></li>
-            <li><Link to="/account">Moje konto</Link></li>
+            <li><Link to="/auth">Moje konto</Link></li>
           </ul>
         </nav>
         <div className="header-icons">

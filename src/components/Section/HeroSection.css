@@ -1,14 +1,16 @@
 .hero-section {
   width: 100%;
-  height: 100vh;
+  height: calc(100vh - 100px);
   min-height: 500px; /* Minimum height for smaller screens */
   background-size: cover;
+  padding: 50px 0;
   background-position: center;
   background-repeat: no-repeat;
   display: flex;
   align-items: center;
   justify-content: center;
   position: relative;
+  background-attachment: fixed;
   color: white;
   text-align: center;
   z-index: 0; /* Make sure the hero section is below the header */
@@ -29,7 +31,19 @@
   position: relative;
   z-index: 2; /* Place content above the overlay */
   max-width: 800px;
-  padding: 0 20px; /* Add padding for smaller screens */
+  padding: 0 20px;
+  animation: fadeInUp 1.5s ease-out;  /* Add padding for smaller screens */
+}
+
+@keyframes fadeInUp {
+  from {
+      opacity: 0;
+      transform: translateY(30px);
+  }
+  to {
+      opacity: 1;
+      transform: translateY(0);
+  }
 }
 
 .hero-content h1 {

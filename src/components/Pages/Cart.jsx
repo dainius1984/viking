@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useCart } from '../../context/CartContext';
 import { FaCheckCircle, FaShoppingCart } from 'react-icons/fa';
 import TopNavBar from '../Headers/TopNavBar';
@@ -7,12 +7,17 @@ import Header from '../Headers/Header';
 import PreFooter from '../Footer/PreFooter';
 import Footer from '../Footer/Footer';
 import ProductGrid from '../Section/ProductGrid';
+import { databases, ID } from '../appwrite';
+import { useAuth } from '../AuthContext';
 import './Cart.css';
 
 const Cart = () => {
   const { state, dispatch } = useCart();
+  const { user } = useAuth(); // Add auth
+  const navigate = useNavigate(); // Add navigation
   const [removingItems, setRemovingItems] = useState(new Set());
   const [notification, setNotification] = useState(null);
+  const [isProcessing, setIsProcessing] = useState(false); // Add loading state
 
   const showNotification = (message) => {
     setNotification(message);
@@ -20,6 +25,56 @@ const Cart = () => {
       setNotification(null);
     }, 3000);
   };
+
+  const handlePlaceOrder = async () => {
+    if (!user) {
+        localStorage.setItem('redirectToCart', 'true');
+        navigate('/auth');
+        return;
+    }
+
+    setIsProcessing(true);
+    try {
+      // Create a simplified version of cart items
+      const simplifiedItems = state.cart.map(item => ({
+        id: item.id,
+        n: item.name,  // shortened key names to save characters
+        q: item.quantity,
+        p: item.price
+      }));
+
+      const order = {
+        userId: user.$id,
+        orderNumber: `ORD-${Date.now()}`,
+        Status: 'pending',
+        total: (state.cart.reduce((sum, item) => sum + item.price * item.quantity, 0) + 15).toFixed(2),
+        createdAt: new Date().toISOString(),
+        items: JSON.stringify(simplifiedItems)  // Convert to string
+      };
+
+      console.log('Attempting to create order:', order);
+
+      const response = await databases.createDocument(
+        '67545c1800028e002c86',         
+        '67545c2c001276c2c261',         
+        ID.unique(),
+        order
+      );
+
+      if (response.$id) {
+        showNotification('Zamówienie zostało złożone pomyślnie');
+        dispatch({ type: 'CLEAR_CART' });
+        setTimeout(() => {
+          navigate('/account');
+        }, 2000);
+      }
+    } catch (error) {
+      console.error('Error placing order:', error);
+      showNotification('Wystąpił błąd podczas składania zamówienia');
+  } finally {
+      setIsProcessing(false);
+  }
+};
 
   const updateQuantity = (id, quantity) => {
     if (quantity === 0) {
@@ -128,21 +183,49 @@ const Cart = () => {
                 </div>
               ))}
             </div>
-            <Link to="/category/produkty" className="continue-shopping">
+            <Link to="/category" className="continue-shopping">
               Powrót Do Sklepu
             </Link>
-            
-            <div className="coupon-section">
-              <h3>Kod zniżki</h3>
-              <div className="coupon-input">
-                <input type="text" placeholder="Wpisz kod" />
-                <button>Zastosuj Kupon</button>
+          </div>
+  
+          {state.cart.length > 0 && (
+            <div className="order-summary">
+              <h3>Podsumowanie zamówienia</h3>
+              <div className="summary-details">
+                <div className="summary-row">
+                  <span>Suma częściowa:</span>
+                  <span>{totalAmount.toFixed(2)} zł</span>
+                </div>
+                <div className="summary-row">
+                  <span>Dostawa:</span>
+                  <span>15.00 zł</span>
+                </div>
+                <div className="summary-row total">
+                  <span>Suma:</span>
+                  <span>{(totalAmount + 15).toFixed(2)} zł</span>
+                </div>
+  
+                <div className="coupon-section">
+                  <h3>Kod zniżki</h3>
+                  <div className="coupon-input">
+                    <input type="text" placeholder="Wpisz kod" />
+                    <button>Zastosuj Kupon</button>
+                  </div>
+                </div>
+  
+                <button 
+                  className="place-order-btn"
+                  onClick={handlePlaceOrder}
+                  disabled={isProcessing}
+                >
+                  {isProcessing ? 'Przetwarzanie...' : 'Złóż zamówienie'}
+                </button>
               </div>
             </div>
-          </div>
+          )}
         </div>
       </div>
-      
+        
       {notification && (
         <div className="notification">
           <FaCheckCircle />
