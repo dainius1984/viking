@@ -10,7 +10,7 @@ const TopNavBar = () => {
       <div className="top-nav-container">
         <div className="top-nav-left">
           <span><FiPhone /> 660 695 776</span>
-          <span><FiMail /> sklep@healthfamily.pl</span>
+          <span><FiMail /> sklep@familybalance.pl</span>
         </div>
         <div className="top-nav-right">
           <Link to="/auth" className="topnav-user-icon">

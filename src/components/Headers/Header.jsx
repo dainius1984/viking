@@ -64,7 +64,7 @@ const Header = () => {
       <div className="header-container">
       <div className="logo">
     <Link to="/">
-      <img src="/img/logo.jpg" alt="Health Family" />
+      <img src="/img/logo.jpg" alt="Family Balance" />
     </Link>
   </div>
         <nav className="navigation">

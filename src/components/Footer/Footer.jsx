@@ -11,7 +11,7 @@ const Footer = () => {
           </div>
           <div className="footer-info">
             <div className="company-info">
-              <p><strong>Health family</strong></p>
+              <p><strong>Family Balance</strong></p>
               <p>ul. Przykładowa 123</p>
               <p>00-000 Warszawa</p>
               <p>NIP: 000-000-00-00</p>
