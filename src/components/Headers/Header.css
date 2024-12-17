@@ -89,46 +89,6 @@
   border: 2px solid white;
 }
 
-@media screen and (max-width: 768px) {
-  .header-container {
-    flex-direction: column;
-    gap: 15px;
-  }
-
-  .logo {
-    width: 100%;
-    display: flex;
-    justify-content: center;
-  }
-  
-  .navigation {
-    width: 100%;
-    margin: 10px 0;
-  }
-  
-  .navigation ul {
-    gap: 15px;
-  }
-  
-  .header-icons {
-    margin-top: 10px;
-  }
-}
-
-@media screen and (max-width: 480px) {
-  .navigation ul {
-    flex-direction: column;
-    align-items: center;
-    gap: 10px;
-  }
-  
-  .logo {
-    width: 100%;
-    display: flex;
-    justify-content: center;
-  }
-}
-
 .dropdown {
   position: relative;
 }
@@ -169,7 +129,7 @@
   align-items: center;
   padding: 0 20px;
   color: #333;
-  font-size: 14px;
+  font-size: 13px;
   text-decoration: none;
   transition: all 0.2s ease;
   line-height: 45px;
@@ -248,4 +208,63 @@
 
 .dropdown-menu li:first-child {
   margin-top: 20px;
+}
+
+@media screen and (max-width: 768px) {
+  .header-container {
+    flex-direction: column;
+    gap: 15px;
+  }
+
+  .logo {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+  }
+  
+  .navigation {
+    width: 100%;
+    margin: 10px 0;
+  }
+  
+  .navigation ul {
+    gap: 15px;
+  }
+  
+  .header-icons {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    margin-top: 10px;
+    gap: 30px;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .navigation ul {
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .navigation ul li {
+    width: 100%;
+    text-align: center;
+  }
+
+  .navigation a {
+    display: block;
+    padding: 10px 0;
+    font-size: 1.1rem;
+  }
+  
+  .logo {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+  }
+
+  .icon-wrapper {
+    font-size: 1.8rem;
+  }
 }
