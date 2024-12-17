@@ -94,6 +94,12 @@
     flex-direction: column;
     gap: 15px;
   }
+
+  .logo {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+  }
   
   .navigation {
     width: 100%;
@@ -116,8 +122,10 @@
     gap: 10px;
   }
   
-  .logo img {
-    height: 40px;
+  .logo {
+    width: 100%;
+    display: flex;
+    justify-content: center;
   }
 }
 

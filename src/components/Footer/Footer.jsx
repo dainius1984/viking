@@ -17,7 +17,7 @@ const Footer = () => {
               <p>NIP: 000-000-00-00</p>
             </div>
             <div className="contact-info">
-              <p>Email: kontakt@vikingnordic.pl</p>
+              <p>Email: kontakt@familybalance.pl</p>
               <p>Tel: +48 000 000 000</p>
               <p>Pon-Pt: 8:00 - 16:00</p>
             </div>

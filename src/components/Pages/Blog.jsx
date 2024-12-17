@@ -15,8 +15,8 @@ const Blog = () => {
 
   return (
     <>
-      <TopNavBar />
       <Header />
+      <TopNavBar /> 
       <div className="blog-container">
         <div className="blog-section">
           <img 

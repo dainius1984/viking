@@ -1,5 +1,4 @@
-// src/pages/HomePage.jsx
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import TopNavBar from '../components/Headers/TopNavBar';
 import Header from '../components/Headers/Header';
 import HeroSection from '../components/Section/HeroSection';
@@ -10,9 +9,20 @@ import PreFooter from '../components/Footer/PreFooter';
 import Footer from '../components/Footer/Footer';
 
 const HomePage = () => {
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
   return (
     <div>
-      <TopNavBar />
+      {!isMobile && <TopNavBar />}
       <Header />
       <HeroSection />
       <HealthyLifestyleBanner />
