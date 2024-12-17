@@ -1,0 +1,50 @@
+/* OrderConfirmation.css */
+.order-confirmation {
+  max-width: 800px;
+  margin: 40px auto;
+  padding: 20px;
+  text-align: center;
+}
+
+.confirmation-content {
+  background: white;
+  padding: 40px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.success-icon {
+  color: #0a683f;
+  font-size: 64px;
+  margin-bottom: 20px;
+}
+
+.order-confirmation h1 {
+  color: #333;
+  margin-bottom: 20px;
+}
+
+.order-confirmation p {
+  color: #666;
+  margin-bottom: 15px;
+}
+
+.return-btn {
+  background: #0a683f;
+  color: white;
+  padding: 12px 24px;
+  border: none;
+  border-radius: 4px;
+  margin-top: 20px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.return-btn:hover {
+  background: #085332;
+}
+
+.return-btn a {
+  color: white;
+  text-decoration: none;
+}
