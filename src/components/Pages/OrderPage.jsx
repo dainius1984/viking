@@ -7,16 +7,14 @@ import TopNavBar from '../Headers/TopNavBar';
 import Header from '../Headers/Header';
 import PreFooter from '../Footer/PreFooter';
 import Footer from '../Footer/Footer';
-import './OrderPage.css';
 
 const PAYU_CONFIG = {
-  posId: '4347473', // Id punktu płatności
-  secondKey: '7c47c70b1c394d90c6187af0ce2b69ed', // Drugi klucz (MD5)
-  clientId: '4347473', // Client ID OAuth
-  clientSecret: '0f3db32e266dcd9878e6ef3933f9e2cc', // Client Secret OAuth
-  apiUrl: 'https://secure.snd.payu.com/api/v2_1/orders', // Testowa bramka PayU
+  posId: '4347473',
+  secondKey: '7c47c70b1c394d90c6187af0ce2b69ed',
+  clientId: '4347473',
+  clientSecret: '0f3db32e266dcd9878e6ef3933f9e2cc',
+  apiUrl: 'https://secure.snd.payu.com/api/v2_1/orders',
 };
-
 
 const OrderPage = () => {
   const { state, dispatch } = useCart();
@@ -37,7 +35,6 @@ const OrderPage = () => {
     notes: ''
   });
 
-  // Calculate total amount
   const totalAmount = state.cart.reduce(
     (sum, item) => sum + item.price * item.quantity,
     0
@@ -53,9 +50,6 @@ const OrderPage = () => {
   const appendToSheet = async (orderData) => {
     try {
       const apiUrl = 'https://healthapi-zvfk.onrender.com/api';
-      
-      console.log('Sending data:', JSON.stringify(orderData, null, 2)); // Log the exact data being sent
-      
       const response = await fetch(apiUrl, {
         method: 'POST',
         headers: {
@@ -64,15 +58,13 @@ const OrderPage = () => {
         },
         body: JSON.stringify(orderData)
       });
-  
+
       if (!response.ok) {
-        const errorText = await response.text(); // Get error details
-        console.error('Server response:', errorText);
+        const errorText = await response.text();
         throw new Error(`HTTP error! status: ${response.status} - ${errorText}`);
       }
-  
-      const result = await response.json();
-      return result;
+
+      return await response.json();
     } catch (error) {
       console.error('Error appending to sheet:', error);
       throw error;
@@ -97,11 +89,9 @@ const OrderPage = () => {
       };
 
       if (user) {
-        // For logged-in users, save to Appwrite
         const appwriteData = {
           userId: user.$id,
           orderNumber: orderData.orderNumber,
-          // Status: orderData.status,
           total: orderData.total,
           createdAt: orderData.createdAt,
           items: JSON.stringify(state.cart.map(item => ({
@@ -120,7 +110,6 @@ const OrderPage = () => {
           appwriteData
         );
       } else {
-        // For non-logged-in users, save to Google Sheets
         const sheetData = {
           "Numer zamowienia": orderData.orderNumber,
           "Data": new Date().toLocaleString('pl-PL'),
@@ -142,7 +131,6 @@ const OrderPage = () => {
         await appendToSheet(sheetData);
       }
 
-      // Clear cart and redirect regardless of user status
       dispatch({ type: 'CLEAR_CART' });
       navigate('/order-confirmation');
     } catch (error) {
@@ -153,168 +141,190 @@ const OrderPage = () => {
     }
   };
 
-return (
-  <>
-    <TopNavBar />
-    <Header />
-    <div className="order-container">
-      <h1>Zamówienie {user ? '(Zalogowany)' : '(Gość)'}</h1>
-      
-      <div className="order-content">
-        <form onSubmit={handleSubmitOrder} className="order-form">
-          <div className="form-section">
-            <h2>Dane rozliczeniowe</h2>
-            <div className="form-group">
-              <input
-                type="text"
-                name="firstName"
-                placeholder="Imię *" 
-                required
-                value={formData.firstName}
-                onChange={handleInputChange}
-              />
+  return (
+    <>
+      <TopNavBar />
+      <Header />
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10">
+        <h1 className="text-2xl sm:text-3xl font-semibold mb-8">
+          Zamówienie {user ? '(Zalogowany)' : '(Gość)'}
+        </h1>
+        
+        <div className="mt-6">
+          <form onSubmit={handleSubmitOrder} className="grid grid-cols-1 lg:grid-cols-[1.5fr,1fr] gap-6 lg:gap-10">
+            {/* Billing Details Section */}
+            <div className="bg-white p-6 sm:p-8 rounded-lg shadow-md">
+              <h2 className="text-xl font-semibold mb-6">Dane rozliczeniowe</h2>
+              
+              <div className="space-y-4">
+                <input
+                  type="text"
+                  name="firstName"
+                  placeholder="Imię *" 
+                  required
+                  value={formData.firstName}
+                  onChange={handleInputChange}
+                  className="w-full p-3 border border-gray-200 rounded-md focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"
+                />
+                
+                <input
+                  type="text"
+                  name="lastName"
+                  placeholder="Nazwisko *"
+                  required
+                  value={formData.lastName}
+                  onChange={handleInputChange}
+                  className="w-full p-3 border border-gray-200 rounded-md focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"
+                />
+                
+                <input
+                  type="text"
+                  name="company"
+                  placeholder="Nazwa firmy (opcjonalnie)"
+                  value={formData.company}
+                  onChange={handleInputChange}
+                  className="w-full p-3 border border-gray-200 rounded-md focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"
+                />
+                
+                <input
+                  type="text"
+                  name="street"
+                  placeholder="Ulica *"
+                  required
+                  value={formData.street}
+                  onChange={handleInputChange}
+                  className="w-full p-3 border border-gray-200 rounded-md focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"
+                />
+                
+                <div className="grid grid-cols-2 gap-4">
+                  <input
+                    type="text"
+                    name="postal"
+                    placeholder="Kod pocztowy *"
+                    required
+                    value={formData.postal}
+                    onChange={handleInputChange}
+                    className="w-full p-3 border border-gray-200 rounded-md focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"
+                  />
+                  
+                  <input
+                    type="text"
+                    name="city"
+                    placeholder="Miasto *"
+                    required
+                    value={formData.city}
+                    onChange={handleInputChange}
+                    className="w-full p-3 border border-gray-200 rounded-md focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"
+                  />
+                </div>
+                
+                <input
+                  type="tel"
+                  name="phone"
+                  placeholder="Telefon *"
+                  required
+                  value={formData.phone}
+                  onChange={handleInputChange}
+                  className="w-full p-3 border border-gray-200 rounded-md focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"
+                />
+                
+                <input
+                  type="email"
+                  name="email"
+                  placeholder="Email *"
+                  required
+                  value={formData.email}
+                  onChange={handleInputChange}
+                  className="w-full p-3 border border-gray-200 rounded-md focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"
+                />
+                
+                <textarea
+                  name="notes"
+                  placeholder="Uwagi do zamówienia"
+                  value={formData.notes}
+                  onChange={handleInputChange}
+                  className="w-full p-3 border border-gray-200 rounded-md focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all min-h-[100px] resize-y"
+                />
+              </div>
             </div>
-            <div className="form-group">
-              <input
-                type="text"
-                name="lastName"
-                placeholder="Nazwisko *"
-                required
-                value={formData.lastName}
-                onChange={handleInputChange}
-              />
-            </div>
-            <div className="form-group">
-              <input
-                type="text"
-                name="company"
-                placeholder="Nazwa firmy (opcjonalnie)"
-                value={formData.company}
-                onChange={handleInputChange}
-              />
-            </div>
-            <div className="form-group">
-              <input
-                type="text" 
-                name="street"
-                placeholder="Ulica *"
-                required
-                value={formData.street}
-                onChange={handleInputChange}
-              />
-            </div>
-            <div className="form-group">
-              <input
-                type="text"
-                name="postal"
-                placeholder="Kod pocztowy *"
-                required
-                value={formData.postal}
-                onChange={handleInputChange}
-              />
-            </div>
-            <div className="form-group">
-              <input
-                type="text"
-                name="city"
-                placeholder="Miasto *"
-                required
-                value={formData.city}
-                onChange={handleInputChange}
-              />
-            </div>
-            <div className="form-group">
-              <input
-                type="tel"
-                name="phone"
-                placeholder="Telefon *"
-                required
-                value={formData.phone}
-                onChange={handleInputChange}
-              />
-            </div>
-            <div className="form-group">
-              <input
-                type="email"
-                name="email"
-                placeholder="Email *"
-                required
-                value={formData.email}
-                onChange={handleInputChange}
-              />
-            </div>
-            <div className="form-group">
-              <textarea
-                name="notes"
-                placeholder="Uwagi do zamówienia"
-                value={formData.notes}
-                onChange={handleInputChange}
-              />
-            </div>
-          </div>
 
-          <div className="order-summary">
-            <h2>Twoje zamówienie</h2>
-            <div className="order-items">
-              {state.cart.map(item => (
-                <div key={item.id} className="order-item">
-                  <div className="order-item-details">
-                    <img src={item.image} alt={item.name} className="order-item-image" />
-                    <span>{item.name} × {item.quantity}</span>
+            {/* Order Summary Section */}
+            <div className="lg:sticky lg:top-5">
+              <div className="bg-white p-6 sm:p-8 rounded-lg shadow-md">
+                <h2 className="text-xl font-semibold mb-6">Twoje zamówienie</h2>
+                
+                <div className="space-y-4 border-b border-gray-100 pb-6">
+                  {state.cart.map(item => (
+                    <div key={item.id} className="flex items-center justify-between bg-gray-50 p-3 rounded-lg">
+                      <div className="flex items-center gap-3">
+                        <img 
+                          src={item.image} 
+                          alt={item.name} 
+                          className="w-12 h-12 object-cover rounded-md"
+                        />
+                        <span className="font-medium">
+                          {item.name} × {item.quantity}
+                        </span>
+                      </div>
+                      <span className="font-semibold">
+                        {(item.price * item.quantity).toFixed(2)} zł
+                      </span>
+                    </div>
+                  ))}
+                </div>
+                
+                <div className="space-y-4 mt-6">
+                  <div className="flex justify-between text-gray-600">
+                    <span>Suma częściowa</span>
+                    <span>{totalAmount.toFixed(2)} zł</span>
                   </div>
-                  <span>{(item.price * item.quantity).toFixed(2)} zł</span>
+                  
+                  <div className="flex flex-col gap-2">
+                    <span className="text-gray-600">Wysyłka</span>
+                    <label className="flex items-center gap-2 text-sm">
+                      <input
+                        type="radio"
+                        name="shipping"
+                        value="DPD"
+                        checked={shipping === 'DPD'}
+                        onChange={(e) => setShipping(e.target.value)}
+                        className="text-green-600 focus:ring-green-500"
+                      />
+                      Kurier DPD - 15.00 zł
+                    </label>
+                  </div>
+                  
+                  <div className="flex justify-between text-lg font-bold pt-4 border-t border-gray-200">
+                    <span>Do zapłaty</span>
+                    <span>{(totalAmount + 15).toFixed(2)} zł</span>
+                  </div>
                 </div>
-              ))}
-            </div>
-             
-            <div className="order-totals">
-              <div className="subtotal">
-                <span>Suma częściowa</span>
-                <span>{totalAmount.toFixed(2)} zł</span>
-              </div>
-              <div className="shipping">
-                <span>Wysyłka</span>
-                <div className="shipping-options">
-                  <label>
-                    <input
-                      type="radio"
-                      name="shipping"
-                      value="DPD"
-                      checked={shipping === 'DPD'}
-                      onChange={(e) => setShipping(e.target.value)}
-                    />
-                    Kurier DPD - 15.00 zł
-                  </label>
-                </div>
-              </div>
-              <div className="total">
-                <span>Do zapłaty</span>
-                <span>{(totalAmount + 15).toFixed(2)} zł</span>
-              </div>
-            </div>
 
-            <button 
-              type="submit" 
-              className="submit-order-btn"
-              disabled={loading}
-            >
-              {loading ? 'Przetwarzanie...' : 'Kupuję i płacę'}
-            </button>
+                <button 
+                  type="submit" 
+                  className="w-full mt-6 bg-green-800 text-white py-4 px-6 rounded-lg font-semibold transition-all 
+                           hover:bg-green-900 focus:ring-4 focus:ring-green-500/20 
+                           disabled:bg-gray-300 disabled:cursor-not-allowed"
+                  disabled={loading}
+                >
+                  {loading ? 'Przetwarzanie...' : 'Kupuję i płacę'}
+                </button>
+              </div>
+            </div>
+          </form>
+        </div>
+
+        {notification && (
+          <div className="fixed bottom-4 right-4 bg-red-500 text-white px-6 py-3 rounded-lg shadow-lg">
+            {notification}
           </div>
-        </form>
+        )}
       </div>
-    </div>
-
-    {notification && (
-      <div className="notification">
-        <span>{notification}</span>
-      </div>
-    )}
-     
-    <PreFooter />
-    <Footer />
-  </>
-);
+      
+      <PreFooter />
+      <Footer />
+    </>
+  );
 };
 
 export default OrderPage;
