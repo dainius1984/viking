@@ -1,13 +1,12 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
+import { Heart, ShoppingCart, Trash } from 'lucide-react';
 import { useCart } from '../../context/CartContext';
 import TopNavBar from '../Headers/TopNavBar';
 import Header from '../Headers/Header';
 import PreFooter from '../Footer/PreFooter';
 import Footer from '../Footer/Footer';
 import ProductGrid from '../Section/ProductGrid';
-import { FaTrash, FaShoppingCart, FaHeart } from 'react-icons/fa';
-import './Wishlist.css';
 
 const Wishlist = () => {
   const { state, dispatch } = useCart();
@@ -32,14 +31,19 @@ const Wishlist = () => {
       <>
         <TopNavBar />
         <Header />
-        <div className="wishlist-container">
-          <div className="empty-wishlist">
-            <FaHeart className="empty-wishlist-icon" />
-            <h2>Wystąpił błąd</h2>
-            <p>Nie można załadować listy życzeń.</p>
-            <button className="return-btn">
-              <Link to="/category">Przejdź Do Sklepu</Link>
-            </button>
+        <div className="max-w-7xl mx-auto px-4 py-10">
+          <div className="text-center p-8 mx-auto max-w-2xl bg-white rounded-xl shadow-sm">
+            <Heart className="w-20 h-20 mx-auto mb-3 text-emerald-800" />
+            <h2 className="text-2xl font-semibold text-gray-800 mb-2">Wystąpił błąd</h2>
+            <p className="text-gray-600 mb-5">Nie można załadować listy życzeń.</p>
+            <Link 
+              to="/category"
+              className="inline-block px-7 py-3 bg-emerald-800 text-white rounded-lg font-medium 
+                transition-all duration-300 hover:bg-emerald-900 hover:-translate-y-0.5 
+                hover:shadow-lg"
+            >
+              Przejdź Do Sklepu
+            </Link>
           </div>
           <ProductGrid />
         </div>
@@ -54,17 +58,24 @@ const Wishlist = () => {
       <>
         <TopNavBar />
         <Header />
-        <div className="wishlist-container">
-          <div className="empty-wishlist">
-            <FaHeart className="empty-wishlist-icon" />
-            <h2>Twoja lista życzeń jest pusta</h2>
-            <p>
+        <div className="max-w-7xl mx-auto px-4 py-10">
+          <div className="text-center p-8 mx-auto max-w-2xl bg-white rounded-xl shadow-sm">
+            <Heart className="w-20 h-20 mx-auto mb-3 text-emerald-800" />
+            <h2 className="text-2xl font-semibold text-gray-800 mb-2">
+              Twoja lista życzeń jest pusta
+            </h2>
+            <p className="text-gray-600 mb-5">
               Wygląda na to, że nie masz jeszcze żadnych produktów w liście życzeń. 
               Zapraszamy do zapoznania się z naszą ofertą.
             </p>
-            <button className="return-btn">
-              <Link to="/category">Przejdź Do Sklepu</Link>
-            </button>
+            <Link 
+              to="/category"
+              className="inline-block px-7 py-3 bg-emerald-800 text-white rounded-lg font-medium 
+                transition-all duration-300 hover:bg-emerald-900 hover:-translate-y-0.5 
+                hover:shadow-lg"
+            >
+              Przejdź Do Sklepu
+            </Link>
           </div>
           <ProductGrid />
         </div>
@@ -78,30 +89,39 @@ const Wishlist = () => {
     <>
       <TopNavBar />
       <Header />
-      <div className="wishlist-container">
-        <h1>Lista życzeń</h1>
-        <div className="wishlist-items">
+      <div className="max-w-7xl mx-auto px-4 py-10">
+        <h1 className="text-3xl font-bold text-center mb-8">Lista życzeń</h1>
+        <div className="flex flex-col gap-5">
           {state.wishlist.map((item) => (
-            <div key={item.id} className="wishlist-item">
-              <div className="product-info">
-                <img src={item.image} alt={item.name} />
-                <div className="product-details">
-                  <h3>{item.name}</h3>
-                  <p className="price">{item.price} zł</p>
+            <div key={item.id} 
+              className="flex justify-between items-center p-5 bg-white rounded-lg shadow-sm">
+              <div className="flex items-center gap-5">
+                <img 
+                  src={item.image} 
+                  alt={item.name} 
+                  className="w-24 h-24 object-cover rounded"
+                />
+                <div>
+                  <h3 className="font-medium text-lg mb-2">{item.name}</h3>
+                  <p className="font-bold text-gray-800">{item.price} zł</p>
                 </div>
               </div>
-              <div className="wishlist-actions">
+              <div className="flex gap-3">
                 <button 
-                  className="add-to-cart-btn"
                   onClick={() => addToCart(item)}
+                  className="flex items-center gap-2 px-5 py-2.5 bg-green-600 text-white rounded 
+                    transition-colors duration-300 hover:bg-green-700"
                 >
-                  <FaShoppingCart /> Dodaj do koszyka
+                  <ShoppingCart className="w-5 h-5" />
+                  Dodaj do koszyka
                 </button>
                 <button 
-                  className="remove-btn"
                   onClick={() => removeFromWishlist(item.id)}
+                  className="flex items-center gap-2 px-5 py-2.5 bg-red-500 text-white rounded 
+                    transition-colors duration-300 hover:bg-red-600"
                 >
-                  <FaTrash /> Usuń
+                  <Trash className="w-5 h-5" />
+                  Usuń
                 </button>
               </div>
             </div>

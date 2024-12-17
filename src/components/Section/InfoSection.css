@@ -1,11 +1,12 @@
 .info-container {
     max-width: 1200px;
-    margin: 0 auto;
+    margin: 0 auto;  /* to już masz */
     padding: 20px;
+    text-align: center;  /* dodaj to */
 }
-
 .header-section {
     display: grid;
+    margin-left: 160px;
     grid-template-columns: 300px 1fr;
     align-items: center;
     gap: 40px;
