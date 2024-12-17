@@ -6,7 +6,6 @@ import TopNavBar from '../Headers/TopNavBar';
 import Header from '../Headers/Header';
 import PreFooter from '../Footer/PreFooter';
 import Footer from '../Footer/Footer';
-import './AccountPage.css';
 import { Query } from 'appwrite';
 import products from '../../Data/products-data';
 import { FaChevronDown } from 'react-icons/fa';
@@ -77,26 +76,27 @@ const AccountPage = () => {
     try {
       const items = JSON.parse(orderItems);
       return (
-        <div className="order-items-list">
+        <div className="p-4">
           {items.map((item, index) => {
             const productDetails = getProductDetails(item.id);
             return (
               <div 
                 key={index} 
-                className="order-item-detail"
+                className="flex items-center p-2.5 mb-2 bg-white border border-gray-200 rounded-md cursor-pointer hover:bg-gray-50 transition-all duration-200 hover:translate-x-1"
                 onClick={() => openProductModal(productDetails)}
               >
-                <div className="item-image">
+                <div className="w-10 h-10 mr-4">
                   <img 
                     src={productDetails?.image} 
                     alt={item.n}
+                    className="w-full h-full object-cover rounded"
                   />
                 </div>
-                <div className="item-info">
-                  <span className="item-name">{item.n}</span>
-                  <div className="item-details">
-                    <span className="item-quantity">Ilość: {item.q}</span>
-                    <span className="item-price">{item.p} zł/szt</span>
+                <div className="flex-grow flex flex-col md:flex-row md:justify-between md:items-center gap-1">
+                  <span className="font-medium text-[0.95rem]">{item.n}</span>
+                  <div className="flex gap-4 text-[0.85rem] text-gray-600">
+                    <span>Ilość: {item.q}</span>
+                    <span>{item.p} zł/szt</span>
                   </div>
                 </div>
               </div>
@@ -106,7 +106,7 @@ const AccountPage = () => {
       );
     } catch (error) {
       console.error('Error parsing order items:', error);
-      return <p>Błąd wyświetlania produktów</p>;
+      return <p className="text-red-500">Błąd wyświetlania produktów</p>;
     }
   }, [getProductDetails, openProductModal]);
 
@@ -114,53 +114,62 @@ const AccountPage = () => {
     <>
       <TopNavBar />
       <Header />
-      <div className="account-container">
-        <div className="account-header">
-          <h1>Moje konto</h1>
-          <button onClick={handleLogout} className="logout-button">
+      <div className="max-w-6xl mx-auto my-10 px-5">
+        <div className="flex justify-between items-center mb-8">
+          <h1 className="text-3xl text-gray-800 font-semibold">Moje konto</h1>
+          <button 
+            onClick={handleLogout} 
+            className="px-8 py-3.5 bg-emerald-800 text-white rounded-lg font-medium transition-all duration-300 
+              shadow-md shadow-emerald-800/20 hover:bg-emerald-900 hover:-translate-y-0.5"
+          >
             Wyloguj się
           </button>
         </div>
 
-        <div className="account-sections">
-          <div className="account-section">
-            <h2>Informacje o koncie</h2>
-            <div className="user-info">
-              <p><strong>Imię:</strong> {user?.name}</p>
-              <p><strong>Email:</strong> {user?.email}</p>
+        <div className="flex flex-col gap-8">
+          <div className="bg-white p-8 rounded-xl shadow-md shadow-black/5">
+            <h2 className="text-2xl text-gray-800 font-semibold mb-5">Informacje o koncie</h2>
+            <div className="flex flex-col gap-4">
+              <p className="text-lg text-gray-600">
+                <strong className="text-gray-800 mr-2">Imię:</strong> {user?.name}
+              </p>
+              <p className="text-lg text-gray-600">
+                <strong className="text-gray-800 mr-2">Email:</strong> {user?.email}
+              </p>
             </div>
           </div>
 
-          <div className="account-section">
-            <h2>Historia zamówień</h2>
+          <div className="bg-white p-8 rounded-xl shadow-md shadow-black/5">
+            <h2 className="text-2xl text-gray-800 font-semibold mb-5">Historia zamówień</h2>
             {loading ? (
               <p>Ładowanie zamówień...</p>
             ) : orders.length > 0 ? (
-              <div className="orders-list">
+              <div className="flex flex-col gap-5">
                 {orders.map(order => (
-                  <div key={order.$id} className="order-item">
+                  <div key={order.$id} className="bg-white border border-gray-200 rounded-lg">
                     <div 
-                      className="order-header"
+                      className="flex justify-between items-center p-5 cursor-pointer transition-colors hover:bg-gray-50"
                       onClick={() => toggleOrder(order.$id)}
                     >
-                      <div className="order-header-content">
-                        <div className="order-top">
+                      <div className="flex-grow">
+                        <div className="flex flex-col md:flex-row justify-between md:items-center mb-2">
                           <h3>Zamówienie #{order.orderNumber}</h3>
-                          <span className="order-date">
+                          <span className="text-gray-600">
                             {new Date(order.createdAt).toLocaleDateString()}
                           </span>
                         </div>
-                        <div className="order-info">
+                        <div className="flex flex-col md:flex-row gap-1 md:gap-5 text-gray-600">
                           <span><strong>Status:</strong> {order.Status}</span>
                           <span><strong>Suma:</strong> {order.total} zł</span>
                         </div>
                       </div>
                       <FaChevronDown 
-                        className={`expand-arrow ${expandedOrders.has(order.$id) ? 'expanded' : ''}`}
+                        className={`text-emerald-800 text-lg ml-4 transition-transform duration-300 
+                          ${expandedOrders.has(order.$id) ? 'rotate-180' : ''}`}
                       />
                     </div>
                     {expandedOrders.has(order.$id) && (
-                      <div className="order-details">
+                      <div className="border-t border-gray-200 bg-gray-50">
                         {renderOrderItems(order.items)}
                       </div>
                     )}
@@ -185,4 +194,4 @@ const AccountPage = () => {
   );
 };
 
-export default AccountPage;  // Moved outside the component
+export default AccountPage;
