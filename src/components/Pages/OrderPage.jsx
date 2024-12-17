@@ -9,6 +9,15 @@ import PreFooter from '../Footer/PreFooter';
 import Footer from '../Footer/Footer';
 import './OrderPage.css';
 
+const PAYU_CONFIG = {
+  posId: '4347473', // Id punktu płatności
+  secondKey: '7c47c70b1c394d90c6187af0ce2b69ed', // Drugi klucz (MD5)
+  clientId: '4347473', // Client ID OAuth
+  clientSecret: '0f3db32e266dcd9878e6ef3933f9e2cc', // Client Secret OAuth
+  apiUrl: 'https://secure.snd.payu.com/api/v2_1/orders', // Testowa bramka PayU
+};
+
+
 const OrderPage = () => {
   const { state, dispatch } = useCart();
   const { user } = useAuth();

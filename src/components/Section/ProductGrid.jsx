@@ -21,7 +21,7 @@ const ProductGrid = () => {
 
   // Memoize random products
   const randomProducts = useMemo(() => {
-    return shuffleArray(products).slice(0, 3);
+    return shuffleArray(products).slice(0, 4);
   }, []);
 
   const handleAddToCart = (product) => {
