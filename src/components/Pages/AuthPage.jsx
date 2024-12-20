@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../AuthContext';
 import TopNavBar from '../Headers/TopNavBar';
 import Header from '../Headers/Header';
-import PreFooter from '../Footer/PreFooter';
 import Footer from '../Footer/Footer';
 
 const AuthPage = () => {
@@ -204,7 +203,6 @@ const AuthPage = () => {
           </div>
         </div>
       </div>
-      <PreFooter />
       <Footer />
     </>
   );

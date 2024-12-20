@@ -104,7 +104,6 @@ const Header = () => {
     </div>
   );
 
-  {/* Mobile Category Menu */}
   const MobileCategoryMenu = () => (
     <>
       {/* Backdrop */}
@@ -225,12 +224,12 @@ const Header = () => {
                   </span>
                 </a>
                 
-                <ul className={`absolute left-1/2 transform -translate-x-1/2 w-60 bg-white border border-gray-200 rounded-lg shadow-lg 
+                <ul className={`absolute left-0 w-[300px] bg-white border border-gray-200 rounded-lg shadow-lg 
                   transition-all duration-300 ease-in-out z-50 mt-2
                   max-h-[80vh] overflow-y-auto
                   ${isDropdownVisible ? 'opacity-100 translate-y-0 visible' : 'opacity-0 translate-y-2 invisible pointer-events-none'}`}
                 >
-                  <div className="absolute -top-1.5 left-1/2 -translate-x-1/2 rotate-45 w-3 h-3 bg-white border-l border-t border-gray-200"></div>
+                  <div className="absolute -top-1.5 left-6 rotate-45 w-3 h-3 bg-white border-l border-t border-gray-200"></div>
                   {categories.map((category, index) => (
                     <li key={index} className="border-b border-gray-100 last:border-none">
                       <Link 
@@ -238,9 +237,11 @@ const Header = () => {
                         className="relative flex h-12 items-center px-5 text-[15px] text-gray-700 hover:text-emerald-800 hover:bg-gray-50 transition-all
                           before:content-[''] before:absolute before:left-0 before:top-1/2 before:-translate-y-1/2 
                           before:w-1 before:h-0 hover:before:h-2/3 before:bg-emerald-800 before:transition-all
-                          whitespace-nowrap overflow-hidden text-ellipsis"
+                          pr-8"
                       >
-                        {category.title}
+                        <span className="block truncate">
+                          {category.title}
+                        </span>
                       </Link>
                     </li>
                   ))}

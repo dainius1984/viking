@@ -52,13 +52,13 @@ const ProductCard = ({
         {/* Product Info Container */}
         <div className="flex flex-col flex-grow p-6">
           {/* Product Title and Description */}
-          <div className="flex-grow space-y-2">
-            <h3 className="text-[16px] font-medium text-gray-800 leading-tight min-h-[48px] line-clamp-2 hover:text-green-800 transition-colors">
+          <div className="flex-grow space-y-2 text-center">
+            <h3 className="text-[16px] font-medium text-gray-800 leading-tight min-h-[48px] line-clamp-2 hover:text-green-800 transition-colors mx-auto">
               {product.name}
             </h3>
             
             {product.subtitle && (
-              <p className="text-sm text-gray-600 min-h-[40px] line-clamp-2">
+              <p className="text-sm text-gray-600 min-h-[40px] line-clamp-2 mx-auto">
                 {product.subtitle}
               </p>
             )}

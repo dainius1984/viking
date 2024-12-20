@@ -5,7 +5,6 @@ import HeroSection from '../components/Section/HeroSection';
 import HealthyLifestyleBanner from '../components/Section/HealthyLifestyleBanner';
 import ProductGrid from '../components/Section/ProductGrid';
 import InfoSection from '../components/Section/InfoSection';
-import PreFooter from '../components/Footer/PreFooter';
 import Footer from '../components/Footer/Footer';
 
 const HomePage = () => {
@@ -28,7 +27,6 @@ const HomePage = () => {
       <HealthyLifestyleBanner />
       <ProductGrid />
       <InfoSection />
-      <PreFooter />
       <Footer />
     </div>
   );

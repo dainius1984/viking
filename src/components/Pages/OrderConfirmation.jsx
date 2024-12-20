@@ -2,7 +2,6 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import TopNavBar from '../Headers/TopNavBar';
 import Header from '../Headers/Header';
-import PreFooter from '../Footer/PreFooter';
 import Footer from '../Footer/Footer';
 import { FaCheckCircle, FaHome, FaFileAlt, FaEnvelope } from 'react-icons/fa';
 
@@ -85,7 +84,6 @@ const OrderConfirmation = () => {
           </div>
         </div>
       </div>
-      <PreFooter />
       <Footer />
     </>
   );

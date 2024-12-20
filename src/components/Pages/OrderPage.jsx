@@ -5,7 +5,6 @@ import { useAuth } from '../AuthContext';
 import { databases, ID } from '../appwrite';
 import TopNavBar from '../Headers/TopNavBar';
 import Header from '../Headers/Header';
-import PreFooter from '../Footer/PreFooter';
 import Footer from '../Footer/Footer';
 
 const PAYU_CONFIG = {
@@ -320,8 +319,6 @@ const OrderPage = () => {
           </div>
         )}
       </div>
-      
-      <PreFooter />
       <Footer />
     </>
   );

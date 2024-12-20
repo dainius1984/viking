@@ -4,7 +4,6 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { CheckCircle } from 'lucide-react';
 import TopNavBar from '../Headers/TopNavBar';
 import Header from '../Headers/Header';
-import PreFooter from '../Footer/PreFooter';
 import Footer from '../Footer/Footer';
 import ProductCard from '../Pages/ProductCard';
 import products from '../../Data/products-data';
@@ -140,8 +139,6 @@ const CategoryPage = () => {
           </motion.div>
         )}
       </AnimatePresence>
-
-      <PreFooter />
       <Footer />
     </div>
   );

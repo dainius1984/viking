@@ -4,7 +4,6 @@ import { useAuth } from '../AuthContext';
 import { databases } from '../appwrite';
 import TopNavBar from '../Headers/TopNavBar';
 import Header from '../Headers/Header';
-import PreFooter from '../Footer/PreFooter';
 import Footer from '../Footer/Footer';
 import { Query } from 'appwrite';
 import products from '../../Data/products-data';
@@ -188,7 +187,6 @@ const AccountPage = () => {
           onClose={() => setShowModal(false)}
         />
       )}
-      <PreFooter />
       <Footer />
     </>
   );

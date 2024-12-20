@@ -65,9 +65,32 @@ const InfoSection = () => {
           zwiększania wagi mięsa, co odbija się na jego wartości odżywczej. W efekcie{' '}
           <strong className="text-[#0a683f]">nasza codzienna dieta jest uboga w ważne składniki odżywcze</strong>.
         </p>
+      </div>
 
-        {/* Feature Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 sm:gap-4 lg:gap-8 mt-5 max-w-[1200px] p-0">
+      {/* Health Family Section */}
+      <div className="bg-gray-50 rounded-lg p-5 sm:p-5 my-5 max-w-[1000px] mx-auto text-center">
+        <h3 className="text-2xl text-[#006400] my-5 relative pb-2.5 text-center inline-block
+          after:content-[''] after:absolute after:bottom-0 after:left-1/2 after:-translate-x-1/2 
+          after:w-[50px] after:h-0.5 after:bg-[#006400]">
+          Health Family – wsparcie dla każdego
+        </h3>
+        <p className="text-lg leading-relaxed text-gray-600 text-center">
+          Suplementy diety od Health Family to{' '}
+          <strong className="text-[#0a683f]">idealny wybór dla całej rodziny</strong>. 
+          Dbając o zdrowie swoje i swoich bliskich, warto sięgnąć po produkty, które wspierają 
+          koncentrację, wzmacniają odporność oraz korzystnie wpływają na serce, mózg i układ krwionośny.
+        </p>
+        <button 
+          onClick={handleClick} 
+          className="bg-[#006400] text-white border-none px-8 py-3 text-base font-semibold rounded-lg 
+            cursor-pointer transition-all duration-300 mt-8 inline-block shadow-[0_4px_15px_rgba(0,100,0,0.15)]
+            hover:bg-[#005300] hover:-translate-y-0.5 hover:shadow-[0_6px_20px_rgba(0,100,0,0.2)]"
+        >
+          Zobacz więcej
+        </button>
+
+        {/* Feature Grid - Moved here */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 sm:gap-4 lg:gap-8 mt-8 max-w-[1200px] p-0">
           {features.map((feature, index) => (
             <div key={index} className="flex flex-col items-center justify-start text-center p-5 w-full">
               <div className="w-[70px] h-[70px] mb-4 flex items-center justify-center text-[#006400]">
@@ -82,30 +105,6 @@ const InfoSection = () => {
             </div>
           ))}
         </div>
-      </div>
-
-      {/* Additional Content */}
-      <div className="bg-gray-50 rounded-lg p-5 sm:p-5 my-5 max-w-[1000px] mx-auto text-center">
-        <h3 className="text-2xl text-[#006400] my-5 relative pb-2.5 text-center inline-block
-          after:content-[''] after:absolute after:bottom-0 after:left-1/2 after:-translate-x-1/2 
-          after:w-[50px] after:h-0.5 after:bg-[#006400]">
-          Health Family – wsparcie dla każdego
-        </h3>
-        <p className="text-lg leading-relaxed text-gray-600 text-center">
-          Suplementy diety od Health Family to{' '}
-          <strong className="text-[#0a683f]">idealny wybór dla całej rodziny</strong>. 
-          Dbając o zdrowie swoje i swoich bliskich, warto sięgnąć po produkty, które wspierają 
-          koncentrację, wzmacniają odporność oraz korzystnie wpływają na serce, mózg i układ krwionośny.
-        </p>
-
-        <button 
-          onClick={handleClick} 
-          className="bg-[#006400] text-white border-none px-8 py-3 text-base font-semibold rounded-lg 
-            cursor-pointer transition-all duration-300 mt-5 inline-block shadow-[0_4px_15px_rgba(0,100,0,0.15)]
-            hover:bg-[#005300] hover:-translate-y-0.5 hover:shadow-[0_6px_20px_rgba(0,100,0,0.2)]"
-        >
-          Zobacz więcej
-        </button>
       </div>
 
       <LinkSection />

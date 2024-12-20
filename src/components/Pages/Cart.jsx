@@ -4,7 +4,6 @@ import { useCart } from '../../context/CartContext';
 import { ShoppingCart, CheckCircle } from 'lucide-react';
 import TopNavBar from '../Headers/TopNavBar';
 import Header from '../Headers/Header';
-import PreFooter from '../Footer/PreFooter';
 import Footer from '../Footer/Footer';
 import ProductGrid from '../Section/ProductGrid';
 import { databases, ID } from '../appwrite';
@@ -91,7 +90,6 @@ const Cart = () => {
           </div>
           <ProductGrid />
         </div>
-        <PreFooter />
         <Footer />
       </>
     );
@@ -214,8 +212,6 @@ const Cart = () => {
           <span>{notification}</span>
         </div>
       )}
-      
-      <PreFooter />
       <Footer />
     </>
   );

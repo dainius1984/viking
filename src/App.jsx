@@ -13,6 +13,7 @@ import Article from './components/Pages/Article';
 import AuthPage from './components/Pages/AuthPage';
 import AccountPage from './components/Pages/AccountPage';
 import { AuthProvider } from './components/AuthContext';
+import AboutUs from './components/Pages/About';
 import PrivateRoute, {RedirectIfAuthenticated} from './PrivateRoute';
 
 const App = () => {
@@ -29,6 +30,7 @@ const App = () => {
             <Route path="/order-confirmation" element={<OrderConfirmation />} />
             <Route path="/wishlist" element={<Wishlist />} />
             <Route path="/blog" element={<Blog />} />
+            <Route path="/o-nas" element={<AboutUs />} />
             <Route path="/article/:id" element={<Article />} />
             <Route 
   path="/auth" 
