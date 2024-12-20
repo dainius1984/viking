@@ -50,29 +50,33 @@ export const AuthProvider = ({ children }) => {
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ email })
+                body: JSON.stringify({ 
+                    email,
+                    appwriteSession: userData.$id 
+                })
             });
 
             if (!backendResponse.ok) {
-                throw new Error('Backend session creation failed');
+                throw new Error(`Backend error: ${backendResponse.status}`);
             }
 
             setUser(userData);
             return { success: true };
         } catch (error) {
+            console.error('Login error:', error);
+            // Cleanup any partial session
             try {
                 await account.deleteSession('current');
                 await fetch('/api/logout', {
                     method: 'POST',
                     credentials: 'include'
                 });
-            } catch (logoutError) {
-                console.error('Cleanup error:', logoutError);
+            } catch (cleanupError) {
+                console.error('Cleanup error:', cleanupError);
             }
-
             return { 
                 success: false, 
-                error: 'Invalid credentials. Please check the email and password.' 
+                error: 'Invalid credentials or server error. Please try again.' 
             };
         }
     };
