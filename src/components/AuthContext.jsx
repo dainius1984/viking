@@ -10,23 +10,27 @@ export const AuthProvider = ({ children }) => {
 
     const checkUser = async () => {
         try {
+            // First check Appwrite session
             const session = await account.get();
-            setUser(session);
-            
-            // Verify backend session
-            await fetch('/api/check-session', {
-                credentials: 'include'
-            });
-        } catch {
+            if (session) {
+                setUser(session);
+                
+                // Then verify backend session
+                await fetch('/api/check-session', {
+                    credentials: 'include'
+                });
+            }
+        } catch (error) {
+            console.log('No active session:', error);
             setUser(null);
-            // Clear backend session if Appwrite session is invalid
+            // Clear backend session if no Appwrite session
             try {
                 await fetch('/api/logout', {
                     method: 'POST',
                     credentials: 'include'
                 });
-            } catch (error) {
-                console.error('Error clearing backend session:', error);
+            } catch (logoutError) {
+                console.error('Error clearing backend session:', logoutError);
             }
         } finally {
             setLoading(false);
@@ -39,11 +43,11 @@ export const AuthProvider = ({ children }) => {
 
     const login = async (email, password) => {
         try {
-            // First authenticate with Appwrite
+            // First authenticate with Appwrite using correct method
             await account.createEmailPasswordSession(email, password);
             const userData = await account.get();
             
-            // Create backend session
+            // Then create backend session
             const backendResponse = await fetch('/api/login', {
                 method: 'POST',
                 credentials: 'include',
@@ -64,7 +68,7 @@ export const AuthProvider = ({ children }) => {
             return { success: true };
         } catch (error) {
             console.error('Login error:', error);
-            // Cleanup any partial session
+            // Clean up any partial session
             try {
                 await account.deleteSession('current');
                 await fetch('/api/logout', {
@@ -74,6 +78,7 @@ export const AuthProvider = ({ children }) => {
             } catch (cleanupError) {
                 console.error('Cleanup error:', cleanupError);
             }
+            
             return { 
                 success: false, 
                 error: 'Invalid credentials or server error. Please try again.' 
@@ -86,6 +91,7 @@ export const AuthProvider = ({ children }) => {
             await account.create(ID.unique(), email, password, name);
             return login(email, password);
         } catch (error) {
+            console.error('Registration error:', error);
             return { 
                 success: false, 
                 error: 'Failed to register. Please try again.' 
@@ -95,13 +101,11 @@ export const AuthProvider = ({ children }) => {
 
     const logout = async () => {
         try {
-            await Promise.all([
-                account.deleteSession('current'),
-                fetch('/api/logout', {
-                    method: 'POST',
-                    credentials: 'include'
-                })
-            ]);
+            await account.deleteSession('current');
+            await fetch('/api/logout', {
+                method: 'POST',
+                credentials: 'include'
+            });
             setUser(null);
         } catch (error) {
             console.error('Logout error:', error);
