@@ -23,6 +23,21 @@ export const AuthProvider = ({ children }) => {
         checkUser();
     }, []);
 
+    // Add this new useEffect for tab/window close
+    useEffect(() => {
+        const handleBeforeUnload = () => {
+            if (user) {
+                account.deleteSession('current');
+            }
+        };
+
+        window.addEventListener('beforeunload', handleBeforeUnload);
+
+        return () => {
+            window.removeEventListener('beforeunload', handleBeforeUnload);
+        };
+    }, [user]);
+
     const login = async (email, password) => {
         try {
             await account.createEmailPasswordSession(email, password);
