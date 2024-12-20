@@ -40,7 +40,7 @@ const ProductCard = ({
   return (
     <>
       <div className="relative flex flex-col bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300 h-full min-h-[500px] sm:min-h-[520px] border border-gray-200">
-        {/* Image Container - Fixed height */}
+        {/* Image Container */}
         <div className="w-full h-[200px] p-4 flex items-center justify-center bg-white rounded-t-lg">
           <img 
             src={product.image} 
@@ -49,35 +49,38 @@ const ProductCard = ({
           />
         </div>
 
-        {/* Product Info Container - Flex grow to push buttons to bottom */}
-        <div className="flex flex-col flex-grow p-4">
-          {/* Product Details - Fixed heights */}
-          <div className="flex-grow">
-            <h3 className="text-[15px] leading-tight text-gray-700 font-medium mb-2 line-clamp-2 min-h-[40px]">
+        {/* Product Info Container */}
+        <div className="flex flex-col flex-grow p-6">
+          {/* Product Title and Description */}
+          <div className="flex-grow space-y-2">
+            <h3 className="text-[16px] font-medium text-gray-800 leading-tight min-h-[48px] line-clamp-2 hover:text-green-800 transition-colors">
               {product.name}
             </h3>
             
             {product.subtitle && (
-              <p className="text-sm text-gray-500 mb-2 line-clamp-2 min-h-[40px]">
+              <p className="text-sm text-gray-600 min-h-[40px] line-clamp-2">
                 {product.subtitle}
               </p>
             )}
             
-            <p className="text-2xl font-bold text-[#006400] my-4">
-              {product.price} zł
-            </p>
+            {/* Price with better visual hierarchy */}
+            <div className="mt-4 mb-6">
+              <p className="text-2xl font-bold text-green-800 text-center">
+                {product.price} <span className="text-xl">zł</span>
+              </p>
+            </div>
           </div>
 
-          {/* Buttons Container - Always at bottom */}
-          <div className="mt-auto space-y-3">
+          {/* Buttons Container */}
+          <div className="space-y-3 mt-auto">
             <button 
               onClick={handleAddToCart}
               disabled={activeButton === product.id}
-              className={`w-full py-3 px-4 rounded-md border-2 border-[#0a683f] font-semibold text-sm
-                flex items-center justify-center gap-2 transition-all duration-300
+              className={`w-full py-3 px-4 rounded-md border-2 border-green-800 font-semibold text-sm
+                flex items-center justify-center gap-2 transition-all duration-300 transform
                 ${activeButton === product.id 
-                  ? 'bg-[#0a683f] text-white cursor-not-allowed'
-                  : 'text-[#0a683f] hover:bg-[#0a683f] hover:text-white hover:shadow-lg'
+                  ? 'bg-green-800 text-white cursor-not-allowed'
+                  : 'text-green-800 hover:bg-green-800 hover:text-white hover:scale-[1.02] hover:shadow-lg'
                 }`}
             >
               {activeButton === product.id ? (
@@ -94,7 +97,7 @@ const ProductCard = ({
               onClick={() => setShowModal(true)}
               className="w-full py-3 px-4 rounded-md border-2 border-gray-700 text-gray-700 
                 font-semibold text-sm hover:bg-gray-700 hover:text-white 
-                transition-all duration-300 hover:shadow-lg"
+                transition-all duration-300 transform hover:scale-[1.02] hover:shadow-lg"
             >
               Czytaj więcej
             </button>
