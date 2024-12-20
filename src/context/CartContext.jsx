@@ -1,21 +1,6 @@
-import React, { createContext, useContext, useReducer, useEffect } from 'react';
+import React, { createContext, useContext, useReducer, useEffect, useState } from 'react';
 
 const CartContext = createContext();
-
-const loadInitialState = () => {
-  try {
-    const savedState = localStorage.getItem('cart');
-    return savedState ? JSON.parse(savedState) : {
-      cart: [],
-      wishlist: []
-    };
-  } catch (error) {
-    return {
-      cart: [],
-      wishlist: []
-    };
-  }
-};
 
 const cartReducer = (state, action) => {
   if (!state || !state.cart || !state.wishlist) {
@@ -25,6 +10,7 @@ const cartReducer = (state, action) => {
     };
   }
 
+  let newState;
   switch (action.type) {
     case 'ADD_TO_CART': {
       const existingItem = state.cart.find(item => item.id === action.payload.id);
@@ -40,20 +26,22 @@ const cartReducer = (state, action) => {
         updatedItems = [...state.cart, { ...action.payload, quantity: 1 }];
       }
 
-      return {
+      newState = {
         ...state,
         cart: updatedItems
       };
+      break;
     }
 
     case 'REMOVE_FROM_CART':
-      return {
+      newState = {
         ...state,
         cart: state.cart.filter(item => item.id !== action.payload),
       };
+      break;
 
     case 'UPDATE_QUANTITY':
-      return {
+      newState = {
         ...state,
         cart: state.cart.map(item =>
           item.id === action.payload.id
@@ -61,41 +49,76 @@ const cartReducer = (state, action) => {
             : item
         ),
       };
+      break;
 
     case 'CLEAR_CART':
-      return {
+      newState = {
         ...state,
         cart: [],
       };
+      break;
 
     case 'ADD_TO_WISHLIST':
       if (!state.wishlist.find(item => item.id === action.payload.id)) {
-        return {
+        newState = {
           ...state,
           wishlist: [...state.wishlist, action.payload]
         };
+      } else {
+        newState = state;
       }
-      return state;
+      break;
 
     case 'REMOVE_FROM_WISHLIST':
-      return {
+      newState = {
         ...state,
         wishlist: state.wishlist.filter(item => item.id !== action.payload)
       };
+      break;
+
+    case 'LOAD_STATE':
+      newState = action.payload;
+      break;
 
     default:
-      return state;
+      newState = state;
   }
+
+  // Sync with server whenever state changes
+  fetch('/api/cart', {
+    method: 'POST',
+    credentials: 'include',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(newState)
+  }).catch(error => console.error('Error syncing cart:', error));
+
+  return newState;
 };
 
 export const CartProvider = ({ children }) => {
-  const [state, dispatch] = useReducer(cartReducer, loadInitialState());
+  const [loading, setLoading] = useState(true);
+  const [state, dispatch] = useReducer(cartReducer, { cart: [], wishlist: [] });
 
+  // Load initial state from server
   useEffect(() => {
-    if (state && (state.cart || state.wishlist)) {
-      localStorage.setItem('cart', JSON.stringify(state));
-    }
-  }, [state]);
+    fetch('/api/cart', {
+      credentials: 'include'
+    })
+      .then(response => response.json())
+      .then(data => {
+        if (data && (data.cart || data.wishlist)) {
+          dispatch({ type: 'LOAD_STATE', payload: data });
+        }
+      })
+      .catch(error => console.error('Error loading cart:', error))
+      .finally(() => setLoading(false));
+  }, []);
+
+  if (loading) {
+    return <div>Loading cart...</div>;
+  }
 
   return (
     <CartContext.Provider value={{ state, dispatch }}>
@@ -111,5 +134,3 @@ export const useCart = () => {
   }
   return context;
 };
-
-

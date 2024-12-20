@@ -12,8 +12,22 @@ export const AuthProvider = ({ children }) => {
         try {
             const session = await account.get();
             setUser(session);
+            
+            // Verify backend session
+            await fetch('/api/check-session', {
+                credentials: 'include'
+            });
         } catch {
             setUser(null);
+            // Clear backend session if Appwrite session is invalid
+            try {
+                await fetch('/api/logout', {
+                    method: 'POST',
+                    credentials: 'include'
+                });
+            } catch (error) {
+                console.error('Error clearing backend session:', error);
+            }
         } finally {
             setLoading(false);
         }
@@ -25,12 +39,37 @@ export const AuthProvider = ({ children }) => {
 
     const login = async (email, password) => {
         try {
+            // First authenticate with Appwrite
             await account.createEmailPasswordSession(email, password);
             const userData = await account.get();
+            
+            // Create backend session
+            const backendResponse = await fetch('/api/login', {
+                method: 'POST',
+                credentials: 'include',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ email })
+            });
+
+            if (!backendResponse.ok) {
+                throw new Error('Backend session creation failed');
+            }
+
             setUser(userData);
-            // Login success - redirectToCart flag will be handled in AuthPage
             return { success: true };
         } catch (error) {
+            try {
+                await account.deleteSession('current');
+                await fetch('/api/logout', {
+                    method: 'POST',
+                    credentials: 'include'
+                });
+            } catch (logoutError) {
+                console.error('Cleanup error:', logoutError);
+            }
+
             return { 
                 success: false, 
                 error: 'Invalid credentials. Please check the email and password.' 
@@ -41,7 +80,6 @@ export const AuthProvider = ({ children }) => {
     const register = async (email, password, name) => {
         try {
             await account.create(ID.unique(), email, password, name);
-            // After registration, login and handle redirect in AuthPage
             return login(email, password);
         } catch (error) {
             return { 
@@ -53,10 +91,17 @@ export const AuthProvider = ({ children }) => {
 
     const logout = async () => {
         try {
-            await account.deleteSession('current');
+            await Promise.all([
+                account.deleteSession('current'),
+                fetch('/api/logout', {
+                    method: 'POST',
+                    credentials: 'include'
+                })
+            ]);
             setUser(null);
         } catch (error) {
             console.error('Logout error:', error);
+            setUser(null);
         }
     };
 
