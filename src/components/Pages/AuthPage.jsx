@@ -10,7 +10,8 @@ const AuthPage = () => {
   const navigate = useNavigate();
   const { login, register, user } = useAuth();
   const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false);
+  const [loginLoading, setLoginLoading] = useState(false);
+  const [registerLoading, setRegisterLoading] = useState(false);
 
   const [loginForm, setLoginForm] = useState({
     email: '',
@@ -26,13 +27,12 @@ const AuthPage = () => {
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    setLoading(true);
+    e.stopPropagation();
+    setLoginLoading(true);
     setError('');
 
     try {
-      console.log("Login attempt with:", loginForm.email);
       const result = await login(loginForm.email, loginForm.password);
-      console.log("Login result:", result);
       if (result.success) {
         const redirectToCart = localStorage.getItem('redirectToCart');
         if (redirectToCart) {
@@ -42,38 +42,45 @@ const AuthPage = () => {
           navigate('/account');
         }
       } else {
-        setError(result.error || 'Failed to login. Please try again.');
+        setError(result.error || 'Błąd logowania. Spróbuj ponownie.');
       }
     } catch (error) {
-      console.error('Login error details:', error);
-      setError('An unexpected error occurred. Please try again.');
+      console.error('Login error:', error);
+      setError('Wystąpił nieoczekiwany błąd. Spróbuj ponownie.');
     } finally {
-      setLoading(false);
+      setLoginLoading(false);
     }
   };
 
   const handleRegister = async (e) => {
     e.preventDefault();
-    setLoading(true);
+    e.stopPropagation();
+    setRegisterLoading(true);
     setError('');
 
-    const result = await register(
-      registerForm.email,
-      registerForm.password,
-      registerForm.name
-    );
-    if (result.success) {
-      const redirectToCart = localStorage.getItem('redirectToCart');
-      if (redirectToCart) {
-        localStorage.removeItem('redirectToCart');
-        navigate('/koszyk');
+    try {
+      const result = await register(
+        registerForm.email,
+        registerForm.password,
+        registerForm.name
+      );
+      if (result.success) {
+        const redirectToCart = localStorage.getItem('redirectToCart');
+        if (redirectToCart) {
+          localStorage.removeItem('redirectToCart');
+          navigate('/koszyk');
+        } else {
+          navigate('/account');
+        }
       } else {
-        navigate('/account');
+        setError(result.error);
       }
-    } else {
-      setError(result.error);
+    } catch (error) {
+      console.error('Registration error:', error);
+      setError('Wystąpił błąd podczas rejestracji. Spróbuj ponownie.');
+    } finally {
+      setRegisterLoading(false);
     }
-    setLoading(false);
   };
 
   return (
@@ -85,7 +92,7 @@ const AuthPage = () => {
           {/* Login Section */}
           <div className="bg-white p-8 rounded-lg shadow-sm">
             <h2 className="text-2xl text-green-800 mb-6 text-center">Zaloguj się</h2>
-            {error && <div className="text-red-500 mb-4">{error}</div>}
+            {error && <div className="text-red-500 mb-4 text-center">{error}</div>}
             <form className="flex flex-col gap-5" onSubmit={handleLogin}>
               <div className="flex flex-col gap-2">
                 <label className="text-sm text-gray-700 font-medium">Email</label>
@@ -131,9 +138,9 @@ const AuthPage = () => {
               <button 
                 type="submit" 
                 className="bg-green-800 hover:bg-green-900 text-white py-3.5 px-4 rounded-md text-base font-semibold cursor-pointer transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
-                disabled={loading}
+                disabled={loginLoading}
               >
-                {loading ? 'Logowanie...' : 'Zaloguj się'}
+                {loginLoading ? 'Logowanie...' : 'Zaloguj się'}
               </button>
             </form>
           </div>
@@ -189,9 +196,9 @@ const AuthPage = () => {
               <button 
                 type="submit" 
                 className="bg-green-800 hover:bg-green-900 text-white py-3.5 px-4 rounded-md text-base font-semibold cursor-pointer transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
-                disabled={loading}
+                disabled={registerLoading}
               >
-                {loading ? 'Rejestracja...' : 'Zarejestruj się'}
+                {registerLoading ? 'Rejestracja...' : 'Zarejestruj się'}
               </button>
             </form>
           </div>
