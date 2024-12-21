@@ -15,6 +15,7 @@ import AccountPage from './components/Pages/AccountPage';
 import Regulamin from './components/Pages/Regulamin';
 import { AuthProvider } from './components/AuthContext';
 import AboutUs from './components/Pages/About';
+import PrivacyPolicy from './components/Pages/Policy';
 import PrivateRoute, {RedirectIfAuthenticated} from './PrivateRoute';
 
 const App = () => {
@@ -33,6 +34,7 @@ const App = () => {
             <Route path="/blog" element={<Blog />} />
             <Route path="/o-nas" element={<AboutUs />} />
             <Route path="/regulamin" element={<Regulamin />} />
+            <Route path="/policy" element={<PrivacyPolicy />} />
             <Route path="/article/:id" element={<Article />} />
             <Route 
   path="/auth" 

@@ -248,7 +248,7 @@ const Header = () => {
                 </ul>
               </li>
               
-              <li><Link to="/zamowienie" className={navLinkStyles}>Zamówienie</Link></li>
+              <li><Link to="/koszyk" className={navLinkStyles}>Zamówienie</Link></li>
               <li><Link to="/blog" className={navLinkStyles}>Blog</Link></li>
               <li><Link to="/auth" className={navLinkStyles}>Moje konto</Link></li>
             </ul>

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCart } from '../../context/CartContext';
 import { useAuth } from '../AuthContext';
@@ -7,14 +7,6 @@ import TopNavBar from '../Headers/TopNavBar';
 import Header from '../Headers/Header';
 import Footer from '../Footer/Footer';
 
-const PAYU_CONFIG = {
-  posId: '4347473',
-  secondKey: '7c47c70b1c394d90c6187af0ce2b69ed',
-  clientId: '4347473',
-  clientSecret: '0f3db32e266dcd9878e6ef3933f9e2cc',
-  apiUrl: 'https://secure.snd.payu.com/api/v2_1/orders',
-};
-
 const OrderPage = () => {
   const { state, dispatch } = useCart();
   const { user } = useAuth();
@@ -22,6 +14,7 @@ const OrderPage = () => {
   const [shipping, setShipping] = useState('DPD');
   const [loading, setLoading] = useState(false);
   const [notification, setNotification] = useState(null);
+  const [retryCount, setRetryCount] = useState(0);
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -40,43 +33,97 @@ const OrderPage = () => {
   );
 
   const handleInputChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value.trim()
+    }));
+  };
+
+  const validateForm = () => {
+    const required = ['firstName', 'lastName', 'street', 'postal', 'city', 'phone', 'email'];
+    const errors = [];
+
+    required.forEach(field => {
+      if (!formData[field]) {
+        errors.push(`Pole ${field} jest wymagane`);
+      }
     });
+
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (formData.email && !emailRegex.test(formData.email)) {
+      errors.push('Nieprawidłowy format adresu email');
+    }
+
+    // Validate phone format (Polish number)
+    const phoneRegex = /^(?:\+48|48)?[1-9]\d{8}$/;
+    if (formData.phone && !phoneRegex.test(formData.phone.replace(/\s/g, ''))) {
+      errors.push('Nieprawidłowy format numeru telefonu');
+    }
+
+    // Validate postal code (Polish format)
+    const postalRegex = /^\d{2}-\d{3}$/;
+    if (formData.postal && !postalRegex.test(formData.postal)) {
+      errors.push('Nieprawidłowy format kodu pocztowego (XX-XXX)');
+    }
+
+    return errors;
   };
 
   const appendToSheet = async (orderData) => {
-    try {
-      const apiUrl = 'https://healthapi-zvfk.onrender.com/api';
-      const response = await fetch(apiUrl, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json'
-        },
-        body: JSON.stringify(orderData)
-      });
+    const MAX_RETRIES = 3;
+    let lastError;
 
-      if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(`HTTP error! status: ${response.status} - ${errorText}`);
+    for (let i = 0; i < MAX_RETRIES; i++) {
+      try {
+        const apiUrl = 'https://healthapi-zvfk.onrender.com/api';
+        const response = await fetch(apiUrl, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+          },
+          body: JSON.stringify(orderData)
+        });
+
+        if (!response.ok) {
+          const errorText = await response.text();
+          throw new Error(`HTTP error! status: ${response.status} - ${errorText}`);
+        }
+
+        return await response.json();
+      } catch (error) {
+        lastError = error;
+        setRetryCount(prev => prev + 1);
+        
+        // Wait before retrying (exponential backoff)
+        await new Promise(resolve => setTimeout(resolve, Math.pow(2, i) * 1000));
+        
+        continue;
       }
-
-      return await response.json();
-    } catch (error) {
-      console.error('Error appending to sheet:', error);
-      throw error;
     }
+
+    throw lastError;
   };
 
   const handleSubmitOrder = async (e) => {
     e.preventDefault();
+    
+    // Validate form before submission
+    const errors = validateForm();
+    if (errors.length > 0) {
+      setNotification(errors[0]);
+      setTimeout(() => setNotification(null), 5000);
+      return;
+    }
+
     setLoading(true);
+    setNotification(null);
 
     try {
       const orderData = {
-        orderNumber: `ORD-${Date.now()}`,
+        orderNumber: `ORD-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
         status: 'pending',
         total: (totalAmount + 15).toFixed(2),
         createdAt: new Date().toISOString(),
@@ -86,6 +133,9 @@ const OrderPage = () => {
         shipping,
         ...formData,
       };
+
+      // Create backup of order data in localStorage
+      localStorage.setItem(`order_backup_${orderData.orderNumber}`, JSON.stringify(orderData));
 
       if (user) {
         const appwriteData = {
@@ -130,11 +180,18 @@ const OrderPage = () => {
         await appendToSheet(sheetData);
       }
 
+      // Clear backup after successful submission
+      localStorage.removeItem(`order_backup_${orderData.orderNumber}`);
+      
       dispatch({ type: 'CLEAR_CART' });
       navigate('/order-confirmation');
     } catch (error) {
       console.error('Error creating order:', error);
-      setNotification('Wystąpił błąd podczas składania zamówienia');
+      setNotification(
+        retryCount >= 3
+          ? 'Przepraszamy, wystąpił błąd. Prosimy spróbować później lub skontaktować się z obsługą.'
+          : 'Wystąpił błąd podczas składania zamówienia. Próbujemy ponownie...'
+      );
     } finally {
       setLoading(false);
     }

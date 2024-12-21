@@ -6,8 +6,8 @@ const Footer = () => {
     informacje: [
       { name: 'O nas', href: '/o-nas' },
       { name: 'Regulamin', href: '/regulamin' },
-      { name: 'Dostawa', href: '/dostawa' },
-      { name: 'Zwroty', href: '/zwroty' }
+      { name: 'Zamówienia', href: '/category' },
+      { name: 'Polityka Prywatności', href: '/policy' }
     ],
     kontakt: [
       { name: 'Pomoc', href: '/pomoc' },
