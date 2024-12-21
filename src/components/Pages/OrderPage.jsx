@@ -74,53 +74,63 @@ const OrderPage = () => {
   const appendToSheet = async (orderData) => {
     const MAX_RETRIES = 3;
     let lastError;
-
+  
     for (let i = 0; i < MAX_RETRIES; i++) {
       try {
-        const apiUrl = 'https://healthapi-zvfk.onrender.com/api';
+        const apiUrl = 'https://healthapi-zvfk.onrender.com/api/guest-order'; // Updated endpoint
         const response = await fetch(apiUrl, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
             'Accept': 'application/json'
           },
+          credentials: 'include', // Important for session handling
           body: JSON.stringify(orderData)
         });
-
+  
         if (!response.ok) {
           const errorText = await response.text();
+          
+          // Handle rate limiting
+          if (response.status === 429) {
+            throw new Error('Zbyt wiele zamówień. Proszę spróbować później.');
+          }
+          
           throw new Error(`HTTP error! status: ${response.status} - ${errorText}`);
         }
-
+  
         return await response.json();
       } catch (error) {
         lastError = error;
+        
+        // Don't retry on rate limiting or validation errors
+        if (error.message.includes('Zbyt wiele zamówień') || 
+            error.message.includes('Missing required fields')) {
+          throw error;
+        }
+        
         setRetryCount(prev => prev + 1);
-        
-        // Wait before retrying (exponential backoff)
         await new Promise(resolve => setTimeout(resolve, Math.pow(2, i) * 1000));
-        
         continue;
       }
     }
-
+  
     throw lastError;
   };
-
+  
   const handleSubmitOrder = async (e) => {
     e.preventDefault();
     
-    // Validate form before submission
     const errors = validateForm();
     if (errors.length > 0) {
       setNotification(errors[0]);
       setTimeout(() => setNotification(null), 5000);
       return;
     }
-
+  
     setLoading(true);
     setNotification(null);
-
+  
     try {
       const orderData = {
         orderNumber: `ORD-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
@@ -133,11 +143,12 @@ const OrderPage = () => {
         shipping,
         ...formData,
       };
-
-      // Create backup of order data in localStorage
+  
+      // Create backup of order data
       localStorage.setItem(`order_backup_${orderData.orderNumber}`, JSON.stringify(orderData));
-
+  
       if (user) {
+        // Existing Appwrite logic for registered users
         const appwriteData = {
           userId: user.$id,
           orderNumber: orderData.orderNumber,
@@ -151,7 +162,7 @@ const OrderPage = () => {
             img: item.image
           })))
         };
-
+  
         await databases.createDocument(
           '67545c1800028e002c86',
           '67545c2c001276c2c261',
@@ -159,6 +170,7 @@ const OrderPage = () => {
           appwriteData
         );
       } else {
+        // Updated guest order handling
         const sheetData = {
           "Numer zamowienia": orderData.orderNumber,
           "Data": new Date().toLocaleString('pl-PL'),
@@ -176,22 +188,25 @@ const OrderPage = () => {
           "Uwagi": formData.notes || '-',
           "Produkty": orderData.items
         };
-
+  
         await appendToSheet(sheetData);
       }
 
-      // Clear backup after successful submission
       localStorage.removeItem(`order_backup_${orderData.orderNumber}`);
-      
+    
       dispatch({ type: 'CLEAR_CART' });
       navigate('/order-confirmation');
     } catch (error) {
       console.error('Error creating order:', error);
-      setNotification(
-        retryCount >= 3
+      
+      // More specific error messages
+      const errorMessage = error.message.includes('Zbyt wiele zamówień') 
+        ? error.message
+        : retryCount >= 3
           ? 'Przepraszamy, wystąpił błąd. Prosimy spróbować później lub skontaktować się z obsługą.'
-          : 'Wystąpił błąd podczas składania zamówienia. Próbujemy ponownie...'
-      );
+          : 'Wystąpił błąd podczas składania zamówienia. Próbujemy ponownie...';
+      
+      setNotification(errorMessage);
     } finally {
       setLoading(false);
     }
