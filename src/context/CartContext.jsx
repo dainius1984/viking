@@ -1,5 +1,7 @@
 import React, { createContext, useContext, useReducer, useEffect, useState } from 'react';
 
+const API_URL = 'https://healthapi-zvfk.onrender.com'; // Update this to match your backend URL
+
 const CartContext = createContext();
 
 const cartReducer = (state, action) => {
@@ -84,15 +86,22 @@ const cartReducer = (state, action) => {
       newState = state;
   }
 
-  // Sync with server whenever state changes
-  fetch('/api/cart', {
-    method: 'POST',
-    credentials: 'include',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(newState)
-  }).catch(error => console.error('Error syncing cart:', error));
+  // Only sync with server for authenticated users and non-LOAD_STATE actions
+  if (action.type !== 'LOAD_STATE') {
+    fetch(`${API_URL}/api/cart`, {
+      method: 'POST',
+      credentials: 'include',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(newState)
+    }).catch(error => {
+      // Only log the error if it's not a 401 (unauthorized)
+      if (!error.message.includes('401')) {
+        console.error('Error syncing cart:', error);
+      }
+    });
+  }
 
   return newState;
 };
@@ -103,21 +112,43 @@ export const CartProvider = ({ children }) => {
 
   // Load initial state from server
   useEffect(() => {
-    fetch('/api/cart', {
+    fetch(`${API_URL}/api/cart`, {
       credentials: 'include'
     })
-      .then(response => response.json())
+      .then(async response => {
+        if (!response.ok) {
+          // If unauthorized, just set loading to false and use local state
+          if (response.status === 401) {
+            setLoading(false);
+            return null;
+          }
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.json();
+      })
       .then(data => {
         if (data && (data.cart || data.wishlist)) {
           dispatch({ type: 'LOAD_STATE', payload: data });
         }
+        setLoading(false);
       })
-      .catch(error => console.error('Error loading cart:', error))
-      .finally(() => setLoading(false));
+      .catch(error => {
+        console.error('Error loading cart:', error);
+        setLoading(false);
+      });
+  }, []);
+
+  // Show loading state only for a brief moment
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      setLoading(false);
+    }, 1000); // Set maximum loading time to 1 second
+
+    return () => clearTimeout(timeout);
   }, []);
 
   if (loading) {
-    return <div>Loading cart...</div>;
+    return null; // Return null instead of loading message for better UX
   }
 
   return (
