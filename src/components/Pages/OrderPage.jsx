@@ -8,7 +8,7 @@ import Header from '../Headers/Header';
 import Footer from '../Footer/Footer';
 import BillingForm from './BillingForm';
 import OrderSummary from './OrderSummary';
-import { appendToSheet, validateForm } from './orderUtils';
+import { appendToSheet, validateForm } from './OrderUtils';
 
 const OrderPage = () => {
   const { state, dispatch } = useCart();

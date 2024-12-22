@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useReducer, useEffect, useState } from 'react';
-import { useAuth } from '../AuthContext';
+import { useAuth } from '../components/AuthContext';
 
 const API_URL = 'https://healthapi-zvfk.onrender.com';
 const CartContext = createContext();
