@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useReducer, useEffect, useState } from 'react';
+import { useAuth } from '../AuthContext';
 
-const API_URL = 'https://healthapi-zvfk.onrender.com'; // Update this to match your backend URL
-
+const API_URL = 'https://healthapi-zvfk.onrender.com';
 const CartContext = createContext();
 
 const cartReducer = (state, action) => {
@@ -86,69 +86,96 @@ const cartReducer = (state, action) => {
       newState = state;
   }
 
-  // Only sync with server for authenticated users and non-LOAD_STATE actions
-  if (action.type !== 'LOAD_STATE') {
-    fetch(`${API_URL}/api/cart`, {
-      method: 'POST',
-      credentials: 'include',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(newState)
-    }).catch(error => {
-      // Only log the error if it's not a 401 (unauthorized)
-      if (!error.message.includes('401')) {
-        console.error('Error syncing cart:', error);
-      }
-    });
+  // Store in localStorage regardless of user status
+  localStorage.setItem('guestCart', JSON.stringify(newState));
+
+  // Check if we're in order completion flow
+  const isOrderCompletion = 
+    action.type === 'CLEAR_CART' && 
+    (window.location.pathname.includes('order-confirmation') || 
+     window.location.pathname.includes('zamowienie'));
+
+  // Only sync with server if we're not in order completion
+  if (!isOrderCompletion && action.type !== 'LOAD_STATE') {
+    // Wrap the fetch in a try-catch to silently handle errors
+    try {
+      fetch(`${API_URL}/api/cart`, {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        body: JSON.stringify(newState)
+      }).catch(() => {
+        // Silently fail for unauthorized or network errors
+      });
+    } catch (error) {
+      // Silently handle any errors
+    }
   }
 
   return newState;
 };
 
 export const CartProvider = ({ children }) => {
+  const { user } = useAuth();
   const [loading, setLoading] = useState(true);
   const [state, dispatch] = useReducer(cartReducer, { cart: [], wishlist: [] });
 
-  // Load initial state from server
+  // Load initial state
   useEffect(() => {
-    fetch(`${API_URL}/api/cart`, {
-      credentials: 'include'
-    })
-      .then(async response => {
-        if (!response.ok) {
-          // If unauthorized, just set loading to false and use local state
-          if (response.status === 401) {
-            setLoading(false);
-            return null;
-          }
-          throw new Error(`HTTP error! status: ${response.status}`);
+    const loadCart = async () => {
+      try {
+        // First try to load from localStorage
+        const savedCart = localStorage.getItem('guestCart');
+        if (savedCart) {
+          const parsedCart = JSON.parse(savedCart);
+          dispatch({ type: 'LOAD_STATE', payload: parsedCart });
         }
-        return response.json();
-      })
-      .then(data => {
-        if (data && (data.cart || data.wishlist)) {
-          dispatch({ type: 'LOAD_STATE', payload: data });
-        }
-        setLoading(false);
-      })
-      .catch(error => {
-        console.error('Error loading cart:', error);
-        setLoading(false);
-      });
-  }, []);
 
-  // Show loading state only for a brief moment
+        // If user is logged in, try to load from server
+        if (user) {
+          try {
+            const response = await fetch(`${API_URL}/api/cart`, {
+              credentials: 'include',
+              headers: {
+                'Accept': 'application/json'
+              }
+            });
+
+            if (response.ok) {
+              const serverCart = await response.json();
+              if (serverCart && (serverCart.cart || serverCart.wishlist)) {
+                dispatch({ type: 'LOAD_STATE', payload: serverCart });
+              }
+            }
+          } catch (error) {
+            // Silently fail and keep using localStorage data
+          }
+        }
+      } catch (error) {
+        // Silently fail
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadCart();
+  }, [user]);
+
+  // Prevent infinite loading
   useEffect(() => {
     const timeout = setTimeout(() => {
       setLoading(false);
-    }, 1000); // Set maximum loading time to 1 second
+    }, 1000);
 
     return () => clearTimeout(timeout);
   }, []);
 
+  // Skip initial loading render
   if (loading) {
-    return null; // Return null instead of loading message for better UX
+    return null;
   }
 
   return (
