@@ -23,12 +23,20 @@ const LinkSection = () => {
     }
   };
 
+  const handleLinkClick = () => {
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth'
+    });
+  };
+
   const CategorySection = ({ category, className = '' }) => (
     <div className={className}>
       <Link 
         to={`/category/${category.slug}`} 
         className="block text-[#006400] text-lg md:text-xl font-bold mb-4 
           no-underline hover:underline text-center md:text-left"
+        onClick={handleLinkClick}
       >
         {category.title}
       </Link>

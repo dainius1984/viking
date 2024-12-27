@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useParams, Link, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { CheckCircle } from 'lucide-react';
 import TopNavBar from '../Headers/TopNavBar';
@@ -14,6 +14,15 @@ const CategoryPage = () => {
   const [showModal, setShowModal] = useState(false);
   const [activeButton, setActiveButton] = useState(null);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const location = useLocation();
+
+  // Scroll to top when component mounts or location changes
+  useEffect(() => {
+    window.scrollTo({
+      top: 0,
+      behavior: 'instant'
+    });
+  }, [location.pathname]);
 
   const categoryProducts = categorySlug
     ? products.filter(product => product.category === categorySlug)
@@ -33,8 +42,17 @@ const CategoryPage = () => {
     setIsSidebarOpen(!isSidebarOpen);
   };
 
+  // Handle link clicks to ensure scroll to top
+  const handleLinkClick = () => {
+    window.scrollTo({
+      top: 0,
+      behavior: 'instant'
+    });
+    setIsSidebarOpen(false);
+  };
+
   return (
-    <div>
+    <div className="relative">
       <TopNavBar />
       <Header />
       
@@ -51,14 +69,26 @@ const CategoryPage = () => {
         </button>
       </div>
       
+          {/* Overlay for mobile when sidebar is open */}
+      {isSidebarOpen && (
+        <div 
+          className="fixed inset-0 bg-black/20 z-30 md:hidden" 
+          onClick={() => setIsSidebarOpen(false)}
+        />
+      )}
+
       <div className="max-w-7xl mx-auto px-4 sm:px-5 py-4 sm:py-5">
         {/* Main Content Container */}
         <div className="flex flex-col md:flex-row gap-6 md:gap-8">
           {/* Sidebar */}
           <aside className={`
-            w-full md:w-60 md:flex-shrink-0 md:block
-            ${isSidebarOpen ? 'block' : 'hidden'}
-            transition-all duration-300 ease-in-out
+            fixed md:static inset-y-0 left-0 
+            w-64 md:w-60 md:flex-shrink-0 
+            ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0
+            transition-transform duration-300 ease-in-out
+            bg-white md:bg-transparent z-40
+            p-4 md:p-0
+            overflow-y-auto
             md:sticky md:top-20 md:h-fit
           `}>
             {categories.map((category, index) => (
@@ -68,27 +98,24 @@ const CategoryPage = () => {
                     to={`/category/${category.slug}`}
                     className={`transition-colors duration-300 hover:text-emerald-900 block
                       ${categorySlug === category.slug ? 'text-emerald-900 font-bold' : ''}`}
-                    onClick={() => setIsSidebarOpen(false)}
+                    onClick={handleLinkClick}
                   >
                     {category.title}
                   </Link>
                 </h3>
                 <ul className="space-y-2 md:space-y-2.5">
-                  {category.products.map((item, itemIndex) => {
-                    const product = products.find(p => p.name === item.name);
-                    return (
+                  {category.products.map((item, itemIndex) => (
                       <li key={itemIndex}>
                         <Link 
                           to="#"
                           className={`text-sm text-gray-700 hover:text-emerald-800 transition-colors block py-1
                             ${categorySlug === item.path.split('/').pop() ? 'text-emerald-800 font-semibold' : ''}`}
-                          onClick={() => setIsSidebarOpen(false)}
+                          onClick={handleLinkClick}
                         >
                           {item.name}
                         </Link>
                       </li>
-                    );
-                  })}
+                    ))}
                 </ul>
               </div>
             ))}
@@ -101,7 +128,7 @@ const CategoryPage = () => {
                 {getCategoryTitle(categorySlug)}
               </h1>
               <div className="text-sm text-gray-600 flex flex-wrap items-center gap-2">
-                <Link to="/" className="text-emerald-800 hover:text-emerald-900">
+                <Link to="/" className="text-emerald-800 hover:text-emerald-900" onClick={handleLinkClick}>
                   Strona główna
                 </Link> 
                 <span>/</span> 

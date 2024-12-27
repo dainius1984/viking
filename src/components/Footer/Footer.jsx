@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { Mail, Phone, Clock, MapPin } from 'lucide-react';
 
 const Footer = () => {
   const navigation = {
@@ -12,38 +13,59 @@ const Footer = () => {
   };
 
   return (
-    <footer className="bg-[#006400] text-white">
-      <div className="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-x-8 gap-y-10">
-          {/* Company Info */}
+    <footer className="bg-green-800 text-white">
+      <div className="max-w-7xl mx-auto px-4 py-4 sm:px-6 lg:px-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-1">
+          {/* Company Info with Logo */}
           <div>
-            <img
-              src="/img/logo.jpg"
-              alt="HealthFamily"
-              className="h-16 w-auto bg-white rounded p-2 mb-6"
-            />
-            <div className="space-y-1 text-sm">
-              <p className="font-semibold">Family Balance</p>
-              <p>ul. Przykładowa 123</p>
-              <p>00-000 Warszawa</p>
-              <p>NIP: 000-000-00-00</p>
+            {/* Logo centered above company info */}
+            <div className="flex mb-2 ml-12">
+              <img
+                src="/img/logo.jpg"
+                alt="HealthFamily"
+                className="h-12 w-auto bg-white rounded p-1"
+              />
             </div>
-            <div className="space-y-1 text-sm mt-4">
-              <p>Email: kontakt@familybalance.pl</p>
-              <p>Tel: +48 000 000 000</p>
-              <p>Pon-Pt: 8:00 - 16:00</p>
+            <div className="space-y-2">
+              <div className="flex items-center gap-2">
+                <MapPin size={18} />
+                <div className="text-sm">
+                  <p className="font-medium">Family Balance</p>
+                  <p>ul. Przykładowa 123</p>
+                  <p>00-000 Warszawa</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-2">
+                <Mail size={18} />
+                <a href="mailto:kontakt@familybalance.pl" 
+                   className="text-sm hover:text-white/80 transition-colors">
+                  kontakt@familybalance.pl
+                </a>
+              </div>
+              <div className="flex items-center gap-2">
+                <Phone size={18} />
+                <a href="tel:+48000000000" 
+                   className="text-sm hover:text-white/80 transition-colors">
+                  +48 000 000 000
+                </a>
+              </div>
+              <div className="flex items-center gap-2">
+                <Clock size={18} />
+                <p className="text-sm">Pon-Pt: 8:00 - 16:00</p>
+              </div>
             </div>
           </div>
 
           {/* Navigation */}
-          <div>
-            <h3 className="text-lg font-semibold mb-4">Informacje</h3>
-            <ul className="space-y-2">
+          <div className="flex flex-col items-start">
+            <h3 className="text-lg font-semibold mb-2">Informacje</h3>
+            <ul className="space-y-1">
               {navigation.informacje.map((item) => (
                 <li key={item.name}>
                   <Link 
                     to={item.href}
-                    className="text-gray-200 hover:text-white transition-colors"
+                    className="text-white/80 hover:text-white transition-colors 
+                             inline-block transform hover:translate-x-1 duration-200"
                   >
                     {item.name}
                   </Link>
@@ -53,48 +75,35 @@ const Footer = () => {
           </div>
 
           {/* Payment Methods */}
-          <div className="flex flex-col items-center md:items-start">
-            <h3 className="text-lg font-semibold mb-4 text-center md:text-left w-full">
-              Metody płatności
-            </h3>
-            <div className="grid grid-cols-2 gap-4">
-              <div className="bg-white rounded-lg p-2 w-24 h-12 flex items-center justify-center">
-                <img 
-                  src="/img/logo/Blik.svg" 
-                  alt="Blik" 
-                  className="h-6 w-auto" 
-                />
-              </div>
-              <div className="bg-white rounded-lg p-2 w-24 h-12 flex items-center justify-center">
-                <img 
-                  src="/img/logo/Visa.png" 
-                  alt="Visa" 
-                  className="h-6 w-auto"
-                />
-              </div>
-              <div className="bg-white rounded-lg p-2 w-24 h-12 flex items-center justify-center">
-                <img 
-                  src="/img/logo/Mastercard.png" 
-                  alt="Mastercard" 
-                  className="h-6 w-auto"
-                />
-              </div>
-              <div className="bg-white rounded-lg p-2 w-24 h-12 flex items-center justify-center">
-                <img 
-                  src="/img/logo/PayU.png" 
-                  alt="PayU" 
-                  className="h-6 w-auto"
-                />
-              </div>
+          <div className="flex flex-col items-center">
+            <h3 className="text-lg font-semibold mb-2">Metody płatności</h3>
+            <div className="grid grid-cols-2 gap-3">
+              {['Blik', 'Visa', 'Mastercard', 'PayU'].map((method) => (
+                <div key={method} 
+                     className="bg-white/5 backdrop-blur-sm border border-white/10 
+                              rounded-lg p-2 flex items-center justify-center
+                              hover:bg-white/10 transition-colors">
+                  <img 
+                    src={`/img/logo/${method === 'Visa' ? 'visa' : method}${method === 'Blik' ? '.svg' : '.png'}`}
+                    alt={method}
+                    className="h-6 w-auto"
+                  />
+                </div>
+              ))}
             </div>
           </div>
         </div>
 
         {/* Footer Bottom */}
-        <div className="mt-12 pt-8 border-t border-white/20">
-          <p className="text-center text-sm text-gray-200">
-            © 2024 Family Balance. Wszystkie prawa zastrzeżone.
-          </p>
+        <div className="mt-4 pt-4 border-t border-white/10">
+          <div className="flex flex-col md:flex-row justify-between items-center gap-2">
+            <p className="text-sm text-white/80">
+              © 2024 Family Balance. Wszystkie prawa zastrzeżone.
+            </p>
+            <p className="text-sm text-white/60">
+              NIP: 000-000-00-00
+            </p>
+          </div>
         </div>
       </div>
     </footer>

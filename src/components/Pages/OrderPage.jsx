@@ -8,7 +8,16 @@ import Header from '../Headers/Header';
 import Footer from '../Footer/Footer';
 import BillingForm from './BillingForm';
 import OrderSummary from './OrderSummary';
-import { appendToSheet, validateForm } from './OrderUtils';
+import { 
+  appendToSheet, 
+  validateForm, 
+  calculateTotals,
+  formatOrderItems,
+  generateOrderNumber,
+  prepareSheetData,
+  DISCOUNT_CONFIG,
+  formatPrice
+} from './OrderUtils';
 
 const OrderPage = () => {
   const { state, dispatch } = useCart();
@@ -30,9 +39,9 @@ const OrderPage = () => {
     notes: ''
   });
 
-  const totalAmount = state.cart.reduce(
-    (sum, item) => sum + item.price * item.quantity,
-    0
+  const { subtotal, discountAmount, totalBeforeShipping, total } = calculateTotals(
+    state.cart, 
+    state.isDiscountApplied
   );
 
   const handleInputChange = (e) => {
@@ -58,13 +67,15 @@ const OrderPage = () => {
 
     try {
       const orderData = {
-        orderNumber: `ORD-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+        orderNumber: generateOrderNumber(),
         status: 'pending',
-        total: (totalAmount + 15).toFixed(2),
+        subtotal: subtotal.toFixed(2),
+        discountApplied: state.isDiscountApplied,
+        discountAmount: discountAmount.toFixed(2),
+        shippingCost: DISCOUNT_CONFIG.shippingCost.toFixed(2),
+        total: total.toFixed(2),
         createdAt: new Date().toISOString(),
-        items: state.cart.map(item => 
-          `${item.name} (${item.quantity}x po ${item.price}zł = ${item.quantity * item.price}zł)`
-        ).join("\n"),
+        items: formatOrderItems(state.cart),
         shipping,
         ...formData,
       };
@@ -77,6 +88,10 @@ const OrderPage = () => {
         const appwriteData = {
           userId: user.$id,
           orderNumber: orderData.orderNumber,
+          subtotal: orderData.subtotal,
+          discountApplied: orderData.discountApplied,
+          discountAmount: orderData.discountAmount,
+          shippingCost: orderData.shippingCost,
           total: orderData.total,
           createdAt: orderData.createdAt,
           items: JSON.stringify(state.cart.map(item => ({
@@ -95,24 +110,7 @@ const OrderPage = () => {
           appwriteData
         );
       } else {
-        const sheetData = {
-          "Numer zamowienia": orderData.orderNumber,
-          "Data": new Date().toLocaleString('pl-PL'),
-          "Status": orderData.status,
-          "Suma": orderData.total,
-          "Wysylka": orderData.shipping,
-          "Imie": formData.firstName,
-          "Nazwisko": formData.lastName,
-          "Firma": formData.company || '-',
-          "Email": formData.email,
-          "Telefon": formData.phone,
-          "Ulica": formData.street,
-          "Kod pocztowy": formData.postal,
-          "Miasto": formData.city,
-          "Uwagi": formData.notes || '-',
-          "Produkty": orderData.items
-        };
-
+        const sheetData = prepareSheetData(orderData, formData);
         await appendToSheet(sheetData, setRetryCount);
       }
 
@@ -138,33 +136,47 @@ const OrderPage = () => {
     <>
       <TopNavBar />
       <Header />
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10">
-        <h1 className="text-2xl sm:text-3xl font-semibold mb-8">
-          Zamówienie {user ? '(Zalogowany)' : '(Gość)'}
-        </h1>
-        
-        <div className="mt-6">
-          <form onSubmit={handleSubmitOrder} className="grid grid-cols-1 lg:grid-cols-[1.5fr,1fr] gap-6 lg:gap-10">
-            <BillingForm 
-              formData={formData}
-              handleInputChange={handleInputChange}
-            />
-            
-            <OrderSummary
-              cart={state.cart}
-              totalAmount={totalAmount}
-              shipping={shipping}
-              setShipping={setShipping}
-              loading={loading}
-            />
-          </form>
-        </div>
-
-        {notification && (
-          <div className="fixed bottom-4 right-4 bg-red-500 text-white px-6 py-3 rounded-lg shadow-lg">
-            {notification}
+      <div className="min-h-screen bg-gray-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10">
+          <h1 className="text-xl sm:text-2xl lg:text-3xl font-semibold mb-6 sm:mb-8">
+            Zamówienie {user ? '(Zalogowany)' : '(Gość)'}
+          </h1>
+          
+          <div className="mt-4 sm:mt-6">
+            <form onSubmit={handleSubmitOrder} className="grid grid-cols-1 lg:grid-cols-[1.5fr,1fr] gap-6 lg:gap-10">
+              <div className="order-2 lg:order-1">
+                <BillingForm 
+                  formData={formData}
+                  handleInputChange={handleInputChange}
+                />
+              </div>
+              
+              <div className="order-1 lg:order-2">
+                <OrderSummary
+                  cart={state.cart}
+                  subtotal={subtotal}
+                  discountApplied={state.isDiscountApplied}
+                  discountAmount={discountAmount}
+                  discountPercentage={DISCOUNT_CONFIG.percentage}
+                  shippingCost={DISCOUNT_CONFIG.shippingCost}
+                  total={total}
+                  shipping={shipping}
+                  setShipping={setShipping}
+                  loading={loading}
+                />
+              </div>
+            </form>
           </div>
-        )}
+
+          {notification && (
+            <div className="fixed bottom-4 right-4 z-50">
+              <div className="bg-red-500 text-white px-6 py-3 rounded-lg shadow-lg 
+                transform transition-all duration-300 text-sm sm:text-base">
+                {notification}
+              </div>
+            </div>
+          )}
+        </div>
       </div>
       <Footer />
     </>

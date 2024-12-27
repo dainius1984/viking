@@ -1,5 +1,12 @@
 const API_URL = 'https://healthapi-zvfk.onrender.com';
 
+// Discount configuration
+export const DISCOUNT_CONFIG = {
+  code: process.env.NEXT_PUBLIC_DISCOUNT_CODE || 'ZNIZKA',
+  percentage: parseInt(process.env.NEXT_PUBLIC_DISCOUNT_PERCENTAGE || '10'),
+  shippingCost: 15
+};
+
 export const validateForm = (formData) => {
   const required = ['firstName', 'lastName', 'street', 'postal', 'city', 'phone', 'email'];
   const errors = [];
@@ -70,7 +77,6 @@ export const appendToSheet = async (orderData, setRetryCount) => {
         throw new Error(`HTTP error! status: ${response.status} - ${errorMessage}`);
       }
 
-      // If we got here, the request was successful
       return response.status === 200 ? { success: true } : JSON.parse(responseText);
     } catch (error) {
       console.error('Attempt', i + 1, 'failed:', error);
@@ -95,6 +101,30 @@ export const appendToSheet = async (orderData, setRetryCount) => {
   }
 
   throw lastError;
+};
+
+// Discount related functions
+export const calculateDiscount = (subtotal, isDiscountApplied) => {
+  if (!isDiscountApplied) return 0;
+  return (subtotal * DISCOUNT_CONFIG.percentage) / 100;
+};
+
+export const validateDiscountCode = (code) => {
+  return code.trim().toUpperCase() === DISCOUNT_CONFIG.code;
+};
+
+export const calculateTotals = (cart, isDiscountApplied = false) => {
+  const subtotal = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  const discountAmount = calculateDiscount(subtotal, isDiscountApplied);
+  const totalBeforeShipping = subtotal - discountAmount;
+  const total = totalBeforeShipping + DISCOUNT_CONFIG.shippingCost;
+
+  return {
+    subtotal,
+    discountAmount,
+    totalBeforeShipping,
+    total
+  };
 };
 
 // Helper function to format prices
@@ -131,7 +161,11 @@ export const prepareSheetData = (orderData, formData) => {
     "Numer zamowienia": orderData.orderNumber,
     "Data": formatDate(new Date()),
     "Status": orderData.status,
-    "Suma": orderData.total,
+    "Suma częściowa": formatPrice(orderData.subtotal),
+    "Rabat zastosowany": orderData.discountApplied ? 'Tak' : 'Nie',
+    "Kwota rabatu": formatPrice(orderData.discountAmount),
+    "Koszt wysyłki": formatPrice(DISCOUNT_CONFIG.shippingCost),
+    "Suma końcowa": formatPrice(orderData.total),
     "Wysylka": orderData.shipping,
     "Imie": formData.firstName,
     "Nazwisko": formData.lastName,
@@ -145,4 +179,11 @@ export const prepareSheetData = (orderData, formData) => {
     "Produkty": orderData.items,
     "Platforma": isMobileDevice() ? 'Mobile' : 'Desktop'
   };
+};
+
+// Helper function to format order items for display
+export const formatOrderItems = (cart) => {
+  return cart.map(item => 
+    `${item.name} (${item.quantity}x po ${formatPrice(item.price)} = ${formatPrice(item.quantity * item.price)})`
+  ).join("\n");
 };
