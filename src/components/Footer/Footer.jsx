@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Mail, Phone, Clock, MapPin } from 'lucide-react';
+import { Mail, Phone, Clock, MapPin, ChevronRight } from 'lucide-react';
 
 const Footer = () => {
   const navigation = {
@@ -13,60 +13,53 @@ const Footer = () => {
   };
 
   return (
-    <footer className="bg-green-800 text-white">
-      <div className="max-w-7xl mx-auto px-4 py-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-1">
+    <footer className="bg-green-800 text-white border-t-4 border-green-700">
+      <div className="max-w-7xl mx-auto px-6 py-8 sm:px-8 lg:px-10">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 lg:gap-12">
           {/* Company Info with Logo */}
-          <div>
-            {/* Logo centered above company info */}
-            <div className="flex mb-2 ml-12">
-              <img
-                src="/img/logo.jpg"
-                alt="HealthFamily"
-                className="h-12 w-auto bg-white rounded p-1"
-              />
-            </div>
-            <div className="space-y-2">
-              <div className="flex items-center gap-2">
-                <MapPin size={18} />
-                <div className="text-sm">
-                  <p className="font-medium">Family Balance</p>
-                  <p>ul. Przykładowa 123</p>
-                  <p>00-000 Warszawa</p>
+          <div className="flex flex-col md:items-start">
+            <div className="space-y-4 text-base">
+              <div className="flex items-start gap-3">
+                <MapPin size={24} className="text-green-400 flex-shrink-0 mt-1" />
+                <div>
+                  <p className="font-semibold text-lg">Family Balance</p>
+                  <p className="text-white/90">ul. Przykładowa 123</p>
+                  <p className="text-white/90">00-000 Warszawa</p>
                 </div>
               </div>
-              <div className="flex items-center gap-2">
-                <Mail size={18} />
+              <div className="flex items-center gap-3">
+                <Mail size={24} className="text-green-400" />
                 <a href="mailto:kontakt@familybalance.pl" 
-                   className="text-sm hover:text-white/80 transition-colors">
+                   className="text-white/90 hover:text-white hover:underline transition-colors">
                   kontakt@familybalance.pl
                 </a>
               </div>
-              <div className="flex items-center gap-2">
-                <Phone size={18} />
+              <div className="flex items-center gap-3">
+                <Phone size={24} className="text-green-400" />
                 <a href="tel:+48533813285" 
-                   className="text-sm hover:text-white/80 transition-colors">
+                   className="text-white/90 hover:text-white hover:underline transition-colors">
                   +48 533 813 285
                 </a>
               </div>
-              <div className="flex items-center gap-2">
-                <Clock size={18} />
-                <p className="text-sm">Pon-Pt: 8:00 - 16:00</p>
+              <div className="flex items-center gap-3">
+                <Clock size={24} className="text-green-400" />
+                <p className="text-white/90">Pon-Pt: 8:00 - 16:00</p>
               </div>
             </div>
           </div>
 
           {/* Navigation */}
-          <div className="flex flex-col items-start">
-            <h3 className="text-lg font-semibold mb-2">Informacje</h3>
-            <ul className="space-y-1">
+          <div className="flex flex-col md:items-start">
+            <h3 className="text-xl font-semibold mb-6">Informacje</h3>
+            <ul className="space-y-3 w-full">
               {navigation.informacje.map((item) => (
-                <li key={item.name}>
+                <li key={item.name} className="group">
                   <Link 
                     to={item.href}
-                    className="text-white/80 hover:text-white transition-colors 
-                             inline-block transform hover:translate-x-1 duration-200"
+                    className="text-white/90 hover:text-white flex items-center gap-2
+                             transition-colors text-base"
                   >
+                    <ChevronRight size={18} className="text-green-400 group-hover:translate-x-1 transition-transform" />
                     {item.name}
                   </Link>
                 </li>
@@ -76,17 +69,18 @@ const Footer = () => {
 
           {/* Payment Methods */}
           <div className="flex flex-col items-center">
-            <h3 className="text-lg font-semibold mb-5">Metody płatności</h3>
-            <div className="grid grid-cols-2 gap-4">
+            <h3 className="text-xl font-semibold mb-6">Metody płatności</h3>
+            <div className="grid grid-cols-2 gap-6">
               {['Blik', 'Visa', 'Mastercard', 'PayU'].map((method) => (
                 <div key={method} 
-                     className="bg-white/5 backdrop-blur-sm border border-white/10 
-                              rounded-lg p-2 flex items-center justify-center
-                              hover:bg-white/10 transition-colors">
+                     className="bg-white/10 backdrop-blur-sm border border-white/20 
+                              rounded-lg p-4 flex items-center justify-center
+                              hover:bg-white/20 transition-colors shadow-lg"
+                >
                   <img 
                     src={`/img/logo/${method === 'Visa' ? 'visa' : method}${method === 'Blik' ? '.svg' : '.png'}`}
                     alt={method}
-                    className="h-10 w-auto"
+                    className="h-8 w-auto"
                   />
                 </div>
               ))}
@@ -95,12 +89,12 @@ const Footer = () => {
         </div>
 
         {/* Footer Bottom */}
-        <div className="mt-4 pt-4 border-t border-white/10">
-          <div className="flex flex-col md:flex-row justify-between items-center gap-2">
-            <p className="text-sm text-white/80">
+        <div className="mt-8 pt-6 border-t border-white/20">
+          <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+            <p className="text-base text-white/90">
               © 2024 Family Balance. Wszystkie prawa zastrzeżone.
             </p>
-            <p className="text-sm text-white/60">
+            <p className="text-base font-medium">
               NIP: 000-000-00-00
             </p>
           </div>
