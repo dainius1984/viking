@@ -76,8 +76,8 @@ const Footer = () => {
 
           {/* Payment Methods */}
           <div className="flex flex-col items-center">
-            <h3 className="text-lg font-semibold mb-2">Metody płatności</h3>
-            <div className="grid grid-cols-2 gap-3">
+            <h3 className="text-lg font-semibold mb-5">Metody płatności</h3>
+            <div className="grid grid-cols-2 gap-4">
               {['Blik', 'Visa', 'Mastercard', 'PayU'].map((method) => (
                 <div key={method} 
                      className="bg-white/5 backdrop-blur-sm border border-white/10 
@@ -86,7 +86,7 @@ const Footer = () => {
                   <img 
                     src={`/img/logo/${method === 'Visa' ? 'visa' : method}${method === 'Blik' ? '.svg' : '.png'}`}
                     alt={method}
-                    className="h-6 w-auto"
+                    className="h-10 w-auto"
                   />
                 </div>
               ))}
