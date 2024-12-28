@@ -13,12 +13,7 @@ const initialState = {
 
 const cartReducer = (state, action) => {
   if (!state) {
-    state = {
-      cart: [],
-      wishlist: [],
-      isDiscountApplied: false,
-      discountCode: null
-    };
+    state = { ...initialState };
   }
 
   let newState;
@@ -79,19 +74,27 @@ const cartReducer = (state, action) => {
       };
       break;
 
+    case 'LOAD_STATE':
+      newState = {
+        ...initialState,
+        ...action.payload,
+        isDiscountApplied: action.payload.isDiscountApplied || false,
+        discountCode: action.payload.discountCode || null
+      };
+      break;
+
     default:
       newState = state;
   }
-
-  localStorage.setItem('guestCart', JSON.stringify(newState));
-  return newState;
-};
 
   // Check if we're in order completion flow
   const isOrderCompletion = 
     action.type === 'CLEAR_CART' && 
     (window.location.pathname.includes('order-confirmation') || 
      window.location.pathname.includes('zamowienie'));
+
+  // Save to localStorage
+  localStorage.setItem('guestCart', JSON.stringify(newState));
 
   // Only sync with server if we're not in order completion
   if (!isOrderCompletion && action.type !== 'LOAD_STATE') {
