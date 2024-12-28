@@ -55,7 +55,7 @@ const Regulamin = () => {
               <div className="mb-8">
                 <h3 className="text-xl font-bold text-gray-800 mb-4">Kontakt z Usługodawcą można uzyskać:</h3>
                 <ul className="list-disc pl-6 space-y-2 text-gray-600">
-                  <li>pod numerami telefonów Infolinii Konsumenckiej (Infolinii): +48660695776</li>
+                  <li>pod numerami telefonów Infolinii Konsumenckiej (Infolinii): ++48 533 813 285</li>
                   <li>korzystając z adresu poczty elektronicznej: sklep@familybalance.pl</li>
                 </ul>
               </div>

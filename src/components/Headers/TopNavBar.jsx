@@ -22,7 +22,7 @@ const TopNavBar = () => {
         <div className="flex gap-5">
           <span className="flex items-center">
             <FiPhone className="mr-2" /> 
-            660 695 776
+            533 813 285
           </span>
           <span className="flex items-center">
             <FiMail className="mr-2" /> 
