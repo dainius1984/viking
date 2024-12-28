@@ -1,9 +1,8 @@
 const API_URL = 'https://healthapi-zvfk.onrender.com';
 
-// Discount configuration
 export const DISCOUNT_CONFIG = {
-  code: process.env.NEXT_PUBLIC_DISCOUNT_CODE || 'zinzino10',
-  percentage: parseInt(process.env.NEXT_PUBLIC_DISCOUNT_PERCENTAGE || '10'),
+  code: 'zinzino10',
+  percentage: 10,
   shippingCost: 15
 };
 
@@ -38,84 +37,25 @@ export const validateForm = (formData) => {
   return errors;
 };
 
-export const appendToSheet = async (orderData, setRetryCount) => {
-  const MAX_RETRIES = 3;
-  let lastError;
+export const validateDiscountCode = (code) => {
+  if (!code) return false;
+  return code.trim().toLowerCase() === DISCOUNT_CONFIG.code.toLowerCase();
+};
 
-  for (let i = 0; i < MAX_RETRIES; i++) {
-    try {
-      const response = await fetch(`${API_URL}/api/guest-order`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-          'Cache-Control': 'no-cache'
-        },
-        credentials: 'include',
-        mode: 'cors',
-        body: JSON.stringify(orderData)
-      });
-
-      // Log response for debugging
-      console.log('Response status:', response.status);
-      const responseText = await response.text();
-      
-      if (!response.ok) {
-        // Try to parse error response
-        let errorMessage;
-        try {
-          const errorData = JSON.parse(responseText);
-          errorMessage = errorData.error || responseText;
-        } catch {
-          errorMessage = responseText;
-        }
-        
-        if (response.status === 429) {
-          throw new Error('Zbyt wiele zamówień. Proszę spróbować później.');
-        }
-        
-        throw new Error(`HTTP error! status: ${response.status} - ${errorMessage}`);
-      }
-
-      return response.status === 200 ? { success: true } : JSON.parse(responseText);
-    } catch (error) {
-      console.error('Attempt', i + 1, 'failed:', error);
-      lastError = error;
-      
-      // Don't retry for specific errors
-      if (error.message.includes('Zbyt wiele zamówień') || 
-          error.message.includes('Missing required fields')) {
-        throw error;
-      }
-      
-      if (setRetryCount) {
-        setRetryCount(prev => prev + 1);
-      }
-
-      // Wait before retrying (exponential backoff)
-      if (i < MAX_RETRIES - 1) {
-        await new Promise(resolve => setTimeout(resolve, Math.pow(2, i) * 1000));
-        continue;
-      }
-    }
+export const calculateTotals = (cart = [], isDiscountApplied = false) => {
+  if (!Array.isArray(cart)) {
+    cart = [];
   }
 
-  throw lastError;
-};
+  const subtotal = cart.reduce((sum, item) => {
+    const price = Number(item?.price) || 0;
+    const quantity = Number(item?.quantity) || 0;
+    return sum + (price * quantity);
+  }, 0);
 
-// Discount related functions
-export const calculateDiscount = (subtotal, isDiscountApplied) => {
-  if (!isDiscountApplied) return 0;
-  return (subtotal * DISCOUNT_CONFIG.percentage) / 100;
-};
+  const discountAmount = isDiscountApplied ? 
+    (subtotal * DISCOUNT_CONFIG.percentage) / 100 : 0;
 
-export const validateDiscountCode = (code) => {
-  return code.trim().toUpperCase() === DISCOUNT_CONFIG.code;
-};
-
-export const calculateTotals = (cart, isDiscountApplied = false) => {
-  const subtotal = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
-  const discountAmount = calculateDiscount(subtotal, isDiscountApplied);
   const totalBeforeShipping = subtotal - discountAmount;
   const total = totalBeforeShipping + DISCOUNT_CONFIG.shippingCost;
 
@@ -127,19 +67,41 @@ export const calculateTotals = (cart, isDiscountApplied = false) => {
   };
 };
 
-// Helper function to format prices
-export const formatPrice = (price) => {
-  return Number(price).toFixed(2) + ' zł';
+export const appendToSheet = async (orderData, setRetryCount = () => {}) => {
+  try {
+    const response = await fetch(`${API_URL}/api/guest-order`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      },
+      body: JSON.stringify(orderData)
+    });
+
+    if (!response.ok) {
+      throw new Error('Wystąpił błąd podczas składania zamówienia');
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error('Error in appendToSheet:', error);
+    setRetryCount(prev => prev + 1);
+    throw error;
+  }
 };
 
-// Helper function to generate order number
+export const formatPrice = (price) => {
+  const number = Number(price);
+  if (isNaN(number)) return '0.00 zł';
+  return `${number.toFixed(2)} zł`;
+};
+
 export const generateOrderNumber = () => {
   const timestamp = Date.now();
   const random = Math.random().toString(36).substr(2, 9);
   return `ORD-${timestamp}-${random}`;
 };
 
-// Helper function to format date
 export const formatDate = (date) => {
   return new Date(date).toLocaleString('pl-PL', {
     year: 'numeric',
@@ -150,12 +112,14 @@ export const formatDate = (date) => {
   });
 };
 
-// Helper function to check if device is mobile
-export const isMobileDevice = () => {
-  return /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+export const formatOrderItems = (cart) => {
+  if (!Array.isArray(cart)) return '';
+  
+  return cart.map(item => 
+    `${item.name} (${item.quantity}x po ${formatPrice(item.price)} = ${formatPrice(item.quantity * item.price)})`
+  ).join("\n");
 };
 
-// Helper function to prepare order data for spreadsheet
 export const prepareSheetData = (orderData, formData) => {
   return {
     "Numer zamowienia": orderData.orderNumber,
@@ -176,14 +140,25 @@ export const prepareSheetData = (orderData, formData) => {
     "Kod pocztowy": formData.postal,
     "Miasto": formData.city,
     "Uwagi": formData.notes || '-',
-    "Produkty": orderData.items,
-    "Platforma": isMobileDevice() ? 'Mobile' : 'Desktop'
+    "Produkty": orderData.items
   };
 };
 
-// Helper function to format order items for display
-export const formatOrderItems = (cart) => {
-  return cart.map(item => 
-    `${item.name} (${item.quantity}x po ${formatPrice(item.price)} = ${formatPrice(item.quantity * item.price)})`
-  ).join("\n");
+// Helper function to check if a value is empty
+export const isEmpty = (value) => {
+  return value === null || 
+         value === undefined || 
+         (typeof value === 'string' && value.trim() === '') ||
+         (Array.isArray(value) && value.length === 0) ||
+         (typeof value === 'object' && Object.keys(value).length === 0);
+};
+
+// Helper function to validate prices
+export const validatePrice = (price) => {
+  const number = Number(price);
+  return !isNaN(number) && number >= 0;
+};
+
+export const cleanPhoneNumber = (phone) => {
+  return phone.replace(/\s+/g, '').replace(/[^0-9+]/g, '');
 };

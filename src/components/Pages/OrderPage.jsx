@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCart } from '../../context/CartContext';
 import { useAuth } from '../AuthContext';
@@ -10,10 +10,13 @@ import BillingForm from './BillingForm';
 import OrderSummary from './OrderSummary';
 import { 
   appendToSheet, 
-  validateForm,
+  validateForm, 
+  calculateTotals,
+  formatOrderItems,
+  generateOrderNumber,
+  prepareSheetData,
   DISCOUNT_CONFIG,
-  formatPrice,
-  generateOrderNumber
+  validateDiscountCode
 } from './OrderUtils';
 
 const OrderPage = () => {
@@ -36,10 +39,32 @@ const OrderPage = () => {
     notes: ''
   });
 
-  const subtotal = state.cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
-  const discountAmount = state.isDiscountApplied ? (subtotal * DISCOUNT_CONFIG.percentage / 100) : 0;
-  const totalBeforeShipping = subtotal - discountAmount;
-  const total = totalBeforeShipping + 15; // 15zł shipping
+  useEffect(() => {
+    if (!state.cart || state.cart.length === 0) {
+      navigate('/cart');
+    }
+  }, [state.cart, navigate]);
+
+  if (!state.cart || state.cart.length === 0) {
+    return (
+      <>
+        <TopNavBar />
+        <Header />
+        <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-800 mx-auto"></div>
+            <p className="mt-4 text-gray-600">Ładowanie...</p>
+          </div>
+        </div>
+        <Footer />
+      </>
+    );
+  }
+
+  const { subtotal, discountAmount, totalBeforeShipping, total } = calculateTotals(
+    state.cart,
+    state.isDiscountApplied
+  );
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -49,12 +74,40 @@ const OrderPage = () => {
     }));
   };
 
+  const handleApplyDiscount = (code) => {
+    if (state.isDiscountApplied) {
+      setNotification({
+        type: 'error',
+        message: 'Kod rabatowy został już wykorzystany w tym zamówieniu.'
+      });
+      return;
+    }
+
+    if (validateDiscountCode(code)) {
+      dispatch({ type: 'APPLY_DISCOUNT', payload: code });
+      setNotification({
+        type: 'success',
+        message: `Kod rabatowy ${DISCOUNT_CONFIG.percentage}% został pomyślnie zastosowany!`
+      });
+    } else {
+      setNotification({
+        type: 'error',
+        message: 'Nieprawidłowy kod rabatowy.'
+      });
+    }
+
+    setTimeout(() => setNotification(null), 3000);
+  };
+
   const handleSubmitOrder = async (e) => {
     e.preventDefault();
     
     const errors = validateForm(formData);
     if (errors.length > 0) {
-      setNotification(errors[0]);
+      setNotification({
+        type: 'error',
+        message: errors[0]
+      });
       setTimeout(() => setNotification(null), 5000);
       return;
     }
@@ -66,25 +119,37 @@ const OrderPage = () => {
       const orderData = {
         orderNumber: generateOrderNumber(),
         status: 'pending',
-        total: total.toFixed(2),
+        subtotal: subtotal.toFixed(2),
         discountApplied: state.isDiscountApplied,
         discountAmount: discountAmount.toFixed(2),
+        shippingCost: DISCOUNT_CONFIG.shippingCost.toFixed(2),
+        total: total.toFixed(2),
         createdAt: new Date().toISOString(),
-        items: state.cart.map(item => 
-          `${item.name} (${item.quantity}x po ${item.price}zł = ${item.quantity * item.price}zł)`
-        ).join("\n"),
+        items: formatOrderItems(state.cart),
         shipping,
         ...formData,
       };
+
+      // Create backup of order data
+      const backupKey = `order_backup_${orderData.orderNumber}`;
+      localStorage.setItem(backupKey, JSON.stringify(orderData));
 
       if (user) {
         const appwriteData = {
           userId: user.$id,
           orderNumber: orderData.orderNumber,
+          subtotal: orderData.subtotal,
+          discountApplied: orderData.discountApplied,
+          discountAmount: orderData.discountAmount,
+          shippingCost: orderData.shippingCost,
           total: orderData.total,
           createdAt: orderData.createdAt,
           items: JSON.stringify(state.cart),
-          formData: JSON.stringify(formData)
+          firstName: formData.firstName,
+          lastName: formData.lastName,
+          email: formData.email,
+          phone: formData.phone,
+          shipping: shipping
         };
 
         await databases.createDocument(
@@ -94,43 +159,28 @@ const OrderPage = () => {
           appwriteData
         );
       } else {
-        const sheetData = {
-          "Numer zamowienia": orderData.orderNumber,
-          "Data": new Date().toLocaleString('pl-PL'),
-          "Status": orderData.status,
-          "Suma": orderData.total,
-          "Rabat": state.isDiscountApplied ? 'Tak' : 'Nie',
-          "Kwota rabatu": discountAmount.toFixed(2),
-          "Wysylka": orderData.shipping,
-          "Imie": formData.firstName,
-          "Nazwisko": formData.lastName,
-          "Firma": formData.company || '-',
-          "Email": formData.email,
-          "Telefon": formData.phone,
-          "Ulica": formData.street,
-          "Kod pocztowy": formData.postal,
-          "Miasto": formData.city,
-          "Uwagi": formData.notes || '-',
-          "Produkty": orderData.items
-        };
-
+        const sheetData = prepareSheetData(orderData, formData);
         await appendToSheet(sheetData, setRetryCount);
       }
 
+      localStorage.removeItem(backupKey);
       dispatch({ type: 'CLEAR_CART' });
       navigate('/order-confirmation');
     } catch (error) {
       console.error('Error creating order:', error);
-      setNotification('Wystąpił błąd podczas składania zamówienia. Prosimy spróbować ponownie.');
+      
+      setNotification({
+        type: 'error',
+        message: error.message.includes('Zbyt wiele zamówień') 
+          ? error.message
+          : retryCount >= 3
+            ? 'Przepraszamy, wystąpił błąd. Prosimy spróbować później lub skontaktować się z obsługą.'
+            : 'Wystąpił błąd podczas składania zamówienia. Próbujemy ponownie...'
+      });
     } finally {
       setLoading(false);
     }
   };
-
-  if (state.cart.length === 0) {
-    navigate('/cart');
-    return null;
-  }
 
   return (
     <>
@@ -162,15 +212,20 @@ const OrderPage = () => {
                   shipping={shipping}
                   setShipping={setShipping}
                   loading={loading}
+                  onApplyDiscount={handleApplyDiscount}
                 />
               </div>
             </form>
           </div>
 
           {notification && (
-            <div className="fixed bottom-4 right-4 z-50">
-              <div className="bg-red-500 text-white px-6 py-3 rounded-lg shadow-lg">
-                {notification}
+            <div className={`fixed bottom-4 right-4 z-50 transition-all duration-300 transform ${
+              notification ? 'translate-y-0 opacity-100' : 'translate-y-2 opacity-0'
+            }`}>
+              <div className={`px-6 py-3 rounded-lg shadow-lg ${
+                notification.type === 'error' ? 'bg-red-500' : 'bg-green-600'
+              } text-white text-sm sm:text-base`}>
+                {notification.message}
               </div>
             </div>
           )}
