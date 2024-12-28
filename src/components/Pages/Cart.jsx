@@ -30,7 +30,17 @@ const Cart = () => {
   };
 
   const handlePlaceOrder = () => {
-    navigate('/order');
+    if (state.cart.length === 0) {
+      showNotification('Twój koszyk jest pusty', false);
+      return;
+    }
+    
+    setIsProcessing(true);
+    // Small delay to show processing state
+    setTimeout(() => {
+      setIsProcessing(false);
+      navigate('/order');
+    }, 300);
   };
 
   const updateQuantity = (id, quantity) => {

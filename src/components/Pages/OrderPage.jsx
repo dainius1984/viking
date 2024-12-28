@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCart } from '../../context/CartContext';
 import { useAuth } from '../AuthContext';
@@ -38,6 +38,34 @@ const OrderPage = () => {
     email: '',
     notes: ''
   });
+
+  // Check if cart is empty and redirect if necessary
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (!state.cart || state.cart.length === 0) {
+        navigate('/cart');
+      }
+    }, 100); // Small delay to ensure state is loaded
+
+    return () => clearTimeout(timer);
+  }, [state.cart, navigate]);
+
+  // If cart is empty, show loading state
+  if (!state.cart || state.cart.length === 0) {
+    return (
+      <>
+        <TopNavBar />
+        <Header />
+        <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-800 mx-auto"></div>
+            <p className="mt-4 text-gray-600">Ładowanie...</p>
+          </div>
+        </div>
+        <Footer />
+      </>
+    );
+  }
 
   const { subtotal, discountAmount, totalBeforeShipping, total } = calculateTotals(
     state.cart, 
@@ -100,7 +128,12 @@ const OrderPage = () => {
             q: item.quantity,
             p: item.price,
             img: item.image
-          })))
+          }))),
+          firstName: formData.firstName,
+          lastName: formData.lastName,
+          email: formData.email,
+          phone: formData.phone,
+          shipping: shipping
         };
 
         await databases.createDocument(

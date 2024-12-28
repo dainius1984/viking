@@ -4,12 +4,16 @@ import { useAuth } from '../components/AuthContext';
 const API_URL = 'https://healthapi-zvfk.onrender.com';
 const CartContext = createContext();
 
+const initialState = {
+  cart: [],
+  wishlist: [],
+  isDiscountApplied: false,
+  discountCode: null
+};
+
 const cartReducer = (state, action) => {
   if (!state || !state.cart || !state.wishlist) {
-    state = {
-      cart: [],
-      wishlist: []
-    };
+    state = { ...initialState };
   }
 
   let newState;
@@ -53,10 +57,28 @@ const cartReducer = (state, action) => {
       };
       break;
 
+    case 'APPLY_DISCOUNT':
+      newState = {
+        ...state,
+        isDiscountApplied: true,
+        discountCode: action.payload
+      };
+      break;
+
+    case 'REMOVE_DISCOUNT':
+      newState = {
+        ...state,
+        isDiscountApplied: false,
+        discountCode: null
+      };
+      break;
+
     case 'CLEAR_CART':
       newState = {
         ...state,
         cart: [],
+        isDiscountApplied: false,
+        discountCode: null
       };
       break;
 
@@ -79,7 +101,12 @@ const cartReducer = (state, action) => {
       break;
 
     case 'LOAD_STATE':
-      newState = action.payload;
+      newState = {
+        ...initialState,
+        ...action.payload,
+        isDiscountApplied: action.payload.isDiscountApplied || false,
+        discountCode: action.payload.discountCode || null
+      };
       break;
 
     default:
@@ -87,7 +114,11 @@ const cartReducer = (state, action) => {
   }
 
   // Store in localStorage regardless of user status
-  localStorage.setItem('guestCart', JSON.stringify(newState));
+  try {
+    localStorage.setItem('guestCart', JSON.stringify(newState));
+  } catch (error) {
+    console.error('Error saving cart to localStorage:', error);
+  }
 
   // Check if we're in order completion flow
   const isOrderCompletion = 
@@ -112,6 +143,7 @@ const cartReducer = (state, action) => {
       });
     } catch (error) {
       // Silently handle any errors
+      console.error('Error syncing cart with server:', error);
     }
   }
 
@@ -121,7 +153,7 @@ const cartReducer = (state, action) => {
 export const CartProvider = ({ children }) => {
   const { user } = useAuth();
   const [loading, setLoading] = useState(true);
-  const [state, dispatch] = useReducer(cartReducer, { cart: [], wishlist: [] });
+  const [state, dispatch] = useReducer(cartReducer, initialState);
 
   // Load initial state
   useEffect(() => {
@@ -130,8 +162,14 @@ export const CartProvider = ({ children }) => {
         // First try to load from localStorage
         const savedCart = localStorage.getItem('guestCart');
         if (savedCart) {
-          const parsedCart = JSON.parse(savedCart);
-          dispatch({ type: 'LOAD_STATE', payload: parsedCart });
+          try {
+            const parsedCart = JSON.parse(savedCart);
+            if (parsedCart && typeof parsedCart === 'object') {
+              dispatch({ type: 'LOAD_STATE', payload: parsedCart });
+            }
+          } catch (error) {
+            console.error('Error parsing saved cart:', error);
+          }
         }
 
         // If user is logged in, try to load from server
@@ -151,11 +189,11 @@ export const CartProvider = ({ children }) => {
               }
             }
           } catch (error) {
-            // Silently fail and keep using localStorage data
+            console.error('Error loading cart from server:', error);
           }
         }
       } catch (error) {
-        // Silently fail
+        console.error('Error in loadCart:', error);
       } finally {
         setLoading(false);
       }
@@ -172,6 +210,20 @@ export const CartProvider = ({ children }) => {
 
     return () => clearTimeout(timeout);
   }, []);
+
+  // Ensure cart state persistence on page refresh
+  useEffect(() => {
+    const handleBeforeUnload = () => {
+      try {
+        localStorage.setItem('guestCart', JSON.stringify(state));
+      } catch (error) {
+        console.error('Error saving cart state:', error);
+      }
+    };
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+  }, [state]);
 
   // Skip initial loading render
   if (loading) {

@@ -2,7 +2,7 @@ const API_URL = 'https://healthapi-zvfk.onrender.com';
 
 // Discount configuration
 export const DISCOUNT_CONFIG = {
-  code: process.env.NEXT_PUBLIC_DISCOUNT_CODE || 'ZNIZKA',
+  code: process.env.NEXT_PUBLIC_DISCOUNT_CODE || 'zinzino10',
   percentage: parseInt(process.env.NEXT_PUBLIC_DISCOUNT_PERCENTAGE || '10'),
   shippingCost: 15
 };
