@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import NotificationAlert from './Alert';
+import EnhancedAlert from './Alert';
 
 const LoginForm = ({ login }) => {
   const navigate = useNavigate();
@@ -16,15 +16,6 @@ const LoginForm = ({ login }) => {
       password: ''
     }
   });
-
-  useEffect(() => {
-    if (notification.message) {
-      const timer = setTimeout(() => {
-        setNotification({ type: '', message: '' });
-      }, 5000);
-      return () => clearTimeout(timer);
-    }
-  }, [notification]);
 
   const validateEmail = (email) => {
     const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -57,14 +48,16 @@ const LoginForm = ({ login }) => {
     if (emailError || passwordError) return;
 
     setLoginLoading(true);
-    setNotification({ type: '', message: '' });
-
+    
     try {
+      console.log('Attempting login...'); // Debug log
       const result = await login(formData.email, formData.password);
+      
       if (result.success) {
+        console.log('Login successful, showing notification'); // Debug log
         setNotification({
           type: 'success',
-          message: 'Zalogowano pomyślnie! Przekierowywanie...'
+          message: 'Logowanie zakończone sukcesem! Zaraz zostaniesz przekierowany do swojego konta.'
         });
         
         const redirectToCart = localStorage.getItem('redirectToCart');
@@ -77,7 +70,7 @@ const LoginForm = ({ login }) => {
           }
         }, 1500);
       } else {
-        // Handle different error scenarios
+        console.log('Login failed, showing error'); // Debug log
         let errorMessage = 'Nieprawidłowe dane logowania. Sprawdź email i hasło.';
         
         if (result.error?.toLowerCase().includes('invalid credentials')) {
@@ -105,14 +98,15 @@ const LoginForm = ({ login }) => {
   };
 
   return (
-    <div className="bg-white p-4 sm:p-6 md:p-8 rounded-lg shadow-sm max-w-xl mx-auto w-full">
+    <div className="bg-white p-4 sm:p-6 md:p-8 rounded-lg shadow-sm max-w-xl mx-auto w-full relative">
       <h2 className="text-xl sm:text-2xl text-green-800 mb-4 sm:mb-6 text-center font-semibold">
         Zaloguj się
       </h2>
       
-      <NotificationAlert 
+      <EnhancedAlert 
         type={notification.type} 
-        message={notification.message} 
+        message={notification.message}
+        onDismiss={() => setNotification({ type: '', message: '' })}
       />
 
       <form className="flex flex-col gap-4 sm:gap-5" onSubmit={handleSubmit}>
@@ -133,6 +127,7 @@ const LoginForm = ({ login }) => {
               email: e.target.value,
               errors: { ...formData.errors, email: '' }
             })}
+            disabled={loginLoading}
             required
           />
           {formData.errors.email && (
@@ -159,6 +154,7 @@ const LoginForm = ({ login }) => {
               password: e.target.value,
               errors: { ...formData.errors, password: '' }
             })}
+            disabled={loginLoading}
             required
           />
           {formData.errors.password && (
@@ -178,6 +174,7 @@ const LoginForm = ({ login }) => {
               ...formData,
               rememberMe: e.target.checked
             })}
+            disabled={loginLoading}
           />
           <label htmlFor="rememberMe" className="text-sm sm:text-base text-gray-600">
             Zapamiętaj mnie
@@ -186,10 +183,18 @@ const LoginForm = ({ login }) => {
 
         <button 
           type="submit" 
-          className="bg-green-800 hover:bg-green-900 text-white py-3 sm:py-3.5 px-4 rounded-md text-sm sm:text-base font-semibold cursor-pointer transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed w-full sm:w-auto mt-2"
+          className="bg-green-800 hover:bg-green-900 text-white py-3 sm:py-3.5 px-4 rounded-md text-sm sm:text-base font-semibold cursor-pointer transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0 disabled:hover:shadow-none w-full sm:w-auto mt-2"
           disabled={loginLoading}
         >
-          {loginLoading ? 'Logowanie...' : 'Zaloguj się'}
+          {loginLoading ? (
+            <span className="flex items-center justify-center gap-2">
+              <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+              </svg>
+              Logowanie...
+            </span>
+          ) : 'Zaloguj się'}
         </button>
       </form>
     </div>
