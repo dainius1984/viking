@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCart } from '../../context/CartContext';
 import { useAuth } from '../AuthContext';
@@ -10,13 +10,10 @@ import BillingForm from './BillingForm';
 import OrderSummary from './OrderSummary';
 import { 
   appendToSheet, 
-  validateForm, 
-  calculateTotals,
-  formatOrderItems,
-  generateOrderNumber,
-  prepareSheetData,
+  validateForm,
   DISCOUNT_CONFIG,
-  formatPrice
+  formatPrice,
+  generateOrderNumber
 } from './OrderUtils';
 
 const OrderPage = () => {
@@ -39,38 +36,10 @@ const OrderPage = () => {
     notes: ''
   });
 
-  // Check if cart is empty and redirect if necessary
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      if (!state.cart || state.cart.length === 0) {
-        navigate('/cart');
-      }
-    }, 100); // Small delay to ensure state is loaded
-
-    return () => clearTimeout(timer);
-  }, [state.cart, navigate]);
-
-  // If cart is empty, show loading state
-  if (!state.cart || state.cart.length === 0) {
-    return (
-      <>
-        <TopNavBar />
-        <Header />
-        <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-800 mx-auto"></div>
-            <p className="mt-4 text-gray-600">Ładowanie...</p>
-          </div>
-        </div>
-        <Footer />
-      </>
-    );
-  }
-
-  const { subtotal, discountAmount, totalBeforeShipping, total } = calculateTotals(
-    state.cart, 
-    state.isDiscountApplied
-  );
+  const subtotal = state.cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  const discountAmount = state.isDiscountApplied ? (subtotal * DISCOUNT_CONFIG.percentage / 100) : 0;
+  const totalBeforeShipping = subtotal - discountAmount;
+  const total = totalBeforeShipping + 15; // 15zł shipping
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -97,43 +66,25 @@ const OrderPage = () => {
       const orderData = {
         orderNumber: generateOrderNumber(),
         status: 'pending',
-        subtotal: subtotal.toFixed(2),
+        total: total.toFixed(2),
         discountApplied: state.isDiscountApplied,
         discountAmount: discountAmount.toFixed(2),
-        shippingCost: DISCOUNT_CONFIG.shippingCost.toFixed(2),
-        total: total.toFixed(2),
         createdAt: new Date().toISOString(),
-        items: formatOrderItems(state.cart),
+        items: state.cart.map(item => 
+          `${item.name} (${item.quantity}x po ${item.price}zł = ${item.quantity * item.price}zł)`
+        ).join("\n"),
         shipping,
         ...formData,
       };
-
-      // Create backup of order data
-      const backupKey = `order_backup_${orderData.orderNumber}`;
-      localStorage.setItem(backupKey, JSON.stringify(orderData));
 
       if (user) {
         const appwriteData = {
           userId: user.$id,
           orderNumber: orderData.orderNumber,
-          subtotal: orderData.subtotal,
-          discountApplied: orderData.discountApplied,
-          discountAmount: orderData.discountAmount,
-          shippingCost: orderData.shippingCost,
           total: orderData.total,
           createdAt: orderData.createdAt,
-          items: JSON.stringify(state.cart.map(item => ({
-            id: item.id,
-            n: item.name,
-            q: item.quantity,
-            p: item.price,
-            img: item.image
-          }))),
-          firstName: formData.firstName,
-          lastName: formData.lastName,
-          email: formData.email,
-          phone: formData.phone,
-          shipping: shipping
+          items: JSON.stringify(state.cart),
+          formData: JSON.stringify(formData)
         };
 
         await databases.createDocument(
@@ -143,27 +94,43 @@ const OrderPage = () => {
           appwriteData
         );
       } else {
-        const sheetData = prepareSheetData(orderData, formData);
+        const sheetData = {
+          "Numer zamowienia": orderData.orderNumber,
+          "Data": new Date().toLocaleString('pl-PL'),
+          "Status": orderData.status,
+          "Suma": orderData.total,
+          "Rabat": state.isDiscountApplied ? 'Tak' : 'Nie',
+          "Kwota rabatu": discountAmount.toFixed(2),
+          "Wysylka": orderData.shipping,
+          "Imie": formData.firstName,
+          "Nazwisko": formData.lastName,
+          "Firma": formData.company || '-',
+          "Email": formData.email,
+          "Telefon": formData.phone,
+          "Ulica": formData.street,
+          "Kod pocztowy": formData.postal,
+          "Miasto": formData.city,
+          "Uwagi": formData.notes || '-',
+          "Produkty": orderData.items
+        };
+
         await appendToSheet(sheetData, setRetryCount);
       }
 
-      localStorage.removeItem(backupKey);
       dispatch({ type: 'CLEAR_CART' });
       navigate('/order-confirmation');
     } catch (error) {
       console.error('Error creating order:', error);
-      
-      const errorMessage = error.message.includes('Zbyt wiele zamówień') 
-        ? error.message
-        : retryCount >= 3
-          ? 'Przepraszamy, wystąpił błąd. Prosimy spróbować później lub skontaktować się z obsługą.'
-          : 'Wystąpił błąd podczas składania zamówienia. Próbujemy ponownie...';
-      
-      setNotification(errorMessage);
+      setNotification('Wystąpił błąd podczas składania zamówienia. Prosimy spróbować ponownie.');
     } finally {
       setLoading(false);
     }
   };
+
+  if (state.cart.length === 0) {
+    navigate('/cart');
+    return null;
+  }
 
   return (
     <>
@@ -191,7 +158,6 @@ const OrderPage = () => {
                   discountApplied={state.isDiscountApplied}
                   discountAmount={discountAmount}
                   discountPercentage={DISCOUNT_CONFIG.percentage}
-                  shippingCost={DISCOUNT_CONFIG.shippingCost}
                   total={total}
                   shipping={shipping}
                   setShipping={setShipping}
@@ -203,8 +169,7 @@ const OrderPage = () => {
 
           {notification && (
             <div className="fixed bottom-4 right-4 z-50">
-              <div className="bg-red-500 text-white px-6 py-3 rounded-lg shadow-lg 
-                transform transition-all duration-300 text-sm sm:text-base">
+              <div className="bg-red-500 text-white px-6 py-3 rounded-lg shadow-lg">
                 {notification}
               </div>
             </div>

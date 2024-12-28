@@ -12,8 +12,13 @@ const initialState = {
 };
 
 const cartReducer = (state, action) => {
-  if (!state || !state.cart || !state.wishlist) {
-    state = { ...initialState };
+  if (!state) {
+    state = {
+      cart: [],
+      wishlist: [],
+      isDiscountApplied: false,
+      discountCode: null
+    };
   }
 
   let newState;
@@ -39,6 +44,14 @@ const cartReducer = (state, action) => {
       break;
     }
 
+    case 'APPLY_DISCOUNT':
+      newState = {
+        ...state,
+        isDiscountApplied: true,
+        discountCode: action.payload
+      };
+      break;
+
     case 'REMOVE_FROM_CART':
       newState = {
         ...state,
@@ -57,55 +70,12 @@ const cartReducer = (state, action) => {
       };
       break;
 
-    case 'APPLY_DISCOUNT':
-      newState = {
-        ...state,
-        isDiscountApplied: true,
-        discountCode: action.payload
-      };
-      break;
-
-    case 'REMOVE_DISCOUNT':
-      newState = {
-        ...state,
-        isDiscountApplied: false,
-        discountCode: null
-      };
-      break;
-
     case 'CLEAR_CART':
       newState = {
-        ...state,
         cart: [],
+        wishlist: state.wishlist,
         isDiscountApplied: false,
         discountCode: null
-      };
-      break;
-
-    case 'ADD_TO_WISHLIST':
-      if (!state.wishlist.find(item => item.id === action.payload.id)) {
-        newState = {
-          ...state,
-          wishlist: [...state.wishlist, action.payload]
-        };
-      } else {
-        newState = state;
-      }
-      break;
-
-    case 'REMOVE_FROM_WISHLIST':
-      newState = {
-        ...state,
-        wishlist: state.wishlist.filter(item => item.id !== action.payload)
-      };
-      break;
-
-    case 'LOAD_STATE':
-      newState = {
-        ...initialState,
-        ...action.payload,
-        isDiscountApplied: action.payload.isDiscountApplied || false,
-        discountCode: action.payload.discountCode || null
       };
       break;
 
@@ -113,12 +83,9 @@ const cartReducer = (state, action) => {
       newState = state;
   }
 
-  // Store in localStorage regardless of user status
-  try {
-    localStorage.setItem('guestCart', JSON.stringify(newState));
-  } catch (error) {
-    console.error('Error saving cart to localStorage:', error);
-  }
+  localStorage.setItem('guestCart', JSON.stringify(newState));
+  return newState;
+};
 
   // Check if we're in order completion flow
   const isOrderCompletion = 
