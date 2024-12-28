@@ -14,84 +14,95 @@ const Regulamin = () => {
       <Header />
       <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
         <div className="max-w-3xl mx-auto">
-          {/* Page Header */}
-          <div className="text-center mb-8 sm:mb-12">
-            <h1 className="text-3xl sm:text-4xl md:text-[2.8rem] font-bold text-gray-800 leading-tight font-serif 
-              mb-6 sm:mb-8 px-4 sm:px-0">
-              Regulamin
+          <div className="text-center mb-8">
+            <h1 className="text-3xl font-bold text-gray-800 mb-6">
+              Regulamin Sklepu Internetowego Familybalance
             </h1>
-            
-            {/* Hero Image */}
-            <div className="w-full mb-8 sm:mb-12 rounded-lg sm:rounded-xl overflow-hidden shadow-lg shadow-black/10">
-              <img 
-                src="/img/banner.jpg" 
-                alt="Health Family - Regulamin"
-                className="w-full h-[200px] sm:h-[250px] md:h-[300px] object-cover"
-              />
-            </div>
           </div>
 
-          {/* Main Content */}
-          <div className="prose prose-base sm:prose-lg mx-auto text-gray-700 space-y-4 sm:space-y-6 px-4 sm:px-0">
-            <div className="text-base sm:text-lg leading-relaxed space-y-4 sm:space-y-6">
-              <h2 className="text-2xl sm:text-3xl font-bold text-gray-800 mt-8 mb-4">
-                REGULAMIN SPRZEDAŻY PRZY WYKORZYSTANIU ŚRODKÓW POROZUMIEWANIA SIĘ NA ODLEGŁOŚĆ ORAZ ŚWIADCZENIA USŁUG DROGĄ ELEKTRONICZNĄ
-              </h2>
+          <div className="prose max-w-none">
+            <section className="mb-8">
+              <h2 className="text-xl font-bold mb-4">§ 1 Postanowienia ogólne</h2>
+              <ol className="list-decimal pl-5 space-y-2">
+                <li>Sklep internetowy Familybalance, działający pod adresem https://familybalance.pl, jest prowadzony przez firmę Tobmar, wpisaną do Centralnej Ewidencji i Informacji o Działalności Gospodarczej, z siedzibą przy ul. Długa 99, 41-409 Mysłowice, NIP: 2220791571, REGON: 381147080.</li>
+                <li>Regulamin określa zasady korzystania ze sklepu internetowego, składania zamówień, realizacji umów sprzedaży, odstąpienia od umowy oraz procedur reklamacyjnych.</li>
+                <li>Wszystkie ceny podane w sklepie są cenami brutto (zawierają podatek VAT).</li>
+              </ol>
+            </section>
 
-              <p className="text-gray-600">
-                Niniejszy regulamin określa zasady dokonywania zakupów w sklepie internetowym prowadzonym przez 
-                Sprzedającego pod adresem www.familybalance.pl
-              </p>
+            <section className="mb-8">
+              <h2 className="text-xl font-bold mb-4">§ 2 Składanie zamówień i dostępność produktów</h2>
+              <ol className="list-decimal pl-5 space-y-2">
+                <li>Zamówienia w sklepie internetowym można składać przez 24 godziny na dobę.</li>
+                <li>Dostępność produktów jest wskazana na stronie produktu. W przypadku braku dostępności, klient zostanie poinformowany przed złożeniem zamówienia.</li>
+                <li>Po złożeniu zamówienia klient otrzymuje potwierdzenie przyjęcia zamówienia drogą elektroniczną na wskazany adres e-mail.</li>
+              </ol>
+            </section>
 
-              <div className="bg-gray-50 p-6 rounded-xl border border-gray-100 mb-6">
-                <p className="text-gray-700">
-                  Sprzedającym jest Dariusz Szoen Brain, Chess&Supplements dostępny pod adresem ul. Wybickiego 100, 
-                  41-404 Mysłowice, prowadzący działalność na podstawie jednoosobowej działalności gospodarczej, 
-                  podlegający wpisowi do Centralnej Ewidencji Działalności Gospodarczej wpisany pod numerem 
-                  NIP: 2220750968, Regon: 385840670, zwany także zamiennie „Usługodawcą".
-                </p>
-              </div>
+            <section className="mb-8">
+              <h2 className="text-xl font-bold mb-4">§ 3 Płatności</h2>
+              <ol className="list-decimal pl-5 space-y-2">
+                <li>Klient może dokonać płatności za zamówienie za pomocą:
+                  <ul className="list-disc pl-5 mt-2">
+                    <li>przelewu tradycyjnego,</li>
+                    <li>szybkich płatności online (np. Przelewy24),</li>
+                    <li>kart płatniczych.</li>
+                  </ul>
+                </li>
+                <li>Realizacja zamówienia rozpoczyna się po zaksięgowaniu płatności na koncie sklepu.</li>
+              </ol>
+            </section>
 
-              <div className="mb-8">
-                <h3 className="text-xl font-bold text-gray-800 mb-4">Kontakt z Usługodawcą można uzyskać:</h3>
-                <ul className="list-disc pl-6 space-y-2 text-gray-600">
-                  <li>pod numerami telefonów Infolinii Konsumenckiej (Infolinii): ++48 533 813 285</li>
-                  <li>korzystając z adresu poczty elektronicznej: sklep@familybalance.pl</li>
-                </ul>
-              </div>
+            <section className="mb-8">
+              <h2 className="text-xl font-bold mb-4">§ 4 Dostawa</h2>
+              <ol className="list-decimal pl-5 space-y-2">
+                <li>Zamówienia są realizowane na terenie Polski.</li>
+                <li>Termin dostawy wynosi od 1 do 3 dni roboczych od momentu zaksięgowania płatności, o ile na stronie produktu nie wskazano inaczej.</li>
+                <li>Koszty dostawy są wskazane w koszyku przed finalizacją zamówienia.</li>
+              </ol>
+            </section>
 
-              <section className="mb-8">
-                <h3 className="text-xl font-bold text-gray-800 mb-4">§ 1 Definicje</h3>
-                <div className="space-y-4 text-gray-600">
-                  <p>
-                    <strong>Regulamin</strong> – niniejszy regulamin. W zakresie usług świadczonych drogą 
-                    elektroniczną Regulamin jest regulaminem, o którym mowa w art. 8 ustawy z dnia 18 lipca 
-                    2002 r. o świadczeniu usług drogą elektroniczną.
-                  </p>
-                  <p>
-                    <strong>Klient (Kupujący)</strong> – osoba fizyczna, która ukończyła co najmniej 13. rok 
-                    życia, przy czym w przypadku nieukończenia przez tę osobę 18. roku życia, wymagana jest 
-                    zgoda jej przedstawiciela ustawowego.
-                  </p>
-                  {/* Additional sections follow the same pattern */}
-                </div>
-              </section>
+            <section className="mb-8">
+              <h2 className="text-xl font-bold mb-4">§ 5 Prawo odstąpienia od umowy</h2>
+              <ol className="list-decimal pl-5 space-y-2">
+                <li>Konsument ma prawo odstąpić od umowy w ciągu 14 dni od otrzymania produktu bez podawania przyczyny.</li>
+                <li>Aby skorzystać z prawa odstąpienia, należy przesłać oświadczenie o odstąpieniu na adres e-mail: tobmar85@gmail.com lub na adres pocztowy: ul. Długa 99, 41-409 Mysłowice.</li>
+                <li>Konsument ponosi koszty zwrotu produktu. Sklep zwraca należność w ciągu 14 dni od otrzymania zwrotu.</li>
+              </ol>
+            </section>
 
-              {/* Additional sections (§ 2-7) following the same pattern */}
-              <section className="mb-8">
-                <h3 className="text-xl font-bold text-gray-800 mb-4">§ 2 Zasady ogólne</h3>
-                <div className="space-y-4 text-gray-600">
-                  <p>
-                    Warunkiem złożenia Zamówienia w Sklepie Internetowym przez Kupującego jest zapoznanie się 
-                    z niniejszym Regulaminem i akceptacja jego postanowień w czasie realizacji Zamówienia.
-                  </p>
-                  {/* Continue with remaining content */}
-                </div>
-              </section>
+            <section className="mb-8">
+              <h2 className="text-xl font-bold mb-4">§ 6 Reklamacje</h2>
+              <ol className="list-decimal pl-5 space-y-2">
+                <li>Klient ma prawo zgłosić reklamację w przypadku niezgodności towaru z umową.</li>
+                <li>Reklamacje należy zgłaszać na adres e-mail: tobmar85@gmail.com lub na adres pocztowy: ul. Długa 99, 41-409 Mysłowice, podając:
+                  <ul className="list-disc pl-5 mt-2">
+                    <li>imię i nazwisko,</li>
+                    <li>numer zamówienia,</li>
+                    <li>opis wady produktu.</li>
+                  </ul>
+                </li>
+                <li>Sklep rozpatruje reklamację w terminie 14 dni od daty jej otrzymania.</li>
+              </ol>
+            </section>
 
-              {/* Continue with remaining sections */}
+            <section className="mb-8">
+              <h2 className="text-xl font-bold mb-4">§ 7 Polityka prywatności</h2>
+              <ol className="list-decimal pl-5 space-y-2">
+                <li>Administratorem danych osobowych klientów jest firma Tobmar, z siedzibą przy ul. Długa 99, 41-409 Mysłowice.</li>
+                <li>Dane osobowe są przetwarzane wyłącznie w celu realizacji zamówień, zgodnie z RODO.</li>
+                <li>Klient ma prawo wglądu, poprawiania i żądania usunięcia swoich danych osobowych.</li>
+                <li>Szczegóły dotyczące plików cookies i przetwarzania danych osobowych znajdują się w zakładce „Polityka prywatności".</li>
+              </ol>
+            </section>
 
-            </div>
+            <section className="mb-8">
+              <h2 className="text-xl font-bold mb-4">§ 8 Postanowienia końcowe</h2>
+              <ol className="list-decimal pl-5 space-y-2">
+                <li>W sprawach nieuregulowanych w regulaminie zastosowanie mają przepisy Kodeksu cywilnego oraz ustawy o prawach konsumenta.</li>
+                <li>Regulamin wchodzi w życie z dniem 27.12.2024 i obowiązuje do odwołania.</li>
+              </ol>
+            </section>
           </div>
         </div>
       </div>
