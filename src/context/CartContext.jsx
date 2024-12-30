@@ -39,6 +39,27 @@ const cartReducer = (state, action) => {
       break;
     }
 
+    case 'ADD_TO_WISHLIST': {
+      const existingItem = state.wishlist.find(item => item.id === action.payload.id);
+      
+      if (!existingItem) {
+        newState = {
+          ...state,
+          wishlist: [...state.wishlist, action.payload]
+        };
+      } else {
+        newState = state;
+      }
+      break;
+    }
+
+    case 'REMOVE_FROM_WISHLIST':
+      newState = {
+        ...state,
+        wishlist: state.wishlist.filter(item => item.id !== action.payload),
+      };
+      break;
+
     case 'APPLY_DISCOUNT':
       newState = {
         ...state,

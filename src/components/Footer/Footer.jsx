@@ -12,6 +12,19 @@ const Footer = () => {
     ]
   };
 
+  const paymentMethods = [
+    { name: 'Blik', extension: '.svg' },
+    { name: 'Visa', extension: '.png' },
+    { name: 'Mastercard', extension: '.png' },
+    { name: 'PayU', extension: '.png' }
+  ];
+
+  const handleImageError = (e) => {
+    console.error(`Failed to load image: ${e.target.src}`);
+    // Optionally set a fallback image
+    // e.target.src = '/img/fallback-logo.png';
+  };
+  
   return (
     <footer className="bg-green-800 text-white border-t-4 border-green-700">
       <div className="max-w-7xl mx-auto px-6 py-8 sm:px-8 lg:px-10">
@@ -71,16 +84,17 @@ const Footer = () => {
           <div className="flex flex-col items-center">
             <h3 className="text-xl font-semibold mb-6">Metody płatności</h3>
             <div className="grid grid-cols-2 gap-6">
-              {['Blik', 'Visa', 'Mastercard', 'PayU'].map((method) => (
-                <div key={method} 
+              {paymentMethods.map(({ name, extension }) => (
+                <div key={name} 
                      className="bg-white/10 backdrop-blur-sm border border-white/20 
                               rounded-lg p-4 flex items-center justify-center
                               hover:bg-white/20 transition-colors shadow-lg"
                 >
                   <img 
-                    src={`/img/logo/${method === 'Visa' ? 'visa' : method}${method === 'Blik' ? '.svg' : '.png'}`}
-                    alt={method}
-                    className="h-8 w-auto"
+                    src={`/img/logo/${name.toLowerCase()}${extension}`}
+                    alt={`${name} payment method`}
+                    className="h-8 w-auto object-contain"
+                    onError={handleImageError}
                   />
                 </div>
               ))}

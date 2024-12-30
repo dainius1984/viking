@@ -17,6 +17,7 @@ import { AuthProvider } from './components/AuthContext';
 import AboutUs from './components/Pages/About';
 import PrivacyPolicy from './components/Pages/Policy';
 import PrivateRoute, {RedirectIfAuthenticated} from './PrivateRoute';
+import ProductPage from './components/Pages/ProductPage';
 
 const App = () => {
   return (
@@ -36,6 +37,7 @@ const App = () => {
             <Route path="/regulamin" element={<Regulamin />} />
             <Route path="/policy" element={<PrivacyPolicy />} />
             <Route path="/article/:id" element={<Article />} />
+            <Route path="/product/:id" element={<ProductPage />} />
             <Route 
   path="/auth" 
   element={

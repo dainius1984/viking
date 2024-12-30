@@ -27,25 +27,25 @@ const HealthyLifestyleBanner = () => {
           />
         </Link>
 
-        <div className="flex-1 flex flex-col gap-1 text-center md:text-left">
-          <div className="space-y-2">
-            <h2 className="text-[30px] md:text-[36px] lg:text-[40px] font-extrabold text-gray-700 
-              leading-[1.2] m-0 tracking-[-0.01em] drop-shadow-sm">
-              Uczyń zdrowy
+        <div className="flex-1 flex flex-col gap-2 text-center md:text-left">
+          <div className="space-y-3">
+            <h2 className="text-[28px] md:text-[32px] lg:text-[36px] font-extrabold text-gray-700 
+              leading-[1.3] m-0 tracking-[-0.01em] drop-shadow-sm">
+              Zdrowie zaczyna się
             </h2>
-            <h2 className="text-[34px] md:text-[38px] lg:text-[44px] font-black text-[#006400] 
-              leading-[1.2] m-0 tracking-[-0.01em] transition-colors duration-300 
+            <h2 className="text-[30px] md:text-[34px] lg:text-[38px] font-black text-[#006400] 
+              leading-[1.3] m-0 tracking-[-0.01em] transition-colors duration-300 
               hover:text-[#008000] drop-shadow-sm">
-              tryb życia
+              w rodzinie
             </h2>
-            <h2 className="text-[36px] md:text-[40px] lg:text-[46px] font-black leading-[1.2] 
+            <h2 className="text-[28px] md:text-[32px] lg:text-[36px] font-bold leading-[1.3] 
               m-0 tracking-[-0.01em] bg-gradient-to-r from-[#006400] to-[#0a8a0a] 
               bg-clip-text text-transparent drop-shadow-sm">
-              swoim nawykiem!
+              zmieniajcie nawyki razem!
             </h2>
           </div>
           
-          <p className="text-lg md:text-xl text-gray-600 mt-4 font-medium">
+          <p className="text-lg md:text-xl text-gray-600 mt-6 font-medium max-w-2xl">
             Zacznij już dziś i ciesz się energią każdego dnia!
           </p>
         </div>
