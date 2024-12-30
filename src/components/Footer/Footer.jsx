@@ -24,7 +24,7 @@ const Footer = () => {
     // Optionally set a fallback image
     // e.target.src = '/img/fallback-logo.png';
   };
-  
+
   return (
     <footer className="bg-green-800 text-white border-t-4 border-green-700">
       <div className="max-w-7xl mx-auto px-6 py-8 sm:px-8 lg:px-10">
@@ -37,7 +37,7 @@ const Footer = () => {
                 <div>
                   <p className="font-semibold text-lg">Family Balance</p>
                   <p className="text-white/90">ul. Przykładowa 123</p>
-                  <p className="text-white/90">00-000 Warszawa</p>
+                  <p className="text-white/90">00-000 Wroclaw</p>
                 </div>
               </div>
               <div className="flex items-center gap-3">
