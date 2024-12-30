@@ -15,14 +15,18 @@ const EnhancedAlert = ({ type, message, duration = 5000, onDismiss }) => {
   if (!message) return null;
 
   return (
-    <div 
-      className="fixed top-4 right-4 w-96 max-w-[calc(100vw-2rem)] z-[9999] animate-fade-in"
-    >
-      <div className={`relative overflow-hidden rounded-lg shadow-lg ${
-        type === 'success' 
-          ? 'bg-green-50 border border-green-200' 
-          : 'bg-red-50 border border-red-200'
-      }`}>
+    <div className="fixed inset-0 pointer-events-none flex items-start justify-center p-4 z-[9999]">
+      <div 
+        className={`
+          pointer-events-auto
+          w-96 max-w-[calc(100vw-2rem)]
+          mt-4
+          transform transition-all duration-300 ease-out
+          translate-y-0 opacity-100
+          rounded-lg shadow-lg
+          ${type === 'success' ? 'bg-green-50 border border-green-200' : 'bg-red-50 border border-red-200'}
+        `}
+      >
         <div className="p-4">
           <div className="flex items-start gap-3">
             {type === 'success' ? (
@@ -46,34 +50,20 @@ const EnhancedAlert = ({ type, message, duration = 5000, onDismiss }) => {
             
             <button
               onClick={onDismiss}
-              className={`p-1 rounded-full hover:bg-opacity-20 transition-colors flex-shrink-0 ${
-                type === 'success' 
-                  ? 'hover:bg-green-600 text-green-600' 
-                  : 'hover:bg-red-600 text-red-600'
-              }`}
+              className={`
+                p-1.5 rounded-full 
+                transition-colors duration-200
+                flex-shrink-0
+                ${type === 'success' 
+                  ? 'text-green-600 hover:bg-green-100' 
+                  : 'text-red-600 hover:bg-red-100'}
+              `}
             >
               <X className="w-4 h-4" />
             </button>
           </div>
         </div>
       </div>
-
-      <style jsx>{`
-        @keyframes fadeIn {
-          from {
-            opacity: 0;
-            transform: translateY(-100%);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-        
-        .animate-fade-in {
-          animation: fadeIn 0.5s ease-out forwards;
-        }
-      `}</style>
     </div>
   );
 };

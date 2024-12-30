@@ -34,6 +34,9 @@ const LoginForm = ({ login }) => {
     e.preventDefault();
     e.stopPropagation();
 
+    // Clear any existing notifications first
+    setNotification({ type: '', message: '' });
+
     const emailError = validateEmail(formData.email);
     const passwordError = validatePassword(formData.password);
 
@@ -50,27 +53,25 @@ const LoginForm = ({ login }) => {
     setLoginLoading(true);
     
     try {
-      console.log('Attempting login...'); // Debug log
       const result = await login(formData.email, formData.password);
       
       if (result.success) {
-        console.log('Login successful, showing notification'); // Debug log
         setNotification({
           type: 'success',
           message: 'Logowanie zakończone sukcesem! Zaraz zostaniesz przekierowany do swojego konta.'
         });
         
-        const redirectToCart = localStorage.getItem('redirectToCart');
+        // Wait longer before redirect to ensure notification is visible
         setTimeout(() => {
+          const redirectToCart = localStorage.getItem('redirectToCart');
           if (redirectToCart) {
             localStorage.removeItem('redirectToCart');
             navigate('/koszyk');
           } else {
             navigate('/account');
           }
-        }, 1500);
+        }, 2500);
       } else {
-        console.log('Login failed, showing error'); // Debug log
         let errorMessage = 'Nieprawidłowe dane logowania. Sprawdź email i hasło.';
         
         if (result.error?.toLowerCase().includes('invalid credentials')) {
@@ -98,7 +99,7 @@ const LoginForm = ({ login }) => {
   };
 
   return (
-    <div className="bg-white p-4 sm:p-6 md:p-8 rounded-lg shadow-sm max-w-xl mx-auto w-full relative">
+    <div className="bg-white p-4 sm:p-6 md:p-8 rounded-lg shadow-sm max-w-xl mx-auto w-full">
       <h2 className="text-xl sm:text-2xl text-green-800 mb-4 sm:mb-6 text-center font-semibold">
         Zaloguj się
       </h2>

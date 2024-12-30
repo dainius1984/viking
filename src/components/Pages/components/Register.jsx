@@ -41,6 +41,9 @@ const RegisterForm = ({ register }) => {
     e.preventDefault();
     e.stopPropagation();
 
+    // Clear any existing notifications first
+    setNotification({ type: '', message: '' });
+
     const emailError = validateEmail(formData.email);
     const passwordError = validatePassword(formData.password);
     const nameError = validateName(formData.name);
@@ -59,7 +62,6 @@ const RegisterForm = ({ register }) => {
     setRegisterLoading(true);
     
     try {
-      console.log('Attempting registration...'); // Debug log
       const result = await register(
         formData.email,
         formData.password,
@@ -67,23 +69,22 @@ const RegisterForm = ({ register }) => {
       );
       
       if (result.success) {
-        console.log('Registration successful, showing notification'); // Debug log
         setNotification({
           type: 'success',
           message: 'Konto zostało utworzone pomyślnie! Witamy w naszym sklepie. Zaraz zostaniesz przekierowany.'
         });
         
-        const redirectToCart = localStorage.getItem('redirectToCart');
+        // Wait longer before redirect to ensure notification is visible
         setTimeout(() => {
+          const redirectToCart = localStorage.getItem('redirectToCart');
           if (redirectToCart) {
             localStorage.removeItem('redirectToCart');
             navigate('/koszyk');
           } else {
             navigate('/account');
           }
-        }, 1500);
+        }, 2500);
       } else {
-        console.log('Registration failed, showing error'); // Debug log
         let errorMessage = 'Wystąpił błąd podczas rejestracji. Spróbuj ponownie.';
         
         if (result.error?.toLowerCase().includes('email already exists')) {
@@ -113,7 +114,7 @@ const RegisterForm = ({ register }) => {
   };
 
   return (
-    <div className="bg-white p-4 sm:p-6 md:p-8 rounded-lg shadow-sm max-w-xl mx-auto w-full relative">
+    <div className="bg-white p-4 sm:p-6 md:p-8 rounded-lg shadow-sm max-w-xl mx-auto w-full">
       <h2 className="text-xl sm:text-2xl text-green-800 mb-4 sm:mb-6 text-center font-semibold">
         Zarejestruj się
       </h2>
