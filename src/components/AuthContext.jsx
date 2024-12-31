@@ -1,3 +1,4 @@
+// AuthContext.jsx
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { ID } from 'appwrite';
 import { account } from './appwrite';
@@ -11,27 +12,18 @@ export const AuthProvider = ({ children }) => {
 
     // Helper function to handle localStorage for user-specific data
     const handleUserStorage = useCallback((isUserSession) => {
-        if (!isUserSession) {
-            // For guest users or on logout, clear user-specific data
+        if (!isUserSession && !user) {
+            // Clear storage only for guests or when explicitly logging out
             localStorage.removeItem('cart');
             localStorage.removeItem('favorites');
-        } else {
-            // For logged-in users, initialize storage if needed
-            if (!localStorage.getItem('cart')) {
-                localStorage.setItem('cart', JSON.stringify([]));
-            }
-            if (!localStorage.getItem('favorites')) {
-                localStorage.setItem('favorites', JSON.stringify([]));
-            }
         }
-    }, []);
+    }, [user]);
 
     // Check user session status
     const checkUser = useCallback(async () => {
         try {
             const session = await account.get();
             setUser(session);
-            handleUserStorage(true);
             setSessionError(null);
         } catch (error) {
             console.log('No active session:', error);
@@ -52,12 +44,10 @@ export const AuthProvider = ({ children }) => {
             await account.createEmailPasswordSession(email, password);
             const userData = await account.get();
             setUser(userData);
-            handleUserStorage(true);
             setSessionError(null);
             return { success: true };
         } catch (error) {
             console.error('Login error:', error);
-            handleUserStorage(false);
             return {
                 success: false,
                 error: error.message || 'Invalid credentials. Please check your email and password.'
@@ -93,8 +83,8 @@ export const AuthProvider = ({ children }) => {
         try {
             setLoading(true);
             await account.deleteSession('current');
-            setUser(null);
             handleUserStorage(false);
+            setUser(null);
             setSessionError(null);
         } catch (error) {
             console.error('Logout error:', error);
@@ -115,15 +105,18 @@ export const AuthProvider = ({ children }) => {
     useEffect(() => {
         const handleVisibilityChange = () => {
             if (document.hidden && !user) {
-                // Clear storage for guest users when tab is hidden
+                // Clear storage only for guests when tab is hidden
                 handleUserStorage(false);
             }
         };
 
         const handleBeforeUnload = () => {
             if (!user) {
-                // Clear storage for guest users before page unload
+                // Clear storage only for guests before page unload
                 handleUserStorage(false);
+            } else {
+                // Logout user when closing browser/tab
+                logout();
             }
         };
 
@@ -136,7 +129,7 @@ export const AuthProvider = ({ children }) => {
             document.removeEventListener('visibilitychange', handleVisibilityChange);
             window.removeEventListener('beforeunload', handleBeforeUnload);
         };
-    }, [user, handleUserStorage]);
+    }, [user, handleUserStorage, logout]);
 
     // Session refresh logic
     useEffect(() => {
@@ -159,6 +152,21 @@ export const AuthProvider = ({ children }) => {
         return () => clearInterval(intervalId);
     }, [user, logout]);
 
+    // Load saved data after login
+    useEffect(() => {
+        if (user) {
+            // Load saved favorites if they exist
+            const savedFavorites = localStorage.getItem('favorites');
+            const savedCart = localStorage.getItem('cart');
+            if (!savedFavorites) {
+                localStorage.setItem('favorites', JSON.stringify([]));
+            }
+            if (!savedCart) {
+                localStorage.setItem('cart', JSON.stringify([]));
+            }
+        }
+    }, [user]);
+
     // Provide context value
     const contextValue = {
         user,
@@ -168,10 +176,9 @@ export const AuthProvider = ({ children }) => {
         register,
         sessionError,
         isAuthenticated: !!user,
-        checkUser // Exposed for manual session checks if needed
+        checkUser
     };
 
-    // Only render children when initial loading is complete
     return (
         <AuthContext.Provider value={contextValue}>
             {!loading && children}
@@ -188,5 +195,4 @@ export const useAuth = () => {
     return context;
 };
 
-// Export AuthContext for direct usage if needed
 export default AuthContext;

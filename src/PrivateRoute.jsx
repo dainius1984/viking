@@ -16,7 +16,7 @@ const PrivateRoute = ({ children }) => {
     }
 
     if (!user) {
-        // Save the attempted location
+        // Save the attempted location and redirect to auth
         return <Navigate to="/auth" state={{ from: location.pathname }} />;
     }
 
@@ -36,9 +36,9 @@ export const RedirectIfAuthenticated = ({ children }) => {
     }
 
     if (user) {
-        // Redirect to the saved location or home
-        const from = location.state?.from || '/';
-        return <Navigate to={from} />;
+        const from = location.state?.from;
+        // If there's a saved location, go there, otherwise go home
+        return <Navigate to={from || "/"} replace={true} />;
     }
 
     return children;

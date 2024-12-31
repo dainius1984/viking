@@ -19,7 +19,7 @@ import PrivacyPolicy from './components/Pages/Policy';
 import PrivateRoute, { RedirectIfAuthenticated } from './PrivateRoute';
 import ProductPage from './components/Pages/ProductPage';
 
-// Component to protect order confirmation and handle order session
+// Order confirmation route protection
 const OrderConfirmationRoute = () => {
   const location = useLocation();
   const isOrderComplete = sessionStorage.getItem('orderComplete') === 'true';
