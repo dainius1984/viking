@@ -20,7 +20,6 @@ import PrivateRoute, { RedirectIfAuthenticated } from './PrivateRoute';
 import ProductPage from './components/Pages/ProductPage';
 
 // Component to protect order confirmation and handle order session
-// Moved outside main App component to be able to use hooks
 const OrderConfirmationRoute = () => {
   const location = useLocation();
   const isOrderComplete = sessionStorage.getItem('orderComplete') === 'true';
@@ -50,14 +49,14 @@ const App = () => {
             <Route path="/article/:id" element={<Article />} />
             <Route path="/product/:id" element={<ProductPage />} />
             
-            {/* Auth Routes */}
+            {/* Auth Route */}
             <Route 
               path="/auth" 
               element={
                 <RedirectIfAuthenticated>
                   <AuthPage />
                 </RedirectIfAuthenticated>
-              } 
+              }
             />
 
             {/* Protected Routes */}
@@ -67,7 +66,7 @@ const App = () => {
                 <PrivateRoute>
                   <AccountPage />
                 </PrivateRoute>
-              } 
+              }
             />
             <Route 
               path="/wishlist" 
@@ -75,18 +74,15 @@ const App = () => {
                 <PrivateRoute>
                   <Wishlist />
                 </PrivateRoute>
-              } 
+              }
             />
 
-            {/* Order Routes - Allow both guest and authenticated users */}
+            {/* Order Routes */}
             <Route path="/order" element={<OrderPage />} />
-            <Route 
-              path="/order-confirmation" 
-              element={<OrderConfirmationRoute />} 
-            />
-
-            {/* Catch all route */}
-            <Route path="*" element={<Navigate to="/" replace />} />
+            <Route path="/order-confirmation" element={<OrderConfirmationRoute />} />
+            
+            {/* Catch all */}
+            <Route path="*" element={<Navigate to="/" />} />
           </Routes>
         </Router>
       </CartProvider>

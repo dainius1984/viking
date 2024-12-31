@@ -1,30 +1,11 @@
 // PrivateRoute.jsx
-import React, { useEffect } from 'react';
+import React from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from './components/AuthContext';
 
 const PrivateRoute = ({ children }) => {
-    const { user, loading, checkUser } = useAuth();
+    const { user, loading } = useAuth();
     const location = useLocation();
-
-    useEffect(() => {
-        // Check backend session as well
-        const checkSession = async () => {
-            try {
-                const response = await fetch('https://healthapi-zvfk.onrender.com/api/check-session', {
-                    credentials: 'include'
-                });
-                if (!response.ok && user) {
-                    // If backend session is invalid but frontend thinks we're logged in
-                    checkUser(); // This will trigger a re-auth check
-                }
-            } catch (error) {
-                console.error('Session check error:', error);
-            }
-        };
-
-        checkSession();
-    }, [user, checkUser]);
 
     if (loading) {
         return (
@@ -35,7 +16,8 @@ const PrivateRoute = ({ children }) => {
     }
 
     if (!user) {
-        return <Navigate to="/auth" state={{ from: location.pathname }} replace />;
+        // Save the attempted location
+        return <Navigate to="/auth" state={{ from: location.pathname }} />;
     }
 
     return children;
@@ -54,8 +36,9 @@ export const RedirectIfAuthenticated = ({ children }) => {
     }
 
     if (user) {
+        // Redirect to the saved location or home
         const from = location.state?.from || '/';
-        return <Navigate to={from} replace />;
+        return <Navigate to={from} />;
     }
 
     return children;
