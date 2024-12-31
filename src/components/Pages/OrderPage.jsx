@@ -104,75 +104,83 @@ const OrderPage = () => {
     
     const errors = validateForm(formData);
     if (errors.length > 0) {
-        setNotification({
-            type: 'error',
-            message: errors[0]
-        });
-        setTimeout(() => setNotification(null), 5000);
-        return;
+      setNotification({
+        type: 'error',
+        message: errors[0]
+      });
+      setTimeout(() => setNotification(null), 5000);
+      return;
     }
 
     setLoading(true);
     setNotification(null);
 
     try {
-        const orderData = {
-            orderNumber: generateOrderNumber(),
-            status: 'pending',
-            subtotal: Number(subtotal).toFixed(2),
-            total: Number(total).toFixed(2),
-            discountApplied: state.isDiscountApplied,
-            discountAmount: Number(discountAmount).toFixed(2),
-            shippingCost: DISCOUNT_CONFIG.shippingCost.toFixed(2),
-            createdAt: new Date().toISOString(),
-            items: formatOrderItems(state.cart),
-            shipping,
-            ...formData,
+      const orderData = {
+        orderNumber: generateOrderNumber(),
+        status: 'pending',
+        subtotal: Number(subtotal).toFixed(2),
+        total: Number(total).toFixed(2),
+        discountApplied: state.isDiscountApplied,
+        discountAmount: Number(discountAmount).toFixed(2),
+        shippingCost: DISCOUNT_CONFIG.shippingCost.toFixed(2),
+        createdAt: new Date().toISOString(),
+        items: formatOrderItems(state.cart),
+        shipping,
+        ...formData,
+      };
+
+      // Create backup of order data
+      const backupKey = `order_backup_${orderData.orderNumber}`;
+      localStorage.setItem(backupKey, JSON.stringify(orderData));
+
+      if (user) {
+        const appwriteData = {
+          userId: user.$id,
+          orderNumber: orderData.orderNumber,
+          subtotal: orderData.subtotal,
+          discountApplied: orderData.discountApplied,
+          discountAmount: orderData.discountAmount,
+          shippingCost: orderData.shippingCost,
+          total: orderData.total,
+          createdAt: orderData.createdAt,
+          items: JSON.stringify(state.cart),
+          firstName: formData.firstName,
+          lastName: formData.lastName,
+          email: formData.email,
+          phone: formData.phone,
+          shipping: shipping
         };
 
-        // Create backup of order data
-        const backupKey = `order_backup_${orderData.orderNumber}`;
-        localStorage.setItem(backupKey, JSON.stringify(orderData));
+        await databases.createDocument(
+          '67545c1800028e002c86',
+          '67545c2c001276c2c261',
+          ID.unique(),
+          appwriteData
+        );
+      } else {
+        const sheetData = prepareSheetData(orderData, formData);
+        await appendToSheet(sheetData, setRetryCount);
+      }
 
-        if (user) {
-            // For logged-in users, use Appwrite
-            await databases.createDocument(
-                '67545c1800028e002c86',
-                '67545c2c001276c2c261',
-                ID.unique(),
-                {
-                    ...orderData,
-                    userId: user.$id,
-                    items: JSON.stringify(state.cart)
-                }
-            );
-        } else {
-            // For guest users, use Google Sheets
-            const sheetData = prepareSheetData(orderData, formData);
-            await appendToSheet(sheetData, setRetryCount);
-        }
-
-        // Add this line here - after successful order creation
-        sessionStorage.setItem('orderComplete', 'true');
-
-        localStorage.removeItem(backupKey);
-        dispatch({ type: 'CLEAR_CART' });
-        navigate('/order-confirmation', { state: { fromOrder: true } });
+      localStorage.removeItem(backupKey);
+      dispatch({ type: 'CLEAR_CART' });
+      navigate('/order-confirmation');
     } catch (error) {
-        console.error('Error creating order:', error);
-        
-        setNotification({
-            type: 'error',
-            message: error.message.includes('Zbyt wiele zamówień') 
-                ? error.message
-                : retryCount >= 3
-                    ? 'Przepraszamy, wystąpił błąd. Prosimy spróbować później lub skontaktować się z obsługą.'
-                    : 'Wystąpił błąd podczas składania zamówienia. Próbujemy ponownie...'
-        });
+      console.error('Error creating order:', error);
+      
+      setNotification({
+        type: 'error',
+        message: error.message.includes('Zbyt wiele zamówień') 
+          ? error.message
+          : retryCount >= 3
+            ? 'Przepraszamy, wystąpił błąd. Prosimy spróbować później lub skontaktować się z obsługą.'
+            : 'Wystąpił błąd podczas składania zamówienia. Próbujemy ponownie...'
+      });
     } finally {
-        setLoading(false);
+      setLoading(false);
     }
-};
+  };
 
   return (
     <>

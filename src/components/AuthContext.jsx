@@ -1,4 +1,3 @@
-// AuthContext.jsx
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { ID } from 'appwrite';
 import { account } from './appwrite';
@@ -8,185 +7,140 @@ const AuthContext = createContext();
 export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
-    const [sessionError, setSessionError] = useState(null);
+    const [autoLogoutTimer, setAutoLogoutTimer] = useState(null);
 
-    // Helper function to handle localStorage for user-specific data
-    const handleUserStorage = useCallback((isUserSession) => {
-        if (!isUserSession && !user) {
-            // Clear storage only for guests or when explicitly logging out
-            localStorage.removeItem('cart');
-            localStorage.removeItem('favorites');
+    const clearAutoLogoutTimer = useCallback(() => {
+        if (autoLogoutTimer) {
+            clearTimeout(autoLogoutTimer);
+            setAutoLogoutTimer(null);
         }
-    }, [user]);
+    }, [autoLogoutTimer]);
 
-    // Check user session status
+    const logout = useCallback(async () => {
+        try {
+            await account.deleteSession('current');
+            setUser(null);
+            clearAutoLogoutTimer();
+        } catch (error) {
+            console.error('Logout error:', error);
+            setUser(null);
+        }
+    }, [clearAutoLogoutTimer]);
+
+    const startAutoLogoutTimer = useCallback(() => {
+        clearAutoLogoutTimer();
+        const timer = setTimeout(() => {
+            logout();
+        }, 120000);
+        setAutoLogoutTimer(timer);
+    }, [clearAutoLogoutTimer, logout]);
+
     const checkUser = useCallback(async () => {
         try {
             const session = await account.get();
             setUser(session);
-            setSessionError(null);
-        } catch (error) {
-            console.log('No active session:', error);
+        } catch {
             setUser(null);
-            handleUserStorage(false);
-            if (error.code !== 401) {
-                setSessionError(error.message);
-            }
         } finally {
             setLoading(false);
         }
-    }, [handleUserStorage]);
+    }, []);
 
-    // Login function
-    const login = async (email, password) => {
-        try {
-            setLoading(true);
-            await account.createEmailPasswordSession(email, password);
-            const userData = await account.get();
-            setUser(userData);
-            setSessionError(null);
-            return { success: true };
-        } catch (error) {
-            console.error('Login error:', error);
-            return {
-                success: false,
-                error: error.message || 'Invalid credentials. Please check your email and password.'
-            };
-        } finally {
-            setLoading(false);
+    // Start timer whenever user state changes
+    useEffect(() => {
+        if (user) {
+            startAutoLogoutTimer();
         }
-    };
+    }, [user, startAutoLogoutTimer]);
 
-    // Register function
-    const register = async (email, password, name) => {
-        try {
-            setLoading(true);
-            await account.create(ID.unique(), email, password, name);
-            const loginResult = await login(email, password);
-            if (!loginResult.success) {
-                throw new Error('Auto-login after registration failed');
-            }
-            return { success: true };
-        } catch (error) {
-            console.error('Registration error:', error);
-            return {
-                success: false,
-                error: error.message || 'Failed to register. Please try again.'
-            };
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    // Logout function
-    const logout = useCallback(async () => {
-        try {
-            setLoading(true);
-            await account.deleteSession('current');
-            handleUserStorage(false);
-            setUser(null);
-            setSessionError(null);
-        } catch (error) {
-            console.error('Logout error:', error);
-            // Force logout on client side even if server request fails
-            setUser(null);
-            handleUserStorage(false);
-        } finally {
-            setLoading(false);
-        }
-    }, [handleUserStorage]);
-
-    // Effect for initial session check
+    // Initial user check
     useEffect(() => {
         checkUser();
     }, [checkUser]);
 
-    // Effect for handling browser/tab visibility and closure
+    // Tab visibility and beforeunload handlers
     useEffect(() => {
         const handleVisibilityChange = () => {
-            if (document.hidden && !user) {
-                // Clear storage only for guests when tab is hidden
-                handleUserStorage(false);
-            }
-        };
-
-        const handleBeforeUnload = () => {
-            if (!user) {
-                // Clear storage only for guests before page unload
-                handleUserStorage(false);
-            } else {
-                // Logout user when closing browser/tab
+            if (document.hidden && user) {
                 logout();
             }
         };
 
-        // Add event listeners
+        const handleBeforeUnload = (e) => {
+            if (user) {
+                const request = new XMLHttpRequest();
+                request.open('POST', '/auth/logout', false);
+                request.send();
+                setUser(null);
+            }
+        };
+
         document.addEventListener('visibilitychange', handleVisibilityChange);
         window.addEventListener('beforeunload', handleBeforeUnload);
 
-        // Cleanup function
         return () => {
+            clearAutoLogoutTimer();
             document.removeEventListener('visibilitychange', handleVisibilityChange);
             window.removeEventListener('beforeunload', handleBeforeUnload);
         };
-    }, [user, handleUserStorage, logout]);
+    }, [user, logout, clearAutoLogoutTimer]);
 
-    // Session refresh logic
+    // Activity monitoring
     useEffect(() => {
         if (!user) return;
 
-        const refreshSession = async () => {
-            try {
-                await account.get();
-            } catch (error) {
-                if (error.code === 401) {
-                    console.log('Session expired, logging out');
-                    await logout();
-                }
-            }
+        const resetTimer = () => {
+            startAutoLogoutTimer();
         };
 
-        // Check session every 5 minutes if user is logged in
-        const intervalId = setInterval(refreshSession, 5 * 60 * 1000);
+        window.addEventListener('mousemove', resetTimer);
+        window.addEventListener('keypress', resetTimer);
+        window.addEventListener('click', resetTimer);
+        window.addEventListener('scroll', resetTimer);
 
-        return () => clearInterval(intervalId);
-    }, [user, logout]);
+        return () => {
+            window.removeEventListener('mousemove', resetTimer);
+            window.removeEventListener('keypress', resetTimer);
+            window.removeEventListener('click', resetTimer);
+            window.removeEventListener('scroll', resetTimer);
+        };
+    }, [user, startAutoLogoutTimer]);
 
-    // Load saved data after login
-    useEffect(() => {
-        if (user) {
-            // Load saved favorites if they exist
-            const savedFavorites = localStorage.getItem('favorites');
-            const savedCart = localStorage.getItem('cart');
-            if (!savedFavorites) {
-                localStorage.setItem('favorites', JSON.stringify([]));
-            }
-            if (!savedCart) {
-                localStorage.setItem('cart', JSON.stringify([]));
-            }
+    const login = async (email, password) => {
+        try {
+            await account.createEmailPasswordSession(email, password);
+            const userData = await account.get();
+            setUser(userData);
+            return { success: true };
+        } catch (error) {
+            return { 
+                success: false, 
+                error: 'Invalid credentials. Please check the email and password.' 
+            };
         }
-    }, [user]);
+    };
 
-    // Provide context value
-    const contextValue = {
-        user,
-        loading,
-        login,
-        logout,
-        register,
-        sessionError,
-        isAuthenticated: !!user,
-        checkUser
+    const register = async (email, password, name) => {
+        try {
+            await account.create(ID.unique(), email, password, name);
+            return login(email, password);
+        } catch (error) {
+            return { 
+                success: false, 
+                error: 'Failed to register. Please try again.' 
+            };
+        }
     };
 
     return (
-        <AuthContext.Provider value={contextValue}>
+        <AuthContext.Provider 
+            value={{ user, login, register, logout, loading }}
+        >
             {!loading && children}
         </AuthContext.Provider>
     );
 };
 
-// Custom hook for using auth context
 export const useAuth = () => {
     const context = useContext(AuthContext);
     if (!context) {
@@ -194,5 +148,3 @@ export const useAuth = () => {
     }
     return context;
 };
-
-export default AuthContext;
