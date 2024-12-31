@@ -36,8 +36,8 @@ const Footer = () => {
                 <MapPin size={24} className="text-green-400 flex-shrink-0 mt-1" />
                 <div>
                   <p className="font-semibold text-lg">Family Balance</p>
-                  <p className="text-white/90">ul. Przykładowa 123</p>
-                  <p className="text-white/90">00-000 Wroclaw</p>
+                  <p className="text-white/90"> ul. Długa 99</p>
+                  <p className="text-white/90">41-409 Mysłowice</p>
                 </div>
               </div>
               <div className="flex items-center gap-3">
@@ -109,7 +109,7 @@ const Footer = () => {
               © 2024 Family Balance. Wszystkie prawa zastrzeżone.
             </p>
             <p className="text-base font-medium">
-              NIP: 000-000-00-00
+              NIP: 222-079-15-71
             </p>
           </div>
         </div>
