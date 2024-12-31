@@ -37,8 +37,14 @@ export const AuthProvider = ({ children }) => {
 
     const checkUser = useCallback(async () => {
         try {
-            const session = await account.get();
-            setUser(session);
+            // First check if we have an active session
+            const sessions = await account.listSessions();
+            if (sessions.total > 0) {
+                const session = await account.get();
+                setUser(session);
+            } else {
+                setUser(null);
+            }
         } catch {
             setUser(null);
         } finally {
