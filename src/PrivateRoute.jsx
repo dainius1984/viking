@@ -1,14 +1,31 @@
 // PrivateRoute.jsx
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from './components/AuthContext';
 
-// Component for protected routes
-const PrivateRoute = ({ children, allowGuest = false }) => {
-    const { user, loading } = useAuth();
+const PrivateRoute = ({ children }) => {
+    const { user, loading, checkUser } = useAuth();
     const location = useLocation();
 
-    // Show loading spinner while checking auth status
+    useEffect(() => {
+        // Check backend session as well
+        const checkSession = async () => {
+            try {
+                const response = await fetch('https://healthapi-zvfk.onrender.com/api/check-session', {
+                    credentials: 'include'
+                });
+                if (!response.ok && user) {
+                    // If backend session is invalid but frontend thinks we're logged in
+                    checkUser(); // This will trigger a re-auth check
+                }
+            } catch (error) {
+                console.error('Session check error:', error);
+            }
+        };
+
+        checkSession();
+    }, [user, checkUser]);
+
     if (loading) {
         return (
             <div className="min-h-screen flex items-center justify-center">
@@ -17,21 +34,17 @@ const PrivateRoute = ({ children, allowGuest = false }) => {
         );
     }
 
-    // Allow access if user is authenticated or if route allows guests
-    if (user || allowGuest) {
-        return children;
+    if (!user) {
+        return <Navigate to="/auth" state={{ from: location.pathname }} replace />;
     }
 
-    // Redirect to login page if not authenticated, saving the attempted path
-    return <Navigate to="/auth" state={{ from: location.pathname }} replace />;
+    return children;
 };
 
-// Component to redirect authenticated users away from login/register pages
 export const RedirectIfAuthenticated = ({ children }) => {
     const { user, loading } = useAuth();
     const location = useLocation();
 
-    // Show loading spinner while checking auth status
     if (loading) {
         return (
             <div className="min-h-screen flex items-center justify-center">
@@ -40,13 +53,11 @@ export const RedirectIfAuthenticated = ({ children }) => {
         );
     }
 
-    // If user is authenticated, redirect to the intended destination or home
     if (user) {
-        const destination = location.state?.from || '/';
-        return <Navigate to={destination} replace />;
+        const from = location.state?.from || '/';
+        return <Navigate to={from} replace />;
     }
 
-    // If not authenticated, show the children (login/register page)
     return children;
 };
 

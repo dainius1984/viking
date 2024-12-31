@@ -136,45 +136,28 @@ const OrderPage = () => {
 
         if (user) {
             // For logged-in users, use Appwrite
-            try {
-                await databases.createDocument(
-                    '67545c1800028e002c86',
-                    '67545c2c001276c2c261',
-                    ID.unique(),
-                    {
-                        ...orderData,
-                        userId: user.$id,
-                        items: JSON.stringify(state.cart)
-                    }
-                );
-            } catch (error) {
-                if (error.code === 401) {
-                    // If session expired, try to refresh it
-                    await account.get();
-                    // Retry order creation
-                    await databases.createDocument(
-                        '67545c1800028e002c86',
-                        '67545c2c001276c2c261',
-                        ID.unique(),
-                        {
-                            ...orderData,
-                            userId: user.$id,
-                            items: JSON.stringify(state.cart)
-                        }
-                    );
-                } else {
-                    throw error;
+            await databases.createDocument(
+                '67545c1800028e002c86',
+                '67545c2c001276c2c261',
+                ID.unique(),
+                {
+                    ...orderData,
+                    userId: user.$id,
+                    items: JSON.stringify(state.cart)
                 }
-            }
+            );
         } else {
             // For guest users, use Google Sheets
             const sheetData = prepareSheetData(orderData, formData);
             await appendToSheet(sheetData, setRetryCount);
         }
 
+        // Add this line here - after successful order creation
+        sessionStorage.setItem('orderComplete', 'true');
+
         localStorage.removeItem(backupKey);
         dispatch({ type: 'CLEAR_CART' });
-        navigate('/order-confirmation');
+        navigate('/order-confirmation', { state: { fromOrder: true } });
     } catch (error) {
         console.error('Error creating order:', error);
         
