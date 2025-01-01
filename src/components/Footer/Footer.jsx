@@ -42,9 +42,9 @@ const Footer = () => {
               </div>
               <div className="flex items-center gap-3">
                 <Mail size={24} className="text-green-400" />
-                <a href="mailto:kontakt@familybalance.pl" 
+                <a href="mailto:sklep@familybalance.pl" 
                    className="text-white/90 hover:text-white hover:underline transition-colors">
-                  kontakt@familybalance.pl
+                  sklep@familybalance.pl
                 </a>
               </div>
               <div className="flex items-center gap-3">
