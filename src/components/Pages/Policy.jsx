@@ -14,14 +14,12 @@ const PrivacyPolicy = () => {
       <Header />
       <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
         <div className="max-w-3xl mx-auto">
-          {/* Page Header */}
           <div className="text-center mb-8 sm:mb-12">
             <h1 className="text-3xl sm:text-4xl md:text-[2.8rem] font-bold text-gray-800 leading-tight font-serif 
               mb-6 sm:mb-8 px-4 sm:px-0">
               Polityka Prywatności
             </h1>
             
-            {/* Hero Image */}
             <div className="w-full mb-8 sm:mb-12 rounded-lg sm:rounded-xl overflow-hidden shadow-lg shadow-black/10">
               <img 
                 src="/img/banner.jpg" 
@@ -31,11 +29,10 @@ const PrivacyPolicy = () => {
             </div>
           </div>
 
-          {/* Main Content */}
           <div className="prose prose-base sm:prose-lg mx-auto text-gray-700 space-y-4 sm:space-y-6 px-4 sm:px-0">
             <div className="text-base sm:text-lg leading-relaxed space-y-4 sm:space-y-6">
               <h2 className="text-2xl sm:text-3xl font-bold text-gray-800 mt-8 mb-4">
-                POLITYKA PRYWATNOŚCI FAMILY BALANCE
+                POLITYKA PRYWATNOŚCI TOBMAR
               </h2>
 
               <p className="text-gray-600">
@@ -47,8 +44,8 @@ const PrivacyPolicy = () => {
                 <h3 className="text-xl font-bold text-gray-800 mb-4">§ 1 Postanowienia ogólne</h3>
                 <div className="space-y-4 text-gray-600">
                   <ol className="list-decimal pl-6 space-y-2">
-                    <li>Administratorem danych osobowych jest Family Balance, z siedzibą przy ul. Wybickiego 100, 
-                    41-404 Mysłowice, NIP: 2220750968, Regon: 385840670, zwany dalej "Administratorem".</li>
+                    <li>Administratorem danych osobowych jest Tobmar, wpisaną do Centralnej Ewidencji i Informacji o Działalności Gospodarczej, 
+                    z siedzibą przy ul. Długa 99, 41-409 Mysłowice, NIP: 2220791571, REGON: 381147080, zwany dalej "Administratorem".</li>
                     <li>Administrator przetwarza dane osobowe zgodnie z obowiązującymi przepisami prawa, w szczególności 
                     z Rozporządzeniem Parlamentu Europejskiego i Rady (UE) 2016/679 z dnia 27 kwietnia 2016 r. w sprawie 
                     ochrony osób fizycznych w związku z przetwarzaniem danych osobowych (RODO).</li>
@@ -59,6 +56,7 @@ const PrivacyPolicy = () => {
                 </div>
               </section>
 
+              {/* Rest of the sections remain unchanged */}
               <section className="mb-8">
                 <h3 className="text-xl font-bold text-gray-800 mb-4">§ 2 Zakres i cel przetwarzania danych</h3>
                 <div className="space-y-4 text-gray-600">
