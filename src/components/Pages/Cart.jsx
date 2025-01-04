@@ -36,7 +36,6 @@ const Cart = () => {
     }
     
     setIsProcessing(true);
-    // Small delay to show processing state
     setTimeout(() => {
       setIsProcessing(false);
       navigate('/order');
@@ -120,7 +119,7 @@ const Cart = () => {
             <div className="grid grid-cols-1 lg:grid-cols-[1fr,380px] gap-6 lg:gap-8">
               <div className="flex flex-col gap-5">
                 <div className="bg-white rounded-lg shadow-sm overflow-hidden">
-                  <div className="grid grid-cols-[2fr,80px,80px] sm:grid-cols-[2fr,100px,100px] p-4 bg-gray-50 font-semibold text-sm sm:text-base">
+                  <div className="hidden sm:grid grid-cols-[2fr,100px,100px] p-4 bg-gray-50 font-semibold text-sm sm:text-base">
                     <span>Produkt</span>
                     <span className="text-center">Ilość</span>
                     <span className="text-right">Suma</span>
@@ -130,13 +129,14 @@ const Cart = () => {
                     {state.cart.map((item) => (
                       <div 
                         key={item.id} 
-                        className={`grid grid-cols-[2fr,80px,80px] sm:grid-cols-[2fr,100px,100px] p-4 sm:p-5
+                        className={`grid grid-cols-1 sm:grid-cols-[2fr,100px,100px] p-4 sm:p-5 gap-4
                           ${removingItems.has(item.id) ? 'animate-fadeOut' : 'animate-fadeIn'}`}
                       >
-                        <div className="flex items-center gap-2 sm:gap-4">
+                        {/* Product info - Full width on mobile */}
+                        <div className="flex items-start sm:items-center gap-2 sm:gap-4">
                           <button 
                             onClick={() => removeItem(item.id)}
-                            className="text-red-500 hover:text-red-600 p-1"
+                            className="text-red-500 hover:text-red-600 p-1 flex-shrink-0"
                             aria-label="Usuń produkt"
                           >
                             <X className="w-4 h-4 sm:w-5 sm:h-5" />
@@ -144,31 +144,38 @@ const Cart = () => {
                           <img 
                             src={item.image} 
                             alt={item.name} 
-                            className="w-16 h-16 sm:w-20 sm:h-20 object-contain"
+                            className="w-16 h-16 sm:w-20 sm:h-20 object-contain flex-shrink-0"
                           />
-                          <span className="text-sm sm:text-base line-clamp-2">{item.name}</span>
+                          <div className="min-w-0 flex-1">
+                            <span className="text-sm sm:text-base break-words">
+                              {item.name}
+                            </span>
+                          </div>
                         </div>
                         
-                        <div className="flex items-center justify-center gap-2 sm:gap-3">
-                          <button 
-                            onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                            className="w-7 h-7 sm:w-8 sm:h-8 border border-gray-200 rounded hover:bg-gray-50 
-                              flex items-center justify-center"
-                          >
-                            -
-                          </button>
-                          <span className="text-sm sm:text-base">{item.quantity}</span>
-                          <button 
-                            onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                            className="w-7 h-7 sm:w-8 sm:h-8 border border-gray-200 rounded hover:bg-gray-50
-                              flex items-center justify-center"
-                          >
-                            +
-                          </button>
-                        </div>
-                        
-                        <div className="flex items-center justify-end text-sm sm:text-base">
-                          {formatPrice(item.price * item.quantity)}
+                        {/* Quantity and Price - Side by side on mobile */}
+                        <div className="grid grid-cols-2 sm:grid-cols-1 gap-2 items-center">
+                          <div className="flex items-center justify-start sm:justify-center gap-2 sm:gap-3">
+                            <button 
+                              onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                              className="w-7 h-7 sm:w-8 sm:h-8 border border-gray-200 rounded hover:bg-gray-50 
+                                flex items-center justify-center flex-shrink-0"
+                            >
+                              -
+                            </button>
+                            <span className="text-sm sm:text-base">{item.quantity}</span>
+                            <button 
+                              onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                              className="w-7 h-7 sm:w-8 sm:h-8 border border-gray-200 rounded hover:bg-gray-50
+                                flex items-center justify-center flex-shrink-0"
+                            >
+                              +
+                            </button>
+                          </div>
+                          
+                          <div className="flex items-center justify-end sm:justify-end text-sm sm:text-base font-medium">
+                            {formatPrice(item.price * item.quantity)}
+                          </div>
                         </div>
                       </div>
                     ))}
