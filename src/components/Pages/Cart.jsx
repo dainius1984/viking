@@ -119,7 +119,7 @@ const Cart = () => {
             <div className="grid grid-cols-1 lg:grid-cols-[1fr,380px] gap-6 lg:gap-8">
               <div className="flex flex-col gap-5">
                 <div className="bg-white rounded-lg shadow-sm overflow-hidden">
-                  <div className="hidden sm:grid grid-cols-[2fr,100px,100px] p-4 bg-gray-50 font-semibold text-sm sm:text-base">
+                  <div className="hidden sm:grid grid-cols-[2fr,100px,100px] p-4 bg-gray-50 font-semibold text-base">
                     <span>Produkt</span>
                     <span className="text-center">Ilość</span>
                     <span className="text-right">Suma</span>
@@ -133,19 +133,24 @@ const Cart = () => {
                           ${removingItems.has(item.id) ? 'animate-fadeOut' : 'animate-fadeIn'}`}
                       >
                         {/* Product info - Full width on mobile */}
-                        <div className="flex items-start sm:items-center gap-2 sm:gap-4">
+                        <div className="flex items-start sm:items-center gap-3">
+                          {/* Remove button - Only visible on desktop */}
                           <button 
                             onClick={() => removeItem(item.id)}
-                            className="text-red-500 hover:text-red-600 p-1 flex-shrink-0"
+                            className="hidden sm:block text-red-500 hover:text-red-600 p-1 flex-shrink-0"
                             aria-label="Usuń produkt"
                           >
-                            <X className="w-4 h-4 sm:w-5 sm:h-5" />
+                            <X className="w-5 h-5" />
                           </button>
+                          
+                          {/* Product image */}
                           <img 
                             src={item.image} 
                             alt={item.name} 
                             className="w-16 h-16 sm:w-20 sm:h-20 object-contain flex-shrink-0"
                           />
+                          
+                          {/* Product name */}
                           <div className="min-w-0 flex-1">
                             <span className="text-sm sm:text-base break-words">
                               {item.name}
@@ -155,6 +160,7 @@ const Cart = () => {
                         
                         {/* Quantity and Price - Side by side on mobile */}
                         <div className="grid grid-cols-2 sm:grid-cols-1 gap-2 items-center">
+                          {/* Quantity controls */}
                           <div className="flex items-center justify-start sm:justify-center gap-2 sm:gap-3">
                             <button 
                               onClick={() => updateQuantity(item.id, item.quantity - 1)}
@@ -173,10 +179,20 @@ const Cart = () => {
                             </button>
                           </div>
                           
+                          {/* Price display */}
                           <div className="flex items-center justify-end sm:justify-end text-sm sm:text-base font-medium">
                             {formatPrice(item.price * item.quantity)}
                           </div>
                         </div>
+
+                        {/* Remove button for mobile - Below price and quantity */}
+                        <button 
+                          onClick={() => removeItem(item.id)}
+                          className="block sm:hidden w-full py-2 px-4 text-red-500 hover:text-red-600 
+                            border border-red-500 rounded-lg text-sm font-medium"
+                        >
+                          Usuń produkt
+                        </button>
                       </div>
                     ))}
                   </div>
