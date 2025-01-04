@@ -11,7 +11,7 @@ const OrderSummary = ({
   shipping = 'DPD', 
   setShipping,
   loading = false,
-  onApplyDiscount // New prop
+  onApplyDiscount
 }) => {
   const [discountCode, setDiscountCode] = useState('');
 
@@ -23,40 +23,48 @@ const OrderSummary = ({
 
   return (
     <div className="lg:sticky lg:top-5">
-      <div className="bg-white p-5 sm:p-6 lg:p-8 rounded-lg shadow-sm">
-        <h2 className="text-lg sm:text-xl font-semibold mb-6">Twoje zamówienie</h2>
+      <div className="bg-white p-4 sm:p-6 lg:p-8 rounded-lg shadow-sm">
+        <h2 className="text-lg sm:text-xl font-semibold mb-4 sm:mb-6">Twoje zamówienie</h2>
         
         {/* Cart items */}
-        <div className="space-y-4 border-b border-gray-100 pb-6">
+        <div className="space-y-3 sm:space-y-4 border-b border-gray-100 pb-4 sm:pb-6">
           {cart.map(item => (
-            <div key={item.id} className="flex items-center justify-between bg-gray-50 p-3 rounded-lg">
-              <div className="flex items-center gap-3">
-                <img src={item.image} alt={item.name} className="w-12 h-12 object-cover rounded-md" />
-                <div>
-                  <p className="font-medium text-sm sm:text-base">{item.name}</p>
-                  <p className="text-gray-600 text-sm">Ilość: {item.quantity}</p>
+            <div key={item.id} className="bg-gray-50 p-3 rounded-lg">
+              <div className="flex gap-3">
+                {/* Product info */}
+                <div className="flex-grow min-w-0">
+                  <p className="font-medium text-sm sm:text-base line-clamp-2 sm:line-clamp-none">
+                    {item.name}
+                  </p>
+                  <p className="text-gray-600 text-xs sm:text-sm mt-1">
+                    Ilość: {item.quantity}
+                  </p>
                 </div>
+                
+                {/* Price */}
+                <span className="font-semibold text-sm sm:text-base whitespace-nowrap">
+                  {formatPrice(item.price * item.quantity)}
+                </span>
               </div>
-              <span className="font-semibold">{formatPrice(item.price * item.quantity)}</span>
             </div>
           ))}
         </div>
 
         {/* Summary */}
-        <div className="space-y-4 mt-6">
-          <div className="flex justify-between">
+        <div className="space-y-3 sm:space-y-4 mt-4 sm:mt-6">
+          <div className="flex justify-between text-sm sm:text-base">
             <span>Suma częściowa:</span>
             <span>{formatPrice(subtotal)}</span>
           </div>
 
           {discountApplied && (
-            <div className="flex justify-between text-green-600">
+            <div className="flex justify-between text-green-600 text-sm sm:text-base">
               <span>Rabat ({discountPercentage}%):</span>
               <span>-{formatPrice(discountAmount)}</span>
             </div>
           )}
 
-          <div className="flex justify-between">
+          <div className="flex justify-between text-sm sm:text-base">
             <span>Wysyłka:</span>
             <span>{formatPrice(DISCOUNT_CONFIG.shippingCost)}</span>
           </div>
@@ -64,18 +72,18 @@ const OrderSummary = ({
           {/* Discount code input */}
           {!discountApplied && (
             <div className="pt-4 border-t">
-              <h3 className="font-semibold mb-2">Kod zniżki</h3>
+              <h3 className="font-semibold mb-2 text-sm sm:text-base">Kod zniżki</h3>
               <div className="flex gap-2">
                 <input
                   type="text"
                   value={discountCode}
                   onChange={(e) => setDiscountCode(e.target.value)}
                   placeholder="Wpisz kod"
-                  className="flex-1 p-2 border rounded"
+                  className="flex-1 p-2 border rounded text-sm sm:text-base"
                 />
                 <button
                   onClick={handleApplyDiscount}
-                  className="px-4 py-2 bg-green-800 text-white rounded hover:bg-green-900"
+                  className="px-3 sm:px-4 py-2 bg-green-800 text-white rounded hover:bg-green-900 text-sm sm:text-base whitespace-nowrap"
                 >
                   Zastosuj
                 </button>
@@ -85,20 +93,20 @@ const OrderSummary = ({
 
           {/* Shipping options */}
           <div className="space-y-2 pt-4 border-t">
-            <label className="flex items-center gap-2">
+            <label className="flex items-center gap-2 text-sm sm:text-base">
               <input
                 type="radio"
                 name="shipping"
                 value="DPD"
                 checked={shipping === 'DPD'}
                 onChange={(e) => setShipping(e.target.value)}
+                className="w-4 h-4"
               />
-              Kurier DPD - {formatPrice(DISCOUNT_CONFIG.shippingCost)}
+              <span>Kurier DPD - {formatPrice(DISCOUNT_CONFIG.shippingCost)}</span>
             </label>
-            {/* Add other shipping options */}
           </div>
 
-          <div className="flex justify-between font-bold text-lg pt-4 border-t">
+          <div className="flex justify-between font-bold text-base sm:text-lg pt-4 border-t">
             <span>Do zapłaty:</span>
             <span>{formatPrice(total)}</span>
           </div>
@@ -107,9 +115,20 @@ const OrderSummary = ({
             type="submit"
             disabled={loading}
             className="w-full py-3 bg-green-800 text-white rounded-lg font-medium
-              hover:bg-green-900 disabled:bg-gray-400 disabled:cursor-not-allowed"
+              hover:bg-green-900 disabled:bg-gray-400 disabled:cursor-not-allowed
+              text-sm sm:text-base mt-2"
           >
-            {loading ? 'Przetwarzanie...' : 'Kupuję i płacę'}
+            {loading ? (
+              <span className="flex items-center justify-center gap-2">
+                <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                </svg>
+                Przetwarzanie...
+              </span>
+            ) : (
+              'Kupuję i płacę'
+            )}
           </button>
         </div>
       </div>
