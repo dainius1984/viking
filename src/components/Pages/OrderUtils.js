@@ -1,4 +1,4 @@
-const API_URL = 'https://healthapi-zvfk.onrender.com';
+export const API_URL = 'https://healthapi-zvfk.onrender.com';
 
 export const DISCOUNT_CONFIG = {
   code: 'zinzino10',
