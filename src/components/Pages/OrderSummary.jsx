@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { formatPrice, DISCOUNT_CONFIG, validateDiscountCode } from './OrderUtils';
+import { formatPrice, DISCOUNT_CONFIG } from './OrderUtils';
+import { initiatePayment } from './PaymentService';
 
 const OrderSummary = ({ 
   cart = [], 
@@ -11,14 +12,44 @@ const OrderSummary = ({
   shipping = 'DPD', 
   setShipping,
   loading = false,
-  onApplyDiscount
+  onApplyDiscount,
+  formData
 }) => {
   const [discountCode, setDiscountCode] = useState('');
+  const [paymentLoading, setPaymentLoading] = useState(false);
 
   const handleApplyDiscount = () => {
     if (!onApplyDiscount) return;
     onApplyDiscount(discountCode);
     setDiscountCode('');
+  };
+
+  const handlePayment = async () => {
+    try {
+      setPaymentLoading(true);
+      
+      const paymentData = {
+        orderData: {
+          cart,
+          total,
+          subtotal,
+          shipping,
+          discountApplied,
+          discountAmount,
+          items: cart.map(item => 
+            `${item.name} (${item.quantity}x po ${formatPrice(item.price)})`
+          ).join('\n')
+        },
+        customerData: formData
+      };
+
+      await initiatePayment(paymentData);
+    } catch (error) {
+      console.error('Payment failed:', error);
+      // You could add error notification here
+    } finally {
+      setPaymentLoading(false);
+    }
   };
 
   return (
@@ -112,13 +143,14 @@ const OrderSummary = ({
           </div>
 
           <button
-            type="submit"
-            disabled={loading}
+            type="button"
+            onClick={handlePayment}
+            disabled={loading || paymentLoading}
             className="w-full py-3 bg-green-800 text-white rounded-lg font-medium
               hover:bg-green-900 disabled:bg-gray-400 disabled:cursor-not-allowed
               text-sm sm:text-base mt-2"
           >
-            {loading ? (
+            {loading || paymentLoading ? (
               <span className="flex items-center justify-center gap-2">
                 <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
                   <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
