@@ -28,6 +28,15 @@ const OrderSummary = ({
     try {
       setPaymentLoading(true);
       
+      // Log to check formData
+      console.log('formData:', formData);
+      
+      // Check if form fields are filled before payment
+      if (!formData.email || !formData.firstName) {
+        alert('Please fill in all required fields');
+        return;
+      }
+      
       const paymentData = {
         orderData: {
           cart,
@@ -40,13 +49,12 @@ const OrderSummary = ({
             `${item.name} (${item.quantity}x po ${formatPrice(item.price)})`
           ).join('\n')
         },
-        customerData: formData
+        customerData: formData  // This is where the error happens
       };
-
+  
       await initiatePayment(paymentData);
     } catch (error) {
       console.error('Payment failed:', error);
-      // You could add error notification here
     } finally {
       setPaymentLoading(false);
     }
