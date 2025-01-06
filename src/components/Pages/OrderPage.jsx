@@ -202,19 +202,18 @@ const OrderPage = () => {
               </div>
               
               <div className="order-1 lg:order-2">
-              <OrderSummary
-  cart={state.cart}
-  subtotal={subtotal}
-  discountApplied={state.isDiscountApplied}
-  discountAmount={discountAmount}
-  discountPercentage={DISCOUNT_CONFIG.percentage}
-  total={total}
-  shipping={shipping}
-  setShipping={setShipping}
-  loading={loading}
-  onApplyDiscount={handleApplyDiscount}
-  formData={formData}  // Add this line
-/>
+                <OrderSummary
+                  cart={state.cart}
+                  subtotal={subtotal}
+                  discountApplied={state.isDiscountApplied}
+                  discountAmount={discountAmount}
+                  discountPercentage={DISCOUNT_CONFIG.percentage}
+                  total={total}
+                  shipping={shipping}
+                  setShipping={setShipping}
+                  loading={loading}
+                  onApplyDiscount={handleApplyDiscount}
+                />
               </div>
             </form>
           </div>
