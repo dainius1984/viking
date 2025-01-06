@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { formatPrice, DISCOUNT_CONFIG } from './OrderUtils';
-import { initiatePayment } from './PaymentService';
+import { initiatePayment } from '../PaymentService';
 
 const OrderSummary = ({ 
   cart = [], 
