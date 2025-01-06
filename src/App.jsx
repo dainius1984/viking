@@ -16,14 +16,14 @@ import Regulamin from './components/Pages/Regulamin';
 import { AuthProvider } from './components/AuthContext';
 import AboutUs from './components/Pages/About';
 import PrivacyPolicy from './components/Pages/Policy';
-import PrivateRoute, {RedirectIfAuthenticated} from './PrivateRoute';
+import PrivateRoute, { RedirectIfAuthenticated } from './PrivateRoute';
 import ProductPage from './components/Pages/ProductPage';
 
 const App = () => {
   return (
-    <AuthProvider>
-      <CartProvider>
-        <Router>
+    <Router>
+      <AuthProvider>
+        <CartProvider>
           <Routes>
             <Route path="/" element={<HomePage />} />
             <Route path="/category" element={<CategoryPage />} />
@@ -39,13 +39,13 @@ const App = () => {
             <Route path="/article/:id" element={<Article />} />
             <Route path="/product/:id" element={<ProductPage />} />
             <Route 
-  path="/auth" 
-  element={
-    <RedirectIfAuthenticated>
-      <AuthPage />
-    </RedirectIfAuthenticated>
-  } 
-/>
+              path="/auth" 
+              element={
+                <RedirectIfAuthenticated>
+                  <AuthPage />
+                </RedirectIfAuthenticated>
+              } 
+            />
             <Route 
               path="/account" 
               element={
@@ -55,9 +55,9 @@ const App = () => {
               } 
             />
           </Routes>
-        </Router>
-      </CartProvider>
-    </AuthProvider>
+        </CartProvider>
+      </AuthProvider>
+    </Router>
   );
 };
 
