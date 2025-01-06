@@ -28,12 +28,10 @@ const OrderSummary = ({
     try {
       setPaymentLoading(true);
       
-      // Log to check formData
       console.log('formData:', formData);
       
-      // Check if form fields are filled before payment
       if (!formData.email || !formData.firstName) {
-        alert('Please fill in all required fields');
+        alert('Proszę wypełnić wszystkie wymagane pola');
         return;
       }
       
@@ -49,7 +47,15 @@ const OrderSummary = ({
             `${item.name} (${item.quantity}x po ${formatPrice(item.price)})`
           ).join('\n')
         },
-        customerData: formData  // This is where the error happens
+        customerData: {
+          Imie: formData.firstName,
+          Nazwisko: formData.lastName,
+          Email: formData.email,
+          Telefon: formData.phone,
+          Ulica: formData.street,
+          'Kod pocztowy': formData.postal,
+          Miasto: formData.city
+        }
       };
   
       await initiatePayment(paymentData);
@@ -59,7 +65,7 @@ const OrderSummary = ({
       setPaymentLoading(false);
     }
   };
-
+  
   return (
     <div className="lg:sticky lg:top-5">
       <div className="bg-white p-4 sm:p-6 lg:p-8 rounded-lg shadow-sm">
