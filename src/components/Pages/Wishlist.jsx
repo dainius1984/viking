@@ -55,7 +55,7 @@ const Wishlist = () => {
     if (state.wishlist.length === 0) {
       return (
         <EmptyState 
-          title="Twoja lista życzeń jest pusta"
+          title="Twoja lista życzeń jest pustaaaa"
           description="Wygląda na to, że nie masz jeszcze żadnych produktów w liście życzeń. 
             Zapraszamy do zapoznania się z naszą ofertą."
         />
