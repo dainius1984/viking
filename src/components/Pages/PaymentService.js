@@ -1,5 +1,5 @@
 // PaymentService.js
-import { API_URL } from './Pages/OrderUtils';
+import { API_URL } from './OrderUtils';
 
 export const initiatePayment = async (orderData, formData) => {
   try {
