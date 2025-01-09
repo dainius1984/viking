@@ -8,10 +8,13 @@ const PaymentButton = ({ orderData, formData }) => {
   const handlePayment = async () => {
     try {
       setLoading(true);
-      await initiatePayment(orderData, formData);
+      const paymentData = {
+        orderData,
+        customerData: formData
+      };
+      await initiatePayment(paymentData);  // Pass single object
     } catch (error) {
       console.error('Payment failed:', error);
-      // Handle error (show error message to user)
     } finally {
       setLoading(false);
     }
