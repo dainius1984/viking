@@ -25,6 +25,7 @@ const OrderSummary = ({
   };
 
   const handlePayment = async () => {
+    console.log(formData)
     try {
       setPaymentLoading(true);
       
