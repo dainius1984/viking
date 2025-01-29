@@ -16,7 +16,6 @@ const CategoryPage = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const location = useLocation();
 
-  // Scroll to top when component mounts or location changes
   useEffect(() => {
     window.scrollTo({
       top: 0,
@@ -42,7 +41,6 @@ const CategoryPage = () => {
     setIsSidebarOpen(!isSidebarOpen);
   };
 
-  // Handle link clicks to ensure scroll to top
   const handleLinkClick = () => {
     window.scrollTo({
       top: 0,
@@ -51,12 +49,17 @@ const CategoryPage = () => {
     setIsSidebarOpen(false);
   };
 
+  // Find product ID by name
+  const getProductIdByName = (productName) => {
+    const product = products.find(p => p.name === productName);
+    return product ? product.id : null;
+  };
+
   return (
     <div className="relative">
       <TopNavBar />
       <Header />
       
-      {/* Mobile Category Toggle Button */}
       <div className="md:hidden sticky top-0 bg-white z-40 shadow-sm">
         <button
           onClick={toggleSidebar}
@@ -69,7 +72,6 @@ const CategoryPage = () => {
         </button>
       </div>
       
-          {/* Overlay for mobile when sidebar is open */}
       {isSidebarOpen && (
         <div 
           className="fixed inset-0 bg-black/20 z-30 md:hidden" 
@@ -78,9 +80,7 @@ const CategoryPage = () => {
       )}
 
       <div className="max-w-7xl mx-auto px-4 sm:px-5 py-4 sm:py-5">
-        {/* Main Content Container */}
         <div className="flex flex-col md:flex-row gap-6 md:gap-8">
-          {/* Sidebar */}
           <aside className={`
             fixed md:static inset-y-0 left-0 
             w-64 md:w-60 md:flex-shrink-0 
@@ -104,10 +104,12 @@ const CategoryPage = () => {
                   </Link>
                 </h3>
                 <ul className="space-y-2 md:space-y-2.5">
-                  {category.products.map((item, itemIndex) => (
+                  {category.products.map((item, itemIndex) => {
+                    const productId = getProductIdByName(item.name);
+                    return (
                       <li key={itemIndex}>
                         <Link 
-                          to="#"
+                          to={productId ? `/product/${productId}` : '#'}
                           className={`text-sm text-gray-700 hover:text-emerald-800 transition-colors block py-1
                             ${categorySlug === item.path.split('/').pop() ? 'text-emerald-800 font-semibold' : ''}`}
                           onClick={handleLinkClick}
@@ -115,13 +117,13 @@ const CategoryPage = () => {
                           {item.name}
                         </Link>
                       </li>
-                    ))}
+                    );
+                  })}
                 </ul>
               </div>
             ))}
           </aside>
 
-          {/* Main Content */}
           <main className="flex-1">
             <div className="mb-6 sm:mb-8">
               <h1 className="text-2xl sm:text-3xl font-bold mb-2 sm:mb-2.5">
@@ -138,7 +140,6 @@ const CategoryPage = () => {
               </div>
             </div>
 
-            {/* Products Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
               {categoryProducts.map(product => (
                 <ProductCard
@@ -171,7 +172,6 @@ const CategoryPage = () => {
   );
 };
 
-// Helper function to get category title
 const getCategoryTitle = (slug) => {
   if (!slug) return 'Wszystkie produkty';
 

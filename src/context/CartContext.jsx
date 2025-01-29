@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useReducer, useEffect, useState } from 'react';
+import React, { createContext, useContext, useReducer, useEffect, useState, useCallback } from 'react';
 import { useAuth } from '../components/AuthContext';
 
 const API_URL = 'https://healthapi-zvfk.onrender.com';
@@ -88,8 +88,8 @@ const cartReducer = (state, action) => {
 
     case 'CLEAR_CART':
       newState = {
+        ...state,
         cart: [],
-        wishlist: state.wishlist,
         isDiscountApplied: false,
         discountCode: null
       };
@@ -108,36 +108,6 @@ const cartReducer = (state, action) => {
       newState = state;
   }
 
-  // Check if we're in order completion flow
-  const isOrderCompletion = 
-    action.type === 'CLEAR_CART' && 
-    (window.location.pathname.includes('order-confirmation') || 
-     window.location.pathname.includes('zamowienie'));
-
-  // Save to localStorage
-  localStorage.setItem('guestCart', JSON.stringify(newState));
-
-  // Only sync with server if we're not in order completion
-  if (!isOrderCompletion && action.type !== 'LOAD_STATE') {
-    // Wrap the fetch in a try-catch to silently handle errors
-    try {
-      fetch(`${API_URL}/api/cart`, {
-        method: 'POST',
-        credentials: 'include',
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json'
-        },
-        body: JSON.stringify(newState)
-      }).catch(() => {
-        // Silently fail for unauthorized or network errors
-      });
-    } catch (error) {
-      // Silently handle any errors
-      console.error('Error syncing cart with server:', error);
-    }
-  }
-
   return newState;
 };
 
@@ -146,25 +116,52 @@ export const CartProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const [state, dispatch] = useReducer(cartReducer, initialState);
 
+  // Handle storage updates with safety checks
+  const syncWithServer = useCallback(async (newState) => {
+    if (!user) return;
+
+    try {
+      await fetch(`${API_URL}/api/cart`, {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        body: JSON.stringify(newState)
+      });
+    } catch (error) {
+      console.error('Error syncing cart with server:', error);
+    }
+  }, [user]);
+
+  // Then define updateStorage which uses syncWithServer
+  const updateStorage = useCallback((newState) => {
+    try {
+      if (user) {
+        // For logged-in users, save to localStorage and sync with server
+        if (typeof window !== 'undefined' && window.localStorage) {
+          localStorage.setItem('userCart', JSON.stringify(newState));
+          syncWithServer(newState);
+        }
+      } else {
+        // For unregistered users, use sessionStorage
+        if (typeof window !== 'undefined' && window.sessionStorage) {
+          sessionStorage.setItem('guestCart', JSON.stringify(newState));
+        }
+      }
+    } catch (error) {
+      // Handle cases where storage might be full or disabled
+      console.error('Storage error:', error);
+    }
+  }, [user, syncWithServer]);
+
   // Load initial state
   useEffect(() => {
     const loadCart = async () => {
       try {
-        // First try to load from localStorage
-        const savedCart = localStorage.getItem('guestCart');
-        if (savedCart) {
-          try {
-            const parsedCart = JSON.parse(savedCart);
-            if (parsedCart && typeof parsedCart === 'object') {
-              dispatch({ type: 'LOAD_STATE', payload: parsedCart });
-            }
-          } catch (error) {
-            console.error('Error parsing saved cart:', error);
-          }
-        }
-
-        // If user is logged in, try to load from server
         if (user) {
+          // For logged-in users
           try {
             const response = await fetch(`${API_URL}/api/cart`, {
               credentials: 'include',
@@ -180,7 +177,26 @@ export const CartProvider = ({ children }) => {
               }
             }
           } catch (error) {
-            console.error('Error loading cart from server:', error);
+            // Fallback to localStorage if server fails
+            const savedCart = localStorage.getItem('userCart');
+            if (savedCart) {
+              dispatch({ type: 'LOAD_STATE', payload: JSON.parse(savedCart) });
+            }
+          }
+        } else {
+          // For unregistered users, load from sessionStorage
+          if (typeof window !== 'undefined' && window.sessionStorage) {
+            try {
+              const savedCart = sessionStorage.getItem('guestCart');
+              if (savedCart) {
+                const parsedCart = JSON.parse(savedCart);
+                if (parsedCart && typeof parsedCart === 'object') {
+                  dispatch({ type: 'LOAD_STATE', payload: parsedCart });
+                }
+              }
+            } catch (error) {
+              console.error('Error loading cart from sessionStorage:', error);
+            }
           }
         }
       } catch (error) {
@@ -193,6 +209,25 @@ export const CartProvider = ({ children }) => {
     loadCart();
   }, [user]);
 
+  // Update storage whenever state changes
+  useEffect(() => {
+    if (!loading) {
+      updateStorage(state);
+    }
+  }, [state, user, loading, updateStorage]);
+
+  // Handle tab/window close for unregistered users
+  useEffect(() => {
+    if (!user) {
+      const handleTabClose = () => {
+        sessionStorage.removeItem('guestCart');
+      };
+
+      window.addEventListener('beforeunload', handleTabClose);
+      return () => window.removeEventListener('beforeunload', handleTabClose);
+    }
+  }, [user]);
+
   // Prevent infinite loading
   useEffect(() => {
     const timeout = setTimeout(() => {
@@ -202,27 +237,21 @@ export const CartProvider = ({ children }) => {
     return () => clearTimeout(timeout);
   }, []);
 
-  // Ensure cart state persistence on page refresh
-  useEffect(() => {
-    const handleBeforeUnload = () => {
-      try {
-        localStorage.setItem('guestCart', JSON.stringify(state));
-      } catch (error) {
-        console.error('Error saving cart state:', error);
-      }
-    };
-
-    window.addEventListener('beforeunload', handleBeforeUnload);
-    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
-  }, [state]);
-
-  // Skip initial loading render
   if (loading) {
     return null;
   }
 
   return (
-    <CartContext.Provider value={{ state, dispatch }}>
+    <CartContext.Provider value={{ 
+      state, 
+      dispatch,
+      clearCart: () => {
+        dispatch({ type: 'CLEAR_CART' });
+        if (!user) {
+          sessionStorage.removeItem('guestCart');
+        }
+      }
+    }}>
       {children}
     </CartContext.Provider>
   );
