@@ -31,8 +31,8 @@ export const checkApiSession = async () => {
 
 export const loginUser = async (email, password) => {
   try {
-    // First create Appwrite session
-    const session = await account.createEmailPassword(email, password);
+    // Create Appwrite session
+    const session = await account.createEmailPasswordSession(email, password);
     
     if (!session) {
       throw new Error('Failed to create Appwrite session');
@@ -47,12 +47,12 @@ export const loginUser = async (email, password) => {
       },
       body: JSON.stringify({ 
         email,
-        password
+        password,
+        appwriteSession: session.$id
       })
     });
 
     if (!response.ok) {
-      // If API login fails, clean up Appwrite session
       try {
         await account.deleteSession('current');
       } catch {}
