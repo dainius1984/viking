@@ -1,117 +1,103 @@
 // AuthContext.jsx
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { account } from './appwrite';
 import { useNavigate } from 'react-router-dom';
+import { 
+  checkAppwriteSession, 
+  checkApiSession, 
+  loginUser, 
+  registerUser, 
+  logoutUser 
+} from './authService';
 
 const AuthContext = createContext(null);
-export const API_URL = 'https://healthapi-zvfk.onrender.com';
 
 export const AuthProvider = ({ children }) => {
- const [user, setUser] = useState(null);
- const [loading, setLoading] = useState(true);
- const navigate = useNavigate();
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
- useEffect(() => {
-   checkUser();
- }, []);
+  const checkUser = async () => {
+    try {
+      // Try Appwrite session first
+      const appwriteResult = await checkAppwriteSession();
+      if (appwriteResult.success) {
+        setUser(appwriteResult.session);
+        return;
+      }
 
- const checkUser = async () => {
-   try {
-     const session = await account.getSession('current');
-     if (session) {
-       setUser(session);
-     } else {
-       const response = await fetch(`${API_URL}/api/check-session`, {
-         credentials: 'include'
-       });
-       if (response.ok) {
-         const { authenticated } = await response.json();
-         if (authenticated) {
-           setUser({ guest: true });
-         }
-       }
-     }
-   } catch (error) {
-     console.error('Session check error:', error);
-   } finally {
-     setLoading(false);
-   }
- };
+      // Fallback to API session check
+      const apiResult = await checkApiSession();
+      if (apiResult.success && apiResult.authenticated) {
+        setUser({ guest: true });
+      }
+    } catch (error) {
+      console.error('Session check error:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
- const login = async (email, password) => {
-   try {
-     const session = await account.createEmailSession(email, password);
-     setUser(session);
-     
-     const response = await fetch(`${API_URL}/api/login`, {
-       method: 'POST',
-       credentials: 'include',
-       headers: {
-         'Content-Type': 'application/json',
-         'Accept': 'application/json'
-       },
-       body: JSON.stringify({
-         email,
-         appwriteSession: session.$id
-       })
-     });
+  useEffect(() => {
+    checkUser();
+  }, []);
 
-     if (!response.ok) throw new Error('API login failed');
+  const login = async (email, password) => {
+    const result = await loginUser(email, password);
+    if (result.success) {
+      setUser(result.session);
+    }
+    return result;
+  };
 
-     return { success: true };
-   } catch (error) {
-     console.error('Login error:', error);
-     return { success: false, error: error.message };
-   }
- };
+  const register = async (email, password, name) => {
+    const result = await registerUser(email, password, name);
+    if (result.success) {
+      setUser(result.session);
+    }
+    return result;
+  };
 
- const register = async (email, password, name) => {
-   try {
-     const user = await account.create('unique()', email, password, name);
-     await login(email, password);
-     return { success: true };
-   } catch (error) {
-     console.error('Registration error:', error);
-     return { success: false, error: error.message };
-   }
- };
+  const logout = async () => {
+    const result = await logoutUser();
+    if (result.success) {
+      setUser(null);
+      navigate('/');
+    }
+    return result;
+  };
 
- const logout = async () => {
-   try {
-     await account.deleteSession('current');
-     await fetch(`${API_URL}/api/logout`, {
-       method: 'POST',
-       credentials: 'include'
-     });
-     setUser(null);
-     navigate('/');
-     return { success: true };
-   } catch (error) {
-     console.error('Logout error:', error);
-     return { success: false, error: error.message };
-   }
- };
+  // Prevent infinite loading
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      setLoading(false);
+    }, 2000); // Increased timeout to ensure Appwrite connection
 
- const value = {
-   user,
-   loading,
-   login,
-   logout, 
-   register,
-   checkUser
- };
+    return () => clearTimeout(timeout);
+  }, []);
 
- return (
-   <AuthContext.Provider value={value}>
-     {!loading && children}
-   </AuthContext.Provider>
- );
+  const value = {
+    user,
+    loading,
+    login,
+    logout,
+    register,
+    checkUser,
+    isAuthenticated: !!user
+  };
+
+  return (
+    <AuthContext.Provider value={value}>
+      {!loading && children}
+    </AuthContext.Provider>
+  );
 };
 
 export const useAuth = () => {
- const context = useContext(AuthContext);
- if (!context) throw new Error('useAuth must be used within AuthProvider');
- return context;
+  const context = useContext(AuthContext);
+  if (!context) {
+    throw new Error('useAuth must be used within AuthProvider');
+  }
+  return context;
 };
 
 export default AuthContext;

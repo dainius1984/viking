@@ -37,9 +37,12 @@ const TopNavBar = () => {
           onMouseLeave={handleMouseLeave}
           ref={dropdownRef}
         >
-          <div className="flex items-center">
+          <Link 
+            to="/auth"
+            className="flex items-center"
+          >
             <AiOutlineUser className="text-white text-2xl cursor-pointer transition-all duration-300 ease-in-out hover:scale-110 hover:text-gray-300" />
-          </div>
+          </Link>
           
           {/* Dropdown menu */}
           <div className={`absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-100 
