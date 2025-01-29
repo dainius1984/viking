@@ -24,48 +24,65 @@ const OrderSummary = ({
     setDiscountCode('');
   };
 
-  const handlePayment = async () => {
-    console.log(formData)
-    try {
-      setPaymentLoading(true);
-      
-      console.log('formData:', formData);
-      
-      if (!formData.email || !formData.firstName) {
-        alert('Proszę wypełnić wszystkie wymagane pola');
-        return;
-      }
-      
-      const paymentData = {
-        orderData: {
-          cart,
-          total,
-          subtotal,
-          shipping,
-          discountApplied,
-          discountAmount,
-          items: cart.map(item => 
-            `${item.name} (${item.quantity}x po ${formatPrice(item.price)})`
-          ).join('\n')
-        },
-        customerData: {
-          Imie: formData.firstName,
-          Nazwisko: formData.lastName,
-          Email: formData.email,
-          Telefon: formData.phone,
-          Ulica: formData.street,
-          'Kod pocztowy': formData.postal,
-          Miasto: formData.city
-        }
-      };
-  
-      await initiatePayment(paymentData);
-    } catch (error) {
-      console.error('Payment failed:', error);
-    } finally {
-      setPaymentLoading(false);
+// Changes to handlePayment in OrderSummary.jsx
+const handlePayment = async () => {
+  try {
+    setPaymentLoading(true);
+    
+    // Validate form data
+    const requiredFields = ['email', 'firstName', 'lastName', 'phone', 'street', 'postal', 'city'];
+    const missingFields = requiredFields.filter(field => !formData[field]);
+    
+    if (missingFields.length > 0) {
+      alert('Proszę wypełnić wszystkie wymagane pola: ' + missingFields.join(', '));
+      return;
     }
-  };
+
+    const paymentData = {
+      orderData: {
+        orderNumber: generateOrderNumber(),
+        cart: cart.map(item => ({
+          name: item.name,
+          quantity: item.quantity,
+          price: item.price.toString()
+        })),
+        total: total.toString(),
+        subtotal: subtotal.toString(),
+        shipping,
+        discountApplied,
+        discountAmount: discountAmount.toString(),
+        items: cart.map(item => 
+          `${item.name} (${item.quantity}x po ${formatPrice(item.price)})`
+        ).join('\n')
+      },
+      customerData: {
+        Imie: formData.firstName?.trim(),
+        Nazwisko: formData.lastName?.trim(),
+        Email: formData.email?.trim().toLowerCase(),
+        Telefon: formData.phone?.trim(),
+        Ulica: formData.street?.trim(),
+        'Kod pocztowy': formData.postal?.trim(),
+        Miasto: formData.city?.trim()
+      }
+    };
+
+    console.log('Sending payment data:', paymentData);
+
+    const response = await initiatePayment(paymentData);
+    
+    if (response.redirectUrl) {
+      window.location.href = response.redirectUrl;
+    } else {
+      throw new Error('No redirect URL received');
+    }
+
+  } catch (error) {
+    console.error('Payment failed:', error);
+    alert('Błąd podczas inicjowania płatności: ' + (error.message || 'Spróbuj ponownie później'));
+  } finally {
+    setPaymentLoading(false);
+  }
+};
   
   return (
     <div className="lg:sticky lg:top-5">
