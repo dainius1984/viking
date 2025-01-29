@@ -9,15 +9,14 @@ import Footer from '../Footer/Footer';
 import BillingForm from './BillingForm';
 import OrderSummary from './OrderSummary';
 import { 
-  appendToSheet, 
-  validateForm, 
+  generateOrderNumber,
   calculateTotals,
   formatOrderItems,
-  generateOrderNumber,
-  prepareSheetData,
-  DISCOUNT_CONFIG,
-  validateDiscountCode
+  validateForm,
+  validateDiscountCode,
+  DISCOUNT_CONFIG
 } from './OrderUtils';
+import { initiatePayment } from './PaymentService';
 
 const OrderPage = () => {
   const { state, dispatch } = useCart();
@@ -26,7 +25,6 @@ const OrderPage = () => {
   const [shipping, setShipping] = useState('DPD');
   const [loading, setLoading] = useState(false);
   const [notification, setNotification] = useState(null);
-  const [retryCount, setRetryCount] = useState(0);
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -61,7 +59,7 @@ const OrderPage = () => {
     );
   }
 
-  const { subtotal, discountAmount, totalBeforeShipping, total } = calculateTotals(
+  const { subtotal, discountAmount, total } = calculateTotals(
     state.cart,
     state.isDiscountApplied
   );
@@ -116,8 +114,9 @@ const OrderPage = () => {
     setNotification(null);
 
     try {
+      const orderNumber = generateOrderNumber();
       const orderData = {
-        orderNumber: generateOrderNumber(),
+        orderNumber,
         status: 'pending',
         subtotal: Number(subtotal).toFixed(2),
         total: Number(total).toFixed(2),
@@ -130,52 +129,54 @@ const OrderPage = () => {
         ...formData,
       };
 
-      // Create backup of order data
-      const backupKey = `order_backup_${orderData.orderNumber}`;
+      // Create backup of order data before payment
+      const backupKey = `order_backup_${orderNumber}`;
       localStorage.setItem(backupKey, JSON.stringify(orderData));
 
-      if (user) {
-        const appwriteData = {
-          userId: user.$id,
-          orderNumber: orderData.orderNumber,
-          subtotal: orderData.subtotal,
-          discountApplied: orderData.discountApplied,
-          discountAmount: orderData.discountAmount,
-          shippingCost: orderData.shippingCost,
-          total: orderData.total,
-          createdAt: orderData.createdAt,
-          items: JSON.stringify(state.cart),
-          firstName: formData.firstName,
-          lastName: formData.lastName,
-          email: formData.email,
-          phone: formData.phone,
-          shipping: shipping
-        };
+      // Prepare payment data
+      const paymentData = {
+        orderData: {
+          orderNumber,
+          cart: state.cart.map(item => ({
+            name: item.name,
+            quantity: item.quantity,
+            price: item.price.toString()
+          })),
+          total: total.toString(),
+          subtotal: subtotal.toString(),
+          shipping,
+          discountApplied: state.isDiscountApplied,
+          discountAmount: discountAmount.toString(),
+          items: state.cart.map(item => 
+            `${item.name} (${item.quantity}x po ${item.price})`
+          ).join('\n')
+        },
+        customerData: {
+          Imie: formData.firstName?.trim(),
+          Nazwisko: formData.lastName?.trim(),
+          Email: formData.email?.trim().toLowerCase(),
+          Telefon: formData.phone?.trim(),
+          Ulica: formData.street?.trim(),
+          'Kod pocztowy': formData.postal?.trim(),
+          Miasto: formData.city?.trim()
+        }
+      };
 
-        await databases.createDocument(
-          '67545c1800028e002c86',
-          '67545c2c001276c2c261',
-          ID.unique(),
-          appwriteData
-        );
+      // Initiate payment
+      const response = await initiatePayment(paymentData);
+      
+      if (response.redirectUrl) {
+        window.location.href = response.redirectUrl;
       } else {
-        const sheetData = prepareSheetData(orderData, formData);
-        await appendToSheet(sheetData, setRetryCount);
+        throw new Error('No redirect URL received');
       }
 
-      localStorage.removeItem(backupKey);
-      dispatch({ type: 'CLEAR_CART' });
-      navigate('/order-confirmation');
     } catch (error) {
       console.error('Error creating order:', error);
       
       setNotification({
         type: 'error',
-        message: error.message.includes('Zbyt wiele zamówień') 
-          ? error.message
-          : retryCount >= 3
-            ? 'Przepraszamy, wystąpił błąd. Prosimy spróbować później lub skontaktować się z obsługą.'
-            : 'Wystąpił błąd podczas składania zamówienia. Próbujemy ponownie...'
+        message: error.message || 'Wystąpił błąd podczas składania zamówienia. Prosimy spróbować później.'
       });
     } finally {
       setLoading(false);
@@ -202,19 +203,19 @@ const OrderPage = () => {
               </div>
               
               <div className="order-1 lg:order-2">
-              <OrderSummary
-  cart={state.cart}
-  subtotal={subtotal}
-  discountApplied={state.isDiscountApplied}
-  discountAmount={discountAmount}
-  discountPercentage={DISCOUNT_CONFIG.percentage}
-  total={total}
-  shipping={shipping}
-  setShipping={setShipping}
-  loading={loading}
-  onApplyDiscount={handleApplyDiscount}
-  formData={formData}  // Add this line
-/>
+                <OrderSummary
+                  cart={state.cart}
+                  subtotal={subtotal}
+                  discountApplied={state.isDiscountApplied}
+                  discountAmount={discountAmount}
+                  discountPercentage={DISCOUNT_CONFIG.percentage}
+                  total={total}
+                  shipping={shipping}
+                  setShipping={setShipping}
+                  loading={loading}
+                  onApplyDiscount={handleApplyDiscount}
+                  formData={formData}
+                />
               </div>
             </form>
           </div>
