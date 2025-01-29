@@ -1,6 +1,9 @@
 // CartItem.jsx
-const CartItem = ({ item }) => (
-  <div key={item.id} className="bg-gray-50 p-3 rounded-lg">
+import React from 'react';
+import { formatPrice } from './OrderUtils';
+
+export const CartItem = ({ item }) => (
+  <div className="bg-gray-50 p-3 rounded-lg">
     <div className="flex gap-3">
       <div className="flex-grow min-w-0">
         <p className="font-medium text-sm sm:text-base line-clamp-2 sm:line-clamp-none">
@@ -18,7 +21,9 @@ const CartItem = ({ item }) => (
 );
 
 // DiscountInput.jsx
-const DiscountInput = ({ discountCode, setDiscountCode, onApplyDiscount }) => (
+import React from 'react';
+
+export const DiscountInput = ({ discountCode, setDiscountCode, onApplyDiscount }) => (
   <div className="pt-4 border-t">
     <h3 className="font-semibold mb-2 text-sm sm:text-base">Kod zniżki</h3>
     <div className="flex gap-2">
@@ -43,6 +48,8 @@ const DiscountInput = ({ discountCode, setDiscountCode, onApplyDiscount }) => (
 import React, { useState } from 'react';
 import { formatPrice, DISCOUNT_CONFIG } from './OrderUtils';
 import { initiatePayment } from './PaymentService';
+import { CartItem } from './CartItem';
+import { DiscountInput } from './DiscountInput';
 
 const generateOrderNumber = () => {
   const timestamp = Date.now();
@@ -111,8 +118,6 @@ const OrderSummary = ({
           Miasto: formData.city?.trim()
         }
       };
-
-      console.log('Sending payment data:', paymentData);
 
       const response = await initiatePayment(paymentData);
       
