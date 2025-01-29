@@ -39,11 +39,13 @@ export const AuthProvider = ({ children }) => {
     setLoading(true);
     try {
       const result = await loginUser(email, password);
-      if (result.success) {
+      if (result.success && result.session) {  // Sprawdzamy czy session istnieje
         setUser(result.session);
         return { success: true };
       }
       return result;
+    } catch (error) {
+      return { success: false, error: error.message };
     } finally {
       setLoading(false);
     }
@@ -53,11 +55,13 @@ export const AuthProvider = ({ children }) => {
     setLoading(true);
     try {
       const result = await registerUser(email, password, name);
-      if (result.success) {
+      if (result.success && result.session) {  // Sprawdzamy czy session istnieje
         setUser(result.session);
         return { success: true };
       }
       return result;
+    } catch (error) {
+      return { success: false, error: error.message };
     } finally {
       setLoading(false);
     }

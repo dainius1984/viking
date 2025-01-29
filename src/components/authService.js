@@ -1,5 +1,5 @@
 // authService.js
-import { account } from './appwrite';
+import { account, ID } from './appwrite';  // Dodajemy import ID
 import { AUTH_ENDPOINTS } from './authConfig';
 
 export const checkAppwriteSession = async () => {
@@ -71,8 +71,8 @@ export const loginUser = async (email, password) => {
 
 export const registerUser = async (email, password, name) => {
   try {
-    // Create Appwrite account
-    await account.create('unique()', email, password, name);
+    // Create Appwrite account - używamy ID.unique() zamiast 'unique()'
+    await account.create(ID.unique(), email, password, name);
     
     // Then login
     return await loginUser(email, password);
