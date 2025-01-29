@@ -69,40 +69,64 @@ export const loginUser = async (email, password) => {
   }
 };
 
+// authService.js
+import { account, ID } from './appwrite';
+import { AUTH_ENDPOINTS } from './authConfig';
+
+export const checkAppwriteSession = async () => {
+  try {
+    const session = await account.get();
+    return { success: true, session };
+  } catch (error) {
+    return { success: false, error };
+  }
+};
+
+export const loginUser = async (email, password) => {
+  try {
+    // Create Appwrite session
+    const session = await account.createEmailPasswordSession(email, password);
+    
+    if (!session) {
+      throw new Error('Failed to create Appwrite session');
+    }
+
+    // Get user details
+    const user = await account.get();
+
+    return { success: true, session, user };
+  } catch (error) {
+    return { 
+      success: false, 
+      error: error.message,
+      code: error?.code 
+    };
+  }
+};
+
 export const registerUser = async (email, password, name) => {
   try {
-    // Create Appwrite account - używamy ID.unique() zamiast 'unique()'
-    await account.create(ID.unique(), email, password, name);
+    // Create Appwrite account
+    const user = await account.create(ID.unique(), email, password, name);
     
+    if (!user) {
+      throw new Error('Failed to create account');
+    }
+
     // Then login
     return await loginUser(email, password);
   } catch (error) {
     return { 
       success: false, 
       error: error.message,
-      code: error.code 
+      code: error?.code 
     };
   }
 };
 
 export const logoutUser = async () => {
   try {
-    // First try to logout from API
-    await fetch(AUTH_ENDPOINTS.LOGOUT, {
-      method: 'POST',
-      credentials: 'include',
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    });
-    
-    // Then delete Appwrite session
-    try {
-      await account.deleteSession('current');
-    } catch (error) {
-      console.warn('Failed to delete Appwrite session:', error);
-    }
-    
+    await account.deleteSession('current');
     return { success: true };
   } catch (error) {
     return { 
