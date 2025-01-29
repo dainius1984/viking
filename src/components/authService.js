@@ -1,10 +1,16 @@
 // authService.js
-import { account, ID } from './appwrite';
+import { account } from './appwrite';
 import { AUTH_ENDPOINTS } from './authConfig';
 
 export const checkAppwriteSession = async () => {
   try {
     const session = await account.get();
+    // Verify the session with your API
+    const apiCheck = await checkApiSession();
+    if (!apiCheck.authenticated) {
+      await account.deleteSession('current');
+      return { success: false };
+    }
     return { success: true, session };
   } catch (error) {
     return { success: false, error };
@@ -28,17 +34,14 @@ export const checkApiSession = async () => {
 
 export const loginUser = async (email, password) => {
   try {
-    // Clear any existing sessions
+    // Clear any existing sessions first
     try {
       await account.deleteSession('current');
     } catch {
       // Ignore errors here
     }
 
-    // Create new session
-    const session = await account.createEmailPasswordSession(email, password);
-    
-    // Sync with API
+    // First authenticate with your API
     const response = await fetch(AUTH_ENDPOINTS.LOGIN, {
       method: 'POST',
       credentials: 'include',
@@ -46,18 +49,23 @@ export const loginUser = async (email, password) => {
         'Content-Type': 'application/json',
         'Accept': 'application/json'
       },
-      body: JSON.stringify({
-        email,
-        appwriteSession: session.$id
-      })
+      body: JSON.stringify({ email, password })
     });
 
     if (!response.ok) {
       throw new Error('API login failed');
     }
 
+    // Then create Appwrite session
+    const session = await account.createEmailPasswordSession(email, password);
+    
     return { success: true, session };
   } catch (error) {
+    // Clean up any partial sessions on error
+    try {
+      await account.deleteSession('current');
+    } catch {}
+    
     return { 
       success: false, 
       error: error.message,
@@ -69,7 +77,7 @@ export const loginUser = async (email, password) => {
 export const registerUser = async (email, password, name) => {
   try {
     // Create account first
-    await account.create(ID.unique(), email, password, name);
+    await account.create(email, password, name);
     // Then login immediately
     const loginResult = await loginUser(email, password);
     return loginResult.success ? { success: true, session: loginResult.session } : loginResult;
@@ -84,11 +92,15 @@ export const registerUser = async (email, password, name) => {
 
 export const logoutUser = async () => {
   try {
-    await account.deleteSession('current');
+    // Delete API session first
     await fetch(AUTH_ENDPOINTS.LOGOUT, {
       method: 'POST',
       credentials: 'include'
     });
+    
+    // Then delete Appwrite session
+    await account.deleteSession('current');
+    
     return { success: true };
   } catch (error) {
     return { 

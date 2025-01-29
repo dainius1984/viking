@@ -2,8 +2,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
-  checkAppwriteSession, 
-  checkApiSession, 
+  checkAppwriteSession,
   loginUser, 
   registerUser, 
   logoutUser 
@@ -18,20 +17,17 @@ export const AuthProvider = ({ children }) => {
 
   const checkUser = async () => {
     try {
-      // Try Appwrite session first
       const appwriteResult = await checkAppwriteSession();
       if (appwriteResult.success) {
         setUser(appwriteResult.session);
-        return;
-      }
-
-      // Fallback to API session check
-      const apiResult = await checkApiSession();
-      if (apiResult.success && apiResult.authenticated) {
-        setUser({ guest: true });
+      } else {
+        // If no valid session, ensure user is logged out
+        setUser(null);
+        await logoutUser();
       }
     } catch (error) {
       console.error('Session check error:', error);
+      setUser(null);
     } finally {
       setLoading(false);
     }
@@ -39,41 +35,61 @@ export const AuthProvider = ({ children }) => {
 
   useEffect(() => {
     checkUser();
-  }, []);
+    
+    // Add event listener for tab/window close
+    const handleBeforeUnload = async () => {
+      if (user) {
+        await logoutUser();
+      }
+    };
+    
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+    };
+  }, [user]);
 
   const login = async (email, password) => {
-    const result = await loginUser(email, password);
-    if (result.success) {
-      setUser(result.session);
+    setLoading(true);
+    try {
+      const result = await loginUser(email, password);
+      if (result.success) {
+        setUser(result.session);
+        return { success: true };
+      }
+      return result;
+    } finally {
+      setLoading(false);
     }
-    return result;
   };
 
   const register = async (email, password, name) => {
-    const result = await registerUser(email, password, name);
-    if (result.success) {
-      setUser(result.session);
+    setLoading(true);
+    try {
+      const result = await registerUser(email, password, name);
+      if (result.success) {
+        setUser(result.session);
+        return { success: true };
+      }
+      return result;
+    } finally {
+      setLoading(false);
     }
-    return result;
   };
 
   const logout = async () => {
-    const result = await logoutUser();
-    if (result.success) {
-      setUser(null);
-      navigate('/');
-    }
-    return result;
-  };
-
-  // Prevent infinite loading
-  useEffect(() => {
-    const timeout = setTimeout(() => {
+    setLoading(true);
+    try {
+      const result = await logoutUser();
+      if (result.success) {
+        setUser(null);
+        navigate('/');
+      }
+      return result;
+    } finally {
       setLoading(false);
-    }, 2000); // Increased timeout to ensure Appwrite connection
-
-    return () => clearTimeout(timeout);
-  }, []);
+    }
+  };
 
   const value = {
     user,
@@ -99,5 +115,3 @@ export const useAuth = () => {
   }
   return context;
 };
-
-export default AuthContext;
