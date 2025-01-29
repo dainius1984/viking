@@ -21,9 +21,7 @@ export const AuthProvider = ({ children }) => {
       if (appwriteResult.success) {
         setUser(appwriteResult.session);
       } else {
-        // If no valid session, ensure user is logged out
         setUser(null);
-        await logoutUser();
       }
     } catch (error) {
       console.error('Session check error:', error);
@@ -35,19 +33,7 @@ export const AuthProvider = ({ children }) => {
 
   useEffect(() => {
     checkUser();
-    
-    // Add event listener for tab/window close
-    const handleBeforeUnload = async () => {
-      if (user) {
-        await logoutUser();
-      }
-    };
-    
-    window.addEventListener('beforeunload', handleBeforeUnload);
-    return () => {
-      window.removeEventListener('beforeunload', handleBeforeUnload);
-    };
-  }, [user]);
+  }, []);
 
   const login = async (email, password) => {
     setLoading(true);
@@ -80,12 +66,16 @@ export const AuthProvider = ({ children }) => {
   const logout = async () => {
     setLoading(true);
     try {
-      const result = await logoutUser();
-      if (result.success) {
-        setUser(null);
-        navigate('/');
-      }
-      return result;
+      await logoutUser();
+      setUser(null);
+      navigate('/');
+      return { success: true };
+    } catch (error) {
+      console.error('Logout error:', error);
+      return { 
+        success: false, 
+        error: error.message 
+      };
     } finally {
       setLoading(false);
     }
