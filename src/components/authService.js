@@ -36,7 +36,7 @@ export const loginUser = async (email, password) => {
     }
 
     // Create new session
-    const session = await account.createEmailSession(email, password);
+    const session = await account.createEmailPasswordSession(email, password);
     
     // Sync with API
     const response = await fetch(AUTH_ENDPOINTS.LOGIN, {
