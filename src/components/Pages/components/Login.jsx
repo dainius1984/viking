@@ -1,9 +1,7 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import EnhancedAlert from './Alert';
 
 const LoginForm = ({ login }) => {
-  const navigate = useNavigate();
   const [loginLoading, setLoginLoading] = useState(false);
   const [notification, setNotification] = useState({ type: '', message: '' });
   
@@ -34,7 +32,6 @@ const LoginForm = ({ login }) => {
     e.preventDefault();
     e.stopPropagation();
 
-    // Clear any existing notifications first
     setNotification({ type: '', message: '' });
 
     const emailError = validateEmail(formData.email);
@@ -60,17 +57,6 @@ const LoginForm = ({ login }) => {
           type: 'success',
           message: 'Logowanie zakończone sukcesem! Zaraz zostaniesz przekierowany do swojego konta.'
         });
-        
-        // Wait longer before redirect to ensure notification is visible
-        setTimeout(() => {
-          const redirectToCart = localStorage.getItem('redirectToCart');
-          if (redirectToCart) {
-            localStorage.removeItem('redirectToCart');
-            navigate('/koszyk');
-          } else {
-            navigate('/account');
-          }
-        }, 2500);
       } else {
         let errorMessage = 'Nieprawidłowe dane logowania. Sprawdź email i hasło.';
         

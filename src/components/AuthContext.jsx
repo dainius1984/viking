@@ -10,7 +10,6 @@ import {
 
 const AuthContext = createContext(null);
 
-// AuthContext.jsx
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -19,8 +18,8 @@ export const AuthProvider = ({ children }) => {
   const checkUser = async () => {
     try {
       const appwriteResult = await checkAppwriteSession();
-      if (appwriteResult.success) {
-        setUser(appwriteResult.session.$id ? appwriteResult.session : null);
+      if (appwriteResult.success && appwriteResult.session) {
+        setUser(appwriteResult.session);
       } else {
         setUser(null);
       }
@@ -42,10 +41,11 @@ export const AuthProvider = ({ children }) => {
       const result = await loginUser(email, password);
       if (result.success && result.user) {
         setUser(result.user);
-        navigate('/account');
         return { success: true };
       }
       return result;
+    } catch (error) {
+      return { success: false, error: error.message };
     } finally {
       setLoading(false);
     }
@@ -57,10 +57,11 @@ export const AuthProvider = ({ children }) => {
       const result = await registerUser(email, password, name);
       if (result.success && result.user) {
         setUser(result.user);
-        navigate('/account');
         return { success: true };
       }
       return result;
+    } catch (error) {
+      return { success: false, error: error.message };
     } finally {
       setLoading(false);
     }

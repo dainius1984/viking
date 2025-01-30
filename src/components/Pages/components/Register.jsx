@@ -1,9 +1,8 @@
 import React, { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import EnhancedAlert from './Alert';
 
 const RegisterForm = ({ register }) => {
-  const navigate = useNavigate();
   const [registerLoading, setRegisterLoading] = useState(false);
   const [notification, setNotification] = useState({ type: '', message: '' });
   
@@ -41,7 +40,6 @@ const RegisterForm = ({ register }) => {
     e.preventDefault();
     e.stopPropagation();
 
-    // Clear any existing notifications first
     setNotification({ type: '', message: '' });
 
     const emailError = validateEmail(formData.email);
@@ -73,17 +71,6 @@ const RegisterForm = ({ register }) => {
           type: 'success',
           message: 'Konto zostało utworzone pomyślnie! Witamy w naszym sklepie. Zaraz zostaniesz przekierowany.'
         });
-        
-        // Wait longer before redirect to ensure notification is visible
-        setTimeout(() => {
-          const redirectToCart = localStorage.getItem('redirectToCart');
-          if (redirectToCart) {
-            localStorage.removeItem('redirectToCart');
-            navigate('/koszyk');
-          } else {
-            navigate('/account');
-          }
-        }, 2500);
       } else {
         let errorMessage = 'Wystąpił błąd podczas rejestracji. Spróbuj ponownie.';
         
