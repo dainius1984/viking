@@ -120,12 +120,19 @@ export const formatOrderItems = (cart) => {
   ).join("\n");
 };
 
-export const prepareSheetData = (orderData, formData) => {
+export const prepareSheetData = (orderData, formData, paymentStatus = 'new') => {
+  const now = new Date();
+  
   return {
+    "Data wpływu": formatDate(now),
+    "Forma płatności": "PayU",
+    "Status płatności": paymentStatus,
+    "PayU OrderId": orderData.payuOrderId || '',
+    "PayU ExtOrderId": orderData.orderNumber || '',
     "Numer zamowienia": orderData.orderNumber,
-    "Data": formatDate(new Date()),
+    "Data": formatDate(now),
     "Status": orderData.status,
-    "Suma": orderData.total, // Changed from orderData.total to ensure proper format
+    "Suma": orderData.total,
     "Suma częściowa": orderData.subtotal,
     "Rabat": orderData.discountApplied ? 'Tak' : 'Nie',
     "Kwota rabatu": orderData.discountAmount,
