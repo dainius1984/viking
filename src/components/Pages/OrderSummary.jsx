@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { formatPrice, DISCOUNT_CONFIG } from './OrderUtils';
-import { initiatePayment } from './PaymentService';
 import { CartItem } from './CartItem';
 import { DiscountInput } from './DiscountInput';
+import PaymentButton from './PaymentButton';
 
 const generateOrderNumber = () => {
   const timestamp = Date.now();
@@ -24,7 +24,6 @@ const OrderSummary = ({
   formData
 }) => {
   const [discountCode, setDiscountCode] = useState('');
-  const [paymentLoading, setPaymentLoading] = useState(false);
 
   const handleApplyDiscount = () => {
     if (!onApplyDiscount) return;
@@ -32,61 +31,25 @@ const OrderSummary = ({
     setDiscountCode('');
   };
 
-  const handlePayment = async () => {
-    try {
-      setPaymentLoading(true);
-      
-      const requiredFields = ['email', 'firstName', 'lastName', 'phone', 'street', 'postal', 'city'];
-      const missingFields = requiredFields.filter(field => !formData[field]);
-      
-      if (missingFields.length > 0) {
-        alert('Proszę wypełnić wszystkie wymagane pola: ' + missingFields.join(', '));
-        return;
-      }
-
-      const paymentData = {
-        orderData: {
-          orderNumber: generateOrderNumber(),
-          cart: cart.map(item => ({
-            name: item.name,
-            quantity: item.quantity,
-            price: item.price.toString()
-          })),
-          total: total.toString(),
-          subtotal: subtotal.toString(),
-          shipping,
-          discountApplied,
-          discountAmount: discountAmount.toString(),
-          items: cart.map(item => 
-            `${item.name} (${item.quantity}x po ${formatPrice(item.price)})`
-          ).join('\n')
-        },
-        customerData: {
-          Imie: formData.firstName?.trim(),
-          Nazwisko: formData.lastName?.trim(),
-          Email: formData.email?.trim().toLowerCase(),
-          Telefon: formData.phone?.trim(),
-          Ulica: formData.street?.trim(),
-          'Kod pocztowy': formData.postal?.trim(),
-          Miasto: formData.city?.trim()
-        }
-      };
-
-      const response = await initiatePayment(paymentData);
-      
-      if (response.redirectUrl) {
-        window.location.href = response.redirectUrl;
-      } else {
-        throw new Error('No redirect URL received');
-      }
-
-    } catch (error) {
-      console.error('Payment failed:', error);
-      alert('Błąd podczas inicjowania płatności: ' + (error.message || 'Spróbuj ponownie później'));
-    } finally {
-      setPaymentLoading(false);
-    }
-  };
+  // Prepare order data for payment
+  const prepareOrderData = () => ({
+    orderNumber: generateOrderNumber(),
+    date: new Date().toISOString(),
+    status: 'new',
+    total: total.toString(),
+    shipping,
+    cart: cart.map(item => ({
+      name: item.name,
+      quantity: item.quantity,
+      price: item.price.toString()
+    })),
+    subtotal: subtotal.toString(),
+    discountApplied,
+    discountAmount: discountAmount.toString(),
+    items: cart.map(item => 
+      `${item.name} (${item.quantity}x po ${formatPrice(item.price)})`
+    ).join('\n')
+  });
 
   const renderOrderSummary = () => (
     <div className="space-y-3 sm:space-y-4 mt-4 sm:mt-6">
@@ -136,31 +99,8 @@ const OrderSummary = ({
     </div>
   );
 
-  const renderPaymentButton = () => (
-    <button
-      type="button"
-      onClick={handlePayment}
-      disabled={loading || paymentLoading}
-      className="w-full py-3 bg-green-800 text-white rounded-lg font-medium
-        hover:bg-green-900 disabled:bg-gray-400 disabled:cursor-not-allowed
-        text-sm sm:text-base mt-2"
-    >
-      {loading || paymentLoading ? (
-        <span className="flex items-center justify-center gap-2">
-          <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
-            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
-            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-          </svg>
-          Przetwarzanie...
-        </span>
-      ) : (
-        'Kupuję i płacę'
-      )}
-    </button>
-  );
-
   return (
-    <div className="lg:sticky lg:top-5">
+    <div className="lg:sticky lg:top-5 w-full">
       <div className="bg-white p-4 sm:p-6 lg:p-8 rounded-lg shadow-sm">
         <h2 className="text-lg sm:text-xl font-semibold mb-4 sm:mb-6">Twoje zamówienie</h2>
         
@@ -171,7 +111,12 @@ const OrderSummary = ({
         </div>
 
         {renderOrderSummary()}
-        {renderPaymentButton()}
+        <PaymentButton 
+          orderData={prepareOrderData()}
+          formData={formData}
+          loading={loading}
+          isDisabled={cart.length === 0}
+        />
       </div>
     </div>
   );
