@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { initiatePayment } from './PaymentService';
-import { prepareSheetData, appendToSheet } from './OrderUtils';
+import { initiatePayment } from './Pages/PaymentService';
+import { prepareSheetData, appendToSheet } from './Pages/OrderUtils';
 
 const PaymentButton = ({ 
   orderData, 
@@ -10,6 +10,22 @@ const PaymentButton = ({
 }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+
+  const validateFormData = () => {
+    const requiredFields = [
+      { key: 'firstName', label: 'Imię' },
+      { key: 'lastName', label: 'Nazwisko' },
+      { key: 'email', label: 'Email' },
+      { key: 'phone', label: 'Telefon' },
+      { key: 'street', label: 'Ulica' },
+      { key: 'postal', label: 'Kod pocztowy' },
+      { key: 'city', label: 'Miasto' }
+    ];
+
+    return requiredFields
+      .filter(field => !formData[field.key]?.trim())
+      .map(field => field.label);
+  };
 
   const handlePayment = async () => {
     try {
@@ -37,30 +53,23 @@ const PaymentButton = ({
         }
       };
 
-      // Initiate payment first
       const paymentResponse = await initiatePayment(paymentData);
       
       if (paymentResponse.redirectUrl) {
-        // Store order data with PayU OrderId
         const orderDataWithPayuId = {
           ...orderData,
           payuOrderId: paymentResponse.payuOrderId
         };
         
-        // Prepare sheet data with payment status
         const sheetData = prepareSheetData(orderDataWithPayuId, formData, 'new');
-        
-        // Only append to sheet after payment is initiated
         await appendToSheet(sheetData);
         
-        // Save order data to sessionStorage for guest users
         sessionStorage.setItem('lastOrder', JSON.stringify({
           orderNumber: orderData.orderNumber,
           payuOrderId: paymentResponse.payuOrderId,
           date: new Date().toISOString()
         }));
         
-        // Redirect to PayU
         window.location.href = paymentResponse.redirectUrl;
       } else {
         throw new Error('Nie otrzymano linku do płatności');

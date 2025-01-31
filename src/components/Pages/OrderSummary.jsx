@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { formatPrice, DISCOUNT_CONFIG } from './OrderUtils';
 import { CartItem } from './CartItem';
 import { DiscountInput } from './DiscountInput';
-import PaymentButton from './PaymentButton';
+import PaymentButton from '../PaymentButton';
 
 const generateOrderNumber = () => {
   const timestamp = Date.now();
