@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useAuth } from './AuthContext';
-import { initiatePayment } from './Pages/PaymentService';
+import { initiatePayment } from '../Pages/PaymentService';
 import { prepareSheetData } from './OrderUtils';
 
 const PaymentButton = ({ 

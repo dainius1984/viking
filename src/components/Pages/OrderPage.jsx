@@ -16,7 +16,7 @@ import {
   validateDiscountCode,
   DISCOUNT_CONFIG
 } from './OrderUtils';
-import { initiatePayment } from './Pages/PaymentService';
+import { initiatePayment } from '../Pages/PaymentService';
 
 const OrderPage = () => {
   const { state, dispatch } = useCart();
