@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useAuth } from './AuthContext';
-import { initiatePayment } from '../Pages/PaymentService';
-import { prepareSheetData } from './OrderUtils';
+// Fix import paths - adjust these based on your actual file structure
+import { initiatePayment } from './Pages/PaymentService';
 
 const PaymentButton = ({ 
   orderData, 
@@ -55,7 +55,7 @@ const PaymentButton = ({
         },
         // Add authentication information
         isAuthenticated: !!user,
-        userId: user?.userId || null
+        userId: user?.$id || null  // Using $id from Appwrite user object
       };
 
       const paymentResponse = await initiatePayment(paymentData);
