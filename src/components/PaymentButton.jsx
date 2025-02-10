@@ -55,9 +55,17 @@ const PaymentButton = ({
         },
         // Add authentication information
         isAuthenticated: !!user,
-        userId: user?.$id || null  // Using $id from Appwrite user object
+        userId: user?.$id || null
       };
-
+      
+      // Add debug logs
+      console.log('User object:', user);
+      console.log('Authentication data:', {
+        isAuthenticated: !!user,
+        userId: user?.$id
+      });
+      console.log('Full payment data:', paymentData);
+      
       const paymentResponse = await initiatePayment(paymentData);
       
       if (paymentResponse.redirectUrl) {
