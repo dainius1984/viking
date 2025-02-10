@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { initiatePayment } from './Pages/PaymentService';
-import { prepareSheetData, appendToSheet } from './Pages/OrderUtils';
+import { useAuth } from './AuthContext';
+import { initiatePayment } from './PaymentService';
+import { prepareSheetData } from './OrderUtils';
 
 const PaymentButton = ({ 
   orderData, 
@@ -10,6 +11,7 @@ const PaymentButton = ({
 }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const { user } = useAuth();  // Get authentication context
 
   const validateFormData = () => {
     const requiredFields = [
@@ -50,26 +52,23 @@ const PaymentButton = ({
           'Kod pocztowy': formData.postal?.trim(),
           Miasto: formData.city?.trim(),
           Firma: formData.company?.trim() || ''
-        }
+        },
+        // Add authentication information
+        isAuthenticated: !!user,
+        userId: user?.userId || null
       };
 
       const paymentResponse = await initiatePayment(paymentData);
       
       if (paymentResponse.redirectUrl) {
-        const orderDataWithPayuId = {
-          ...orderData,
-          payuOrderId: paymentResponse.payuOrderId
-        };
-        
-        const sheetData = prepareSheetData(orderDataWithPayuId, formData, 'new');
-        await appendToSheet(sheetData);
-        
+        // Store order reference in session storage
         sessionStorage.setItem('lastOrder', JSON.stringify({
           orderNumber: orderData.orderNumber,
           payuOrderId: paymentResponse.payuOrderId,
           date: new Date().toISOString()
         }));
         
+        // Redirect to payment gateway
         window.location.href = paymentResponse.redirectUrl;
       } else {
         throw new Error('Nie otrzymano linku do płatności');

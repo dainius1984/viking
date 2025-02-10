@@ -1,34 +1,50 @@
+/**
+ * Order Utilities
+ * Contains utility functions and configurations for order processing
+ */
+
+// API endpoint for the health service
 export const API_URL = 'https://healthapi-zvfk.onrender.com';
 
+/**
+ * Discount configuration settings
+ * @constant {Object}
+ */
 export const DISCOUNT_CONFIG = {
-  code: 'zinzino10',
-  percentage: 10,
-  shippingCost: 15
+  code: 'zinzino10',      // Discount code
+  percentage: 10,         // Discount percentage
+  shippingCost: 15       // Fixed shipping cost
 };
 
+/**
+ * Validates form data for required fields and format
+ * @param {Object} formData - Customer form data
+ * @returns {Array} Array of validation error messages
+ */
 export const validateForm = (formData) => {
   const required = ['firstName', 'lastName', 'street', 'postal', 'city', 'phone', 'email'];
   const errors = [];
 
+  // Check required fields
   required.forEach(field => {
     if (!formData[field]) {
       errors.push(`Pole ${field} jest wymagane`);
     }
   });
 
-  // Validate email format
+  // Email validation
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   if (formData.email && !emailRegex.test(formData.email)) {
     errors.push('Nieprawidłowy format adresu email');
   }
 
-  // Validate phone format (Polish number)
+  // Phone validation (Polish format)
   const phoneRegex = /^(?:\+48|48)?[1-9]\d{8}$/;
   if (formData.phone && !phoneRegex.test(formData.phone.replace(/\s/g, ''))) {
     errors.push('Nieprawidłowy format numeru telefonu');
   }
 
-  // Validate postal code (Polish format)
+  // Postal code validation (Polish format)
   const postalRegex = /^\d{2}-\d{3}$/;
   if (formData.postal && !postalRegex.test(formData.postal)) {
     errors.push('Nieprawidłowy format kodu pocztowego (XX-XXX)');
@@ -37,22 +53,35 @@ export const validateForm = (formData) => {
   return errors;
 };
 
+/**
+ * Validates discount code against configuration
+ * @param {string} code - Discount code to validate
+ * @returns {boolean} True if code is valid
+ */
 export const validateDiscountCode = (code) => {
   if (!code) return false;
   return code.trim().toLowerCase() === DISCOUNT_CONFIG.code.toLowerCase();
 };
 
+/**
+ * Calculates order totals including discounts and shipping
+ * @param {Array} cart - Array of cart items
+ * @param {boolean} isDiscountApplied - Whether discount should be applied
+ * @returns {Object} Calculated totals
+ */
 export const calculateTotals = (cart = [], isDiscountApplied = false) => {
   if (!Array.isArray(cart)) {
     cart = [];
   }
 
+  // Calculate subtotal
   const subtotal = cart.reduce((sum, item) => {
     const price = Number(item?.price) || 0;
     const quantity = Number(item?.quantity) || 0;
     return sum + (price * quantity);
   }, 0);
 
+  // Apply discount if applicable
   const discountAmount = isDiscountApplied ? 
     (subtotal * DISCOUNT_CONFIG.percentage) / 100 : 0;
 
@@ -67,6 +96,12 @@ export const calculateTotals = (cart = [], isDiscountApplied = false) => {
   };
 };
 
+/**
+ * Appends order data to backend sheet
+ * @param {Object} orderData - Order data to append
+ * @param {Function} setRetryCount - Callback to update retry counter
+ * @returns {Promise} API response
+ */
 export const appendToSheet = async (orderData, setRetryCount = () => {}) => {
   try {
     const response = await fetch(`${API_URL}/api/guest-order`, {
@@ -90,18 +125,32 @@ export const appendToSheet = async (orderData, setRetryCount = () => {}) => {
   }
 };
 
+/**
+ * Formats price with currency
+ * @param {number|string} price - Price to format
+ * @returns {string} Formatted price with currency
+ */
 export const formatPrice = (price) => {
   const number = Number(price);
   if (isNaN(number)) return '0.00 zł';
   return `${number.toFixed(2)} zł`;
 };
 
+/**
+ * Generates unique order number
+ * @returns {string} Generated order number
+ */
 export const generateOrderNumber = () => {
   const timestamp = Date.now();
   const random = Math.random().toString(36).substr(2, 9);
   return `ORD-${timestamp}-${random}`;
 };
 
+/**
+ * Formats date to Polish locale string
+ * @param {Date|string} date - Date to format
+ * @returns {string} Formatted date string
+ */
 export const formatDate = (date) => {
   return new Date(date).toLocaleString('pl-PL', {
     year: 'numeric',
@@ -112,6 +161,11 @@ export const formatDate = (date) => {
   });
 };
 
+/**
+ * Formats cart items for display
+ * @param {Array} cart - Cart items to format
+ * @returns {string} Formatted items string
+ */
 export const formatOrderItems = (cart) => {
   if (!Array.isArray(cart)) return '';
   
@@ -120,6 +174,13 @@ export const formatOrderItems = (cart) => {
   ).join("\n");
 };
 
+/**
+ * Prepares order data for sheet storage
+ * @param {Object} orderData - Order details
+ * @param {Object} formData - Customer form data
+ * @param {string} paymentStatus - Payment status
+ * @returns {Object} Prepared sheet data
+ */
 export const prepareSheetData = (orderData, formData, paymentStatus = 'new') => {
   const now = new Date();
   
@@ -151,7 +212,11 @@ export const prepareSheetData = (orderData, formData, paymentStatus = 'new') => 
   };
 };
 
-// Helper function to check if a value is empty
+/**
+ * Checks if a value is empty
+ * @param {*} value - Value to check
+ * @returns {boolean} True if value is empty
+ */
 export const isEmpty = (value) => {
   return value === null || 
          value === undefined || 
@@ -160,12 +225,21 @@ export const isEmpty = (value) => {
          (typeof value === 'object' && Object.keys(value).length === 0);
 };
 
-// Helper function to validate prices
+/**
+ * Validates price value
+ * @param {number|string} price - Price to validate
+ * @returns {boolean} True if price is valid
+ */
 export const validatePrice = (price) => {
   const number = Number(price);
   return !isNaN(number) && number >= 0;
 };
 
+/**
+ * Cleans phone number by removing spaces and non-numeric characters
+ * @param {string} phone - Phone number to clean
+ * @returns {string} Cleaned phone number
+ */
 export const cleanPhoneNumber = (phone) => {
   return phone.replace(/\s+/g, '').replace(/[^0-9+]/g, '');
 };
