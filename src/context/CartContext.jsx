@@ -9,6 +9,9 @@
 import React, { createContext, useContext, useReducer, useEffect, useState, useCallback } from 'react';
 import { useAuth } from '../components/AuthContext';
 
+// Constants
+const API_URL = 'https://healthapi-zvfk.onrender.com';
+
 // Context Creation
 const CartContext = createContext();
 
@@ -128,16 +131,37 @@ export const CartProvider = ({ children }) => {
   const { user } = useAuth();
   const [loading, setLoading] = useState(true);
   const [state, dispatch] = useReducer(cartReducer, initialState);
+
+  // Server Synchronization
+  const syncWithServer = useCallback(async (newState) => {
+    if (!user) return;
+
+    try {
+      await fetch(`${API_URL}/api/cart`, {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        body: JSON.stringify(newState)
+      });
+    } catch (error) {
+      console.error('Error syncing cart with server:', error);
+    }
+  }, [user]);
+
   // Storage Management
   const updateStorage = useCallback((newState) => {
     try {
       if (user) {
-        // Tylko localStorage dla zalogowanych użytkowników
+        // Logged-in users: localStorage + server sync
         if (typeof window !== 'undefined' && window.localStorage) {
           localStorage.setItem('userCart', JSON.stringify(newState));
+          syncWithServer(newState);
         }
       } else {
-        // sessionStorage dla gości
+        // Guest users: sessionStorage only
         if (typeof window !== 'undefined' && window.sessionStorage) {
           sessionStorage.setItem('guestCart', JSON.stringify(newState));
         }
@@ -145,34 +169,58 @@ export const CartProvider = ({ children }) => {
     } catch (error) {
       console.error('Storage error:', error);
     }
-  }, [user]);
+  }, [user, syncWithServer]);
 
   // Initial Cart Loading
   useEffect(() => {
     const loadCart = async () => {
       try {
         if (user) {
-          // Ładuj z localStorage dla zalogowanych
-          const savedCart = localStorage.getItem('userCart');
-          if (savedCart) {
-            dispatch({ type: 'LOAD_STATE', payload: JSON.parse(savedCart) });
-          }
-        } else {
-          // Ładuj z sessionStorage dla gości
-          if (typeof window !== 'undefined' && window.sessionStorage) {
-            const savedCart = sessionStorage.getItem('guestCart');
+          // Try loading from server first
+          try {
+            const response = await fetch(`${API_URL}/api/cart`, {
+              credentials: 'include',
+              headers: {
+                'Accept': 'application/json'
+              }
+            });
+
+            if (response.ok) {
+              const serverCart = await response.json();
+              if (serverCart && (serverCart.cart || serverCart.wishlist)) {
+                dispatch({ type: 'LOAD_STATE', payload: serverCart });
+              }
+            }
+          } catch (error) {
+            // Fallback to localStorage
+            const savedCart = localStorage.getItem('userCart');
             if (savedCart) {
               dispatch({ type: 'LOAD_STATE', payload: JSON.parse(savedCart) });
             }
           }
+        } else {
+          // Load from sessionStorage for guests
+          if (typeof window !== 'undefined' && window.sessionStorage) {
+            try {
+              const savedCart = sessionStorage.getItem('guestCart');
+              if (savedCart) {
+                const parsedCart = JSON.parse(savedCart);
+                if (parsedCart && typeof parsedCart === 'object') {
+                  dispatch({ type: 'LOAD_STATE', payload: parsedCart });
+                }
+              }
+            } catch (error) {
+              console.error('Error loading cart from sessionStorage:', error);
+            }
+          }
         }
       } catch (error) {
-        console.error('Error loading cart:', error);
+        console.error('Error in loadCart:', error);
       } finally {
         setLoading(false);
       }
     };
-  
+
     loadCart();
   }, [user]);
 
