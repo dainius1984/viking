@@ -16,22 +16,29 @@ import { API_URL } from './OrderUtils';
  */
 export const initiatePayment = async (paymentData) => {
   try {
-    // Log payment initialization attempt
-    console.log('Initiating payment with data:', paymentData);
+    // Bardziej szczegółowe logi
+    console.log('Payment initialization:', {
+      orderNumber: paymentData.orderData.orderNumber,
+      isAuthenticated: paymentData.isAuthenticated,
+      userId: paymentData.userId,
+      total: paymentData.orderData.total
+    });
 
-    // Send payment request to API
     const response = await fetch(`${API_URL}/api/create-payment`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(paymentData),
-      credentials: 'include'  // Include credentials for cross-origin requests
+      credentials: 'include'
     });
 
-    // Parse API response
     const data = await response.json();
-    console.log('Payment response:', data);
+    console.log('Payment gateway response:', {
+      success: data.success,
+      orderId: data.orderId,
+      hasRedirectUrl: !!data.redirectUrl
+    });
 
     // Check for API errors
     if (!response.ok) {
