@@ -11,17 +11,26 @@ const databases = new Databases(client);
 export const createOrder = async (orderData) => {
     try {
         return await databases.createDocument(
-            '67545c1800028e002c86',    // Your database ID
-            '67545c2c001276c2c261',    // Your collection ID
+            '67545c1800028e002c86',
+            '67545c2c001276c2c261',
             ID.unique(),
             {
                 userId: orderData.userId,
-                orderNumber: orderData.orderNumber || `ORD-${Date.now()}`,
-                Status: 'pending',  // Changed from 'status' to 'Status'
+                orderNumber: orderData.orderNumber,
+                Status: 'pending',
                 total: orderData.total,
+                items: orderData.items,
+                customerData: orderData.customerData,
+                shippingDetails: orderData.shippingDetails,
+                discountApplied: orderData.discountApplied,
+                discountAmount: orderData.discountAmount,
+                subtotal: orderData.subtotal,
+                paymentMethod: 'PayU',
+                createdAt: new Date().toISOString()
             }
         );
     } catch (error) {
+        console.error('Appwrite order creation error:', error);
         throw error;
     }
 };
