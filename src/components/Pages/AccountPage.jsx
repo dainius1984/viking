@@ -20,7 +20,18 @@ const AccountPage = () => {
   const [showModal, setShowModal] = useState(false);
 
   const getProductDetails = useCallback((productId) => {
-    return products.find(product => product.id === productId);
+    // Try to find product by ID first
+    let product = products.find(p => p.id === productId || p.id === parseInt(productId));
+    
+    // If not found, try to find by name match
+    if (!product && typeof productId === 'string') {
+      product = products.find(p => 
+        p.name.toLowerCase().replace(/[^a-z0-9]+/g, '') === 
+        productId.toLowerCase().replace(/[^a-z0-9]+/g, '')
+      );
+    }
+    
+    return product;
   }, []);
 
   const toggleOrder = useCallback((orderId) => {
@@ -43,7 +54,8 @@ const AccountPage = () => {
         '67545c1800028e002c86',
         '67545c2c001276c2c261',
         [
-          Query.equal('userId', user.$id)
+          Query.equal('userId', user.$id),
+          Query.orderDesc('$createdAt')
         ]
       );
       setOrders(response.documents);
@@ -67,47 +79,83 @@ const AccountPage = () => {
   };
 
   const openProductModal = useCallback((productDetails) => {
-    setSelectedProduct(productDetails);
-    setShowModal(true);
+    if (productDetails) {
+      setSelectedProduct(productDetails);
+      setShowModal(true);
+    }
+  }, []);
+
+  const parseOrderItems = useCallback((orderItems) => {
+    try {
+      // If orderItems is already an array, return it
+      if (Array.isArray(orderItems)) return orderItems;
+      
+      // If it's a string but not JSON, try to parse it as a product string
+      if (typeof orderItems === 'string' && !orderItems.startsWith('[')) {
+        const match = orderItems.match(/(.*?)\s*\((\d+)x po\s*([\d.]+)/);
+        if (match) {
+          const [_, name, quantity, price] = match;
+          return [{
+            id: name.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
+            n: name.trim(),
+            p: parseFloat(price),
+            q: parseInt(quantity),
+          }];
+        }
+      }
+      
+      // Try parsing as JSON
+      return JSON.parse(orderItems);
+    } catch (error) {
+      console.error('Error parsing order items:', error);
+      return [];
+    }
   }, []);
 
   const renderOrderItems = useCallback((orderItems) => {
-    try {
-      const items = JSON.parse(orderItems);
-      return (
-        <div className="p-4">
-          {items.map((item, index) => {
-            const productDetails = getProductDetails(item.id);
-            return (
-              <div 
-                key={index} 
-                className="flex items-center p-2.5 mb-2 bg-white border border-gray-200 rounded-md cursor-pointer hover:bg-gray-50 transition-all duration-200 hover:translate-x-1"
-                onClick={() => openProductModal(productDetails)}
-              >
-                <div className="w-10 h-10 mr-4">
-                  <img 
-                    src={productDetails?.image} 
-                    alt={item.n}
-                    className="w-full h-full object-cover rounded"
-                  />
-                </div>
-                <div className="flex-grow flex flex-col md:flex-row md:justify-between md:items-center gap-1">
-                  <span className="font-medium text-[0.95rem]">{item.n}</span>
-                  <div className="flex gap-4 text-[0.85rem] text-gray-600">
-                    <span>Ilość: {item.q}</span>
-                    <span>{item.p} zł/szt</span>
-                  </div>
+    const parsedItems = parseOrderItems(orderItems);
+    
+    if (!parsedItems || parsedItems.length === 0) {
+      return <p className="text-red-500 p-4">Brak szczegółów zamówienia</p>;
+    }
+
+    return (
+      <div className="p-4 space-y-3">
+        {parsedItems.map((item, index) => {
+          const productDetails = getProductDetails(item.id);
+          return (
+            <div 
+              key={index} 
+              className="flex items-center p-3 bg-white border border-gray-200 rounded-lg cursor-pointer 
+                        hover:bg-gray-50 transition-all duration-200 hover:translate-x-1 hover:shadow-sm"
+              onClick={() => openProductModal(productDetails)}
+            >
+              <div className="w-12 h-12 mr-4 flex-shrink-0">
+                <img 
+                  src={productDetails?.image || `/img/products/${item.id}.png`}
+                  alt={item.n || item.name}
+                  className="w-full h-full object-cover rounded-md"
+                  onError={(e) => {
+                    e.target.onerror = null;
+                    e.target.src = '/img/placeholder.png';
+                  }}
+                />
+              </div>
+              <div className="flex-grow flex flex-col md:flex-row md:justify-between md:items-center gap-2">
+                <span className="font-medium text-gray-800">
+                  {item.n || item.name}
+                </span>
+                <div className="flex gap-6 text-sm text-gray-600">
+                  <span>Ilość: {item.q || item.quantity}</span>
+                  <span>{(item.p || item.price).toFixed(2)} zł/szt</span>
                 </div>
               </div>
-            );
-          })}
-        </div>
-      );
-    } catch (error) {
-      console.error('Error parsing order items:', error);
-      return <p className="text-red-500">Błąd wyświetlania produktów</p>;
-    }
-  }, [getProductDetails, openProductModal]);
+            </div>
+          );
+        })}
+      </div>
+    );
+  }, [getProductDetails, openProductModal, parseOrderItems]);
 
   return (
     <>
@@ -152,14 +200,14 @@ const AccountPage = () => {
                     >
                       <div className="flex-grow">
                         <div className="flex flex-col md:flex-row justify-between md:items-center mb-2">
-                          <h3>Zamówienie #{order.orderNumber}</h3>
+                          <h3 className="font-medium">Zamówienie #{order.orderNumber}</h3>
                           <span className="text-gray-600">
-                            {new Date(order.createdAt).toLocaleDateString()}
+                            {new Date(order.createdAt).toLocaleDateString('pl-PL')}
                           </span>
                         </div>
                         <div className="flex flex-col md:flex-row gap-1 md:gap-5 text-gray-600">
-                          <span><strong>Status:</strong> {order.Status}</span>
-                          <span><strong>Suma:</strong> {order.total} zł</span>
+                          <span><strong>Status:</strong> {order.status || 'W trakcie'}</span>
+                          <span><strong>Suma:</strong> {parseFloat(order.total).toFixed(2)} zł</span>
                         </div>
                       </div>
                       <FaChevronDown 
