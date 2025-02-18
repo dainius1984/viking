@@ -5,83 +5,43 @@ import TopNavBar from '../Headers/TopNavBar';
 import Header from '../Headers/Header';
 import Footer from '../Footer/Footer';
 import { FaCheckCircle, FaHome, FaFileAlt, FaEnvelope } from 'react-icons/fa';
-import { 
-  appendToSheet, 
-  prepareSheetData 
-} from './OrderUtils';
 
 const OrderConfirmation = () => {
   const { user } = useAuth();
   const [orderDetails, setOrderDetails] = useState(null);
-  const [submitted, setSubmitted] = useState(false);
-  const [sheetSubmissionStatus, setSheetSubmissionStatus] = useState({
-    submitted: false,
-    error: null
-  });
 
   useEffect(() => {
-    // Only run once when component mounts
-    const init = async () => {
+    // Get order details from session storage first
+    const lastOrder = sessionStorage.getItem('lastOrder');
+    if (lastOrder) {
       try {
-        // Get order details from session storage first
-        const lastOrder = sessionStorage.getItem('lastOrder');
-        if (lastOrder) {
-          const parsedOrder = JSON.parse(lastOrder);
-          setOrderDetails(parsedOrder);
-        }
+        const parsedOrder = JSON.parse(lastOrder);
+        setOrderDetails(parsedOrder);
+      } catch (error) {
+        console.error('Error parsing order from session storage:', error);
+      }
+    }
 
-        // Only try to send to sheets if not already submitted
-        if (!submitted) {
-          const orderBackupKeys = Object.keys(localStorage).filter(
-            key => key.startsWith('order_backup_')
-          );
+    // Get backup from localStorage if session storage is empty
+    if (!lastOrder) {
+      const orderBackupKeys = Object.keys(localStorage).filter(
+        key => key.startsWith('order_backup_')
+      );
 
-          if (orderBackupKeys.length === 0) {
-            console.log('No order backup found');
-            return;
-          }
-
-          const latestOrderBackupKey = orderBackupKeys.sort().pop();
+      if (orderBackupKeys.length > 0) {
+        const latestOrderBackupKey = orderBackupKeys.sort().pop();
+        try {
           const orderData = JSON.parse(
             localStorage.getItem(latestOrderBackupKey)
           );
-
-          if (!orderData) {
-            console.log('No order data found in backup');
-            return;
-          }
-
-          // Set order details from backup if not already set
-          if (!orderDetails) {
-            setOrderDetails(orderData);
-          }
-
-          // Prepare sheet data
-          const sheetData = prepareSheetData(orderData, {
-            firstName: orderData.firstName,
-            lastName: orderData.lastName,
-            email: orderData.email,
-            phone: orderData.phone,
-            street: orderData.street,
-            postal: orderData.postal,
-            city: orderData.city
-          });
-
-          await appendToSheet(sheetData);
-          setSubmitted(true);
-          setSheetSubmissionStatus({ submitted: true, error: null });
+          setOrderDetails(orderData);
+          // Clean up the backup
           localStorage.removeItem(latestOrderBackupKey);
+        } catch (error) {
+          console.error('Error parsing order backup:', error);
         }
-      } catch (error) {
-        console.error('Error in OrderConfirmation:', error);
-        setSheetSubmissionStatus({ 
-          submitted: false, 
-          error: error.message || 'Failed to send order details'
-        });
       }
-    };
-
-    init();
+    }
   }, []); // Empty dependency array - only run once
 
   const orderDate = new Date().toLocaleDateString('pl-PL');
@@ -107,13 +67,6 @@ const OrderConfirmation = () => {
             <p className="text-base sm:text-lg text-gray-600 mb-6 sm:mb-8">
               Wkrótce otrzymasz email z potwierdzeniem zamówienia na podany adres.
             </p>
-
-            {sheetSubmissionStatus.error && (
-              <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
-                <strong className="font-bold">Uwaga: </strong>
-                <span className="block sm:inline">{sheetSubmissionStatus.error}</span>
-              </div>
-            )}
 
             <div className="bg-gray-50 p-4 sm:p-6 rounded-lg sm:rounded-xl mb-6 sm:mb-8 text-left">
               <div className="font-mono text-base sm:text-lg font-semibold text-green-800 mb-3 sm:mb-4">
