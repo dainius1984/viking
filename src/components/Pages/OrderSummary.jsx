@@ -48,7 +48,10 @@ const OrderSummary = ({
     discountAmount: discountAmount.toString(),
     items: cart.map(item => 
       `${item.name} (${item.quantity}x po ${formatPrice(item.price)})`
-    ).join('\n')
+    ).join('\n'),
+    // Add these fields
+    paymentStatus: 'PENDING',
+    lastUpdateTime: new Date().toISOString()
   });
 
   const renderOrderSummary = () => (

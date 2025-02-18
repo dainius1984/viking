@@ -70,12 +70,20 @@ const PaymentButton = ({
       
       if (paymentResponse.redirectUrl) {
         // Store order reference in session storage
-        sessionStorage.setItem('lastOrder', JSON.stringify({
-          orderNumber: orderData.orderNumber,
-          payuOrderId: paymentResponse.payuOrderId,
-          date: new Date().toISOString()
-        }));
-        
+// In PaymentButton.jsx, modify the sessionStorage save:
+sessionStorage.setItem('lastOrder', JSON.stringify({
+  orderNumber: orderData.orderNumber,
+  payuOrderId: paymentResponse.orderId,  // Add this
+  date: new Date().toISOString(),
+  status: 'PENDING'  // Add initial status
+}));
+
+// Also add better error logging
+console.log('Payment response:', {
+  orderNumber: orderData.orderNumber,
+  payuOrderId: paymentResponse.payuOrderId,
+  redirectUrl: !!paymentResponse.redirectUrl
+});
         // Redirect to payment gateway
         window.location.href = paymentResponse.redirectUrl;
       } else {

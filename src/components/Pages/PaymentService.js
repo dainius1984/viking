@@ -13,15 +13,17 @@ import { API_URL } from './OrderUtils';
  * @param {Object} paymentData.customerData - Customer information
  * @returns {Promise<Object>} Payment gateway response with redirect URL
  * @throws {Error} If payment initialization fails
- */
+ /** */
+ 
 export const initiatePayment = async (paymentData) => {
   try {
-    // Bardziej szczegółowe logi
-    console.log('Payment initialization:', {
+    // Add more detailed logging
+    console.log('Initiating payment:', {
       orderNumber: paymentData.orderData.orderNumber,
       isAuthenticated: paymentData.isAuthenticated,
       userId: paymentData.userId,
-      total: paymentData.orderData.total
+      total: paymentData.orderData.total,
+      time: new Date().toISOString()
     });
 
     const response = await fetch(`${API_URL}/api/create-payment`, {
@@ -34,32 +36,35 @@ export const initiatePayment = async (paymentData) => {
     });
 
     const data = await response.json();
-    console.log('Payment gateway response:', {
+    
+    // Add more detailed success logging
+    console.log('Payment initiation response:', {
       success: data.success,
       orderId: data.orderId,
-      hasRedirectUrl: !!data.redirectUrl
+      hasRedirectUrl: !!data.redirectUrl,
+      orderNumber: paymentData.orderData.orderNumber,
+      time: new Date().toISOString()
     });
 
-    // Check for API errors
     if (!response.ok) {
       throw new Error(data.error || data.details || 'Payment initialization failed');
     }
 
-    // Verify redirect URL exists
     if (!data.redirectUrl) {
-      throw new Error('No redirect URL received');
+      throw new Error('No redirect URL received from payment service');
     }
 
     return data;
   } catch (error) {
-    // Log detailed error information
+    // Add more detailed error logging
     console.error('Payment error:', {
       message: error.message,
+      orderNumber: paymentData.orderData.orderNumber,
+      time: new Date().toISOString(),
       response: error.response,
       data: error.response?.data
     });
     
-    // Throw user-friendly error
     throw new Error(
       error.response?.data?.error || 
       error.response?.data?.details || 
