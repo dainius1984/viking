@@ -8,69 +8,72 @@ import { FaCheckCircle, FaHome, FaFileAlt, FaEnvelope } from 'react-icons/fa';
 import { 
   appendToSheet, 
   prepareSheetData 
-} from './OrderUtils';  // Removed unused formatOrderItems import
+} from './OrderUtils';
 
 const OrderConfirmation = () => {
   const { user } = useAuth();
   const [orderDetails, setOrderDetails] = useState(null);
+  const [submitted, setSubmitted] = useState(false);
   const [sheetSubmissionStatus, setSheetSubmissionStatus] = useState({
     submitted: false,
     error: null
   });
 
   useEffect(() => {
-    // Get order details from session storage first
-    const lastOrder = sessionStorage.getItem('lastOrder');
-    if (lastOrder) {
-      const parsedOrder = JSON.parse(lastOrder);
-      setOrderDetails(parsedOrder);
-    }
-
-    const sendOrderToSheets = async () => {
+    // Only run once when component mounts
+    const init = async () => {
       try {
-        // Get the most recent order backup
-        const orderBackupKeys = Object.keys(localStorage).filter(
-          key => key.startsWith('order_backup_')
-        );
-
-        if (orderBackupKeys.length === 0) {
-          console.log('No order backup found');
-          return;
+        // Get order details from session storage first
+        const lastOrder = sessionStorage.getItem('lastOrder');
+        if (lastOrder) {
+          const parsedOrder = JSON.parse(lastOrder);
+          setOrderDetails(parsedOrder);
         }
 
-        const latestOrderBackupKey = orderBackupKeys.sort().pop();
-        const orderData = JSON.parse(
-          localStorage.getItem(latestOrderBackupKey)
-        );
+        // Only try to send to sheets if not already submitted
+        if (!submitted) {
+          const orderBackupKeys = Object.keys(localStorage).filter(
+            key => key.startsWith('order_backup_')
+          );
 
-        if (!orderData) {
-          console.log('No order data found in backup');
-          return;
+          if (orderBackupKeys.length === 0) {
+            console.log('No order backup found');
+            return;
+          }
+
+          const latestOrderBackupKey = orderBackupKeys.sort().pop();
+          const orderData = JSON.parse(
+            localStorage.getItem(latestOrderBackupKey)
+          );
+
+          if (!orderData) {
+            console.log('No order data found in backup');
+            return;
+          }
+
+          // Set order details from backup if not already set
+          if (!orderDetails) {
+            setOrderDetails(orderData);
+          }
+
+          // Prepare sheet data
+          const sheetData = prepareSheetData(orderData, {
+            firstName: orderData.firstName,
+            lastName: orderData.lastName,
+            email: orderData.email,
+            phone: orderData.phone,
+            street: orderData.street,
+            postal: orderData.postal,
+            city: orderData.city
+          });
+
+          await appendToSheet(sheetData);
+          setSubmitted(true);
+          setSheetSubmissionStatus({ submitted: true, error: null });
+          localStorage.removeItem(latestOrderBackupKey);
         }
-
-        // Set order details from backup if not already set
-        if (!orderDetails) {
-          setOrderDetails(orderData);
-        }
-
-        // Prepare sheet data
-        const sheetData = prepareSheetData(orderData, {
-          firstName: orderData.firstName,
-          lastName: orderData.lastName,
-          email: orderData.email,
-          phone: orderData.phone,
-          street: orderData.street,
-          postal: orderData.postal,
-          city: orderData.city
-        });
-
-        console.log('Sending to sheets:', sheetData);
-        await appendToSheet(sheetData);
-
-        setSheetSubmissionStatus({ submitted: true, error: null });
-        localStorage.removeItem(latestOrderBackupKey);
       } catch (error) {
-        console.error('Error sending order to sheets:', error);
+        console.error('Error in OrderConfirmation:', error);
         setSheetSubmissionStatus({ 
           submitted: false, 
           error: error.message || 'Failed to send order details'
@@ -78,8 +81,8 @@ const OrderConfirmation = () => {
       }
     };
 
-    sendOrderToSheets();
-  }, [orderDetails]); // Added orderDetails to dependency array
+    init();
+  }, []); // Empty dependency array - only run once
 
   const orderDate = new Date().toLocaleDateString('pl-PL');
   const estimatedDelivery = new Date(Date.now() + 5 * 24 * 60 * 60 * 1000).toLocaleDateString('pl-PL');
@@ -144,7 +147,7 @@ const OrderConfirmation = () => {
                 Powrót do strony głównej
               </Link>
               
-              {user && (  // Only show if user is logged in
+              {user && (
                 <Link 
                   to="/account" 
                   className="inline-flex items-center justify-center gap-2 px-4 sm:px-6 py-2.5 sm:py-3 border-2 border-green-800 text-green-800 text-sm sm:text-base font-medium rounded-lg transition-all duration-200 hover:bg-green-50 w-full sm:w-auto"
