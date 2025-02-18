@@ -104,6 +104,8 @@ export const calculateTotals = (cart = [], isDiscountApplied = false) => {
  */
 export const appendToSheet = async (orderData, setRetryCount = () => {}) => {
   try {
+    console.log('Sending order data to sheets:', orderData);
+    
     const response = await fetch(`${API_URL}/api/guest-order`, {
       method: 'POST',
       headers: {
@@ -114,17 +116,24 @@ export const appendToSheet = async (orderData, setRetryCount = () => {}) => {
     });
 
     if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      console.error('Sheet API error:', {
+        status: response.status,
+        statusText: response.statusText,
+        errorData
+      });
       throw new Error('Wystąpił błąd podczas składania zamówienia');
     }
 
-    return await response.json();
+    const data = await response.json();
+    console.log('Sheet API response:', data);
+    return data;
   } catch (error) {
     console.error('Error in appendToSheet:', error);
     setRetryCount(prev => prev + 1);
     throw error;
   }
 };
-
 /**
  * Formats price with currency
  * @param {number|string} price - Price to format
