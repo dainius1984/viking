@@ -106,7 +106,7 @@ const Footer = () => {
         <div className="mt-8 pt-6 border-t border-white/20">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
             <p className="text-base text-white/90">
-              © 2024 Family Balance. Wszystkie prawa zastrzeżone.
+              © 2025 Family Balance. Wszystkie prawa zastrzeżone.
             </p>
             <p className="text-base font-medium">
               NIP: 222-079-15-71
