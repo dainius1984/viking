@@ -41,32 +41,28 @@ const PaymentButton = ({
 
       setLoading(true);
 
-      const paymentData = {
-        orderData: {
-          ...orderData,
-          notes: formData.notes // Add this
-        },
-        customerData: {
-          Imie: formData.firstName?.trim(),
-          Nazwisko: formData.lastName?.trim(),
-          Email: formData.email?.trim().toLowerCase(),
-          Telefon: formData.phone?.trim(),
-          Ulica: formData.street?.trim(),
-          'Kod pocztowy': formData.postal?.trim(),
-          Miasto: formData.city?.trim(),
-          Firma: formData.company?.trim() || '',
-          Uwagi: formData.notes?.trim() || '' // Add this
-        },
-        isAuthenticated: !!user,
-        userId: user?.$id || null
-      };
-      
-      // Add debug logs
-      console.log('User object:', user);
-      console.log('Authentication data:', {
-        isAuthenticated: !!user,
-        userId: user?.$id
-      });
+// In PaymentButton.jsx
+const paymentData = {
+  orderData: {
+    ...orderData,
+    notes: formData.notes,
+    shipping: formData.shipping || 'DPD' // Make sure shipping is passed
+  },
+  customerData: {
+    Imie: formData.firstName?.trim(),
+    Nazwisko: formData.lastName?.trim(),
+    Email: formData.email?.trim().toLowerCase(),
+    Telefon: formData.phone?.trim(),
+    Ulica: formData.street?.trim(),
+    'Kod pocztowy': formData.postal?.trim(),
+    Miasto: formData.city?.trim(),
+    Firma: formData.company?.trim() || '', // Make sure company is passed
+    Uwagi: formData.notes?.trim() || ''
+  },
+  isAuthenticated: !!user,
+  userId: user?.$id || null
+  };
+  
       console.log('Full payment data:', paymentData);
       
       const paymentResponse = await initiatePayment(paymentData);
