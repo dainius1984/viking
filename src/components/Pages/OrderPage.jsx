@@ -27,7 +27,7 @@ const INITIAL_FORM_STATE = {
   city: '',
   phone: '',
   email: '',
-  notes: ''
+  notes: '' // Make sure this is included
 };
 
 const OrderPage = () => {

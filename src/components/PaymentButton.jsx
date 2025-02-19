@@ -42,7 +42,10 @@ const PaymentButton = ({
       setLoading(true);
 
       const paymentData = {
-        orderData,
+        orderData: {
+          ...orderData,
+          notes: formData.notes // Add this
+        },
         customerData: {
           Imie: formData.firstName?.trim(),
           Nazwisko: formData.lastName?.trim(),
@@ -51,9 +54,9 @@ const PaymentButton = ({
           Ulica: formData.street?.trim(),
           'Kod pocztowy': formData.postal?.trim(),
           Miasto: formData.city?.trim(),
-          Firma: formData.company?.trim() || ''
+          Firma: formData.company?.trim() || '',
+          Uwagi: formData.notes?.trim() || '' // Add this
         },
-        // Add authentication information
         isAuthenticated: !!user,
         userId: user?.$id || null
       };
