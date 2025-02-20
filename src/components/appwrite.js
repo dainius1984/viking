@@ -17,20 +17,75 @@ export const createOrder = async (orderData) => {
             {
                 userId: orderData.userId,
                 orderNumber: orderData.orderNumber,
-                Status: 'pending',
-                total: orderData.total,
-                items: orderData.items,
-                customerData: orderData.customerData,
-                shippingDetails: orderData.shippingDetails,
-                discountApplied: orderData.discountApplied,
-                discountAmount: orderData.discountAmount,
-                subtotal: orderData.subtotal,
+                payuOrderId: orderData.payuOrderId,
+                payuExtOrderId: orderData.payuExtOrderId,
+                status: 'Oczekujące',
+                total: orderData.total.toString(),
+                items: Array.isArray(orderData.items) ? orderData.items : [],
+                subtotal: orderData.subtotal?.toString() || '0',
+                discountAmount: orderData.discountAmount?.toString() || '0',
+                customerData: {
+                    Imie: orderData.customerData?.Imie || '',
+                    Nazwisko: orderData.customerData?.Nazwisko || '',
+                    Email: orderData.customerData?.Email || '',
+                    Telefon: orderData.customerData?.Telefon || '',
+                    Ulica: orderData.customerData?.Ulica || '',
+                    'Kod pocztowy': orderData.customerData?.['Kod pocztowy'] || '',
+                    Miasto: orderData.customerData?.Miasto || '',
+                    Firma: orderData.customerData?.Firma || '',
+                    Uwagi: orderData.customerData?.Uwagi || ''
+                },
+                shippingDetails: {
+                    method: orderData.shippingDetails?.method || 'DPD',
+                    cost: orderData.shippingDetails?.cost || '15.00'
+                },
+                discountApplied: !!orderData.discountApplied,
                 paymentMethod: 'PayU',
-                createdAt: new Date().toISOString()
+                createdAt: new Date().toISOString(),
+                lastUpdated: new Date().toISOString()
             }
         );
     } catch (error) {
         console.error('Appwrite order creation error:', error);
+        throw error;
+    }
+};
+
+// Helper function to get order status
+export const getOrderStatus = async (orderId) => {
+    try {
+        const documents = await databases.listDocuments(
+            '67545c1800028e002c86',
+            '67545c2c001276c2c261',
+            [
+                Query.equal('payuOrderId', orderId)
+            ]
+        );
+        
+        if (documents?.documents?.length > 0) {
+            return documents.documents[0].status;
+        }
+        return null;
+    } catch (error) {
+        console.error('Appwrite get order status error:', error);
+        throw error;
+    }
+};
+
+// Helper function to get order by number
+export const getOrderByNumber = async (orderNumber) => {
+    try {
+        const documents = await databases.listDocuments(
+            '67545c1800028e002c86',
+            '67545c2c001276c2c261',
+            [
+                Query.equal('orderNumber', orderNumber)
+            ]
+        );
+        
+        return documents?.documents?.[0] || null;
+    } catch (error) {
+        console.error('Appwrite get order error:', error);
         throw error;
     }
 };
