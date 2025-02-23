@@ -33,7 +33,6 @@ const OrderSummary = ({
   };
 
   const prepareOrderData = () => ({
-    orderNumber: generateOrderNumber(),
     date: new Date().toISOString(),
     status: 'new',
     total: total.toString(),
