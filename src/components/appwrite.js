@@ -17,15 +17,19 @@ export const createOrder = async (orderData) => {
             {
                 userId: orderData.userId,
                 orderNumber: orderData.orderNumber,
-                Status: 'pending',
-                total: orderData.total,
-                items: orderData.items,
-                customerData: orderData.customerData,
-                shippingDetails: orderData.shippingDetails,
-                discountApplied: orderData.discountApplied,
-                discountAmount: orderData.discountAmount,
-                subtotal: orderData.subtotal,
-                paymentMethod: 'PayU',
+                status: 'Oczekujące', // Changed from Status to status and default value
+                total: orderData.total.toString(), // Ensure it's a string
+                items: JSON.stringify(orderData.items), // Ensure items are properly stringified
+                firstName: orderData.customerData?.Imie || '',
+                lastName: orderData.customerData?.Nazwisko || '',
+                email: orderData.customerData?.Email || '',
+                phone: orderData.customerData?.Telefon || '',
+                shipping: orderData.shippingDetails?.method || 'DPD',
+                shippingCost: orderData.shippingDetails?.cost?.toString() || '0',
+                discountApplied: !!orderData.discountApplied,
+                discountAmount: orderData.discountAmount?.toString() || '0',
+                subtotal: orderData.subtotal?.toString() || '0',
+                payuOrderId: orderData.payuOrderId || '',
                 createdAt: new Date().toISOString()
             }
         );
