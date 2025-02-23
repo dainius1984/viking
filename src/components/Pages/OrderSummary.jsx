@@ -56,7 +56,6 @@ const OrderSummary = ({
   const renderShippingOptions = () => (
     <div className="space-y-2 pt-4 border-t">
       {isFreeShipping ? (
-        // Free shipping options
         <>
           <label className="flex items-center gap-2 text-sm sm:text-base">
             <input
@@ -93,7 +92,6 @@ const OrderSummary = ({
           </label>
         </>
       ) : (
-        // Paid shipping options
         <>
           <label className="flex items-center gap-2 text-sm sm:text-base">
             <input
@@ -170,7 +168,7 @@ const OrderSummary = ({
 
       <div className="flex justify-between font-bold text-base sm:text-lg pt-4 border-t">
         <span>Do zapłaty:</span>
-        <span>{formatPrice(total + (isFreeShipping ? 0 : getShippingCost(subtotal, shipping)))}</span>
+        <span>{formatPrice(total)}</span>
       </div>
     </div>
   );
