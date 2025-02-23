@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
-import { formatPrice, DISCOUNT_CONFIG } from './OrderUtils';
+import { 
+  formatPrice, 
+  DISCOUNT_CONFIG,
+  SHIPPING_OPTIONS,
+  isEligibleForFreeShipping,
+  getShippingCost 
+} from './OrderUtils';
 import { CartItem } from './CartItem';
 import { DiscountInput } from './DiscountInput';
 import PaymentButton from '../PaymentButton';
-
-const generateOrderNumber = () => {
-  const timestamp = Date.now();
-  const random = Math.floor(Math.random() * 1000);
-  return `ORD-${timestamp}-${random}`;
-};
 
 const OrderSummary = ({ 
   cart = [], 
@@ -24,6 +24,7 @@ const OrderSummary = ({
   formData
 }) => {
   const [discountCode, setDiscountCode] = useState('');
+  const isFreeShipping = isEligibleForFreeShipping(subtotal);
 
   const handleApplyDiscount = () => {
     if (!onApplyDiscount) return;
@@ -31,7 +32,6 @@ const OrderSummary = ({
     setDiscountCode('');
   };
 
-  // Prepare order data for payment
   const prepareOrderData = () => ({
     orderNumber: generateOrderNumber(),
     date: new Date().toISOString(),
@@ -49,10 +49,90 @@ const OrderSummary = ({
     items: cart.map(item => 
       `${item.name} (${item.quantity}x po ${formatPrice(item.price)})`
     ).join('\n'),
-    // Add these fields
     paymentStatus: 'PENDING',
-    lastUpdateTime: new Date().toISOString()
+    lastUpdateTime: new Date().toISOString(),
+    shippingCost: isFreeShipping ? '0' : SHIPPING_OPTIONS[shipping].cost.toString()
   });
+
+  const renderShippingOptions = () => (
+    <div className="space-y-2 pt-4 border-t">
+      {isFreeShipping ? (
+        // Free shipping options
+        <>
+          <label className="flex items-center gap-2 text-sm sm:text-base">
+            <input
+              type="radio"
+              name="shipping"
+              value="DPD"
+              checked={shipping === 'DPD'}
+              onChange={(e) => setShipping(e.target.value)}
+              className="w-4 h-4"
+            />
+            <span>Kurier DPD - Darmowa wysyłka</span>
+          </label>
+          <label className="flex items-center gap-2 text-sm sm:text-base">
+            <input
+              type="radio"
+              name="shipping"
+              value="DPD_PICKUP"
+              checked={shipping === 'DPD_PICKUP'}
+              onChange={(e) => setShipping(e.target.value)}
+              className="w-4 h-4"
+            />
+            <span>Kurier DPD - za pobraniem - Darmowa wysyłka</span>
+          </label>
+          <label className="flex items-center gap-2 text-sm sm:text-base">
+            <input
+              type="radio"
+              name="shipping"
+              value="INPOST"
+              checked={shipping === 'INPOST'}
+              onChange={(e) => setShipping(e.target.value)}
+              className="w-4 h-4"
+            />
+            <span>Kurier InPost - Darmowa wysyłka</span>
+          </label>
+        </>
+      ) : (
+        // Paid shipping options
+        <>
+          <label className="flex items-center gap-2 text-sm sm:text-base">
+            <input
+              type="radio"
+              name="shipping"
+              value="DPD"
+              checked={shipping === 'DPD'}
+              onChange={(e) => setShipping(e.target.value)}
+              className="w-4 h-4"
+            />
+            <span>Kurier DPD - {formatPrice(SHIPPING_OPTIONS.DPD.cost)}</span>
+          </label>
+          <label className="flex items-center gap-2 text-sm sm:text-base">
+            <input
+              type="radio"
+              name="shipping"
+              value="DPD_PICKUP"
+              checked={shipping === 'DPD_PICKUP'}
+              onChange={(e) => setShipping(e.target.value)}
+              className="w-4 h-4"
+            />
+            <span>Kurier DPD - za pobraniem - {formatPrice(SHIPPING_OPTIONS.DPD_PICKUP.cost)}</span>
+          </label>
+          <label className="flex items-center gap-2 text-sm sm:text-base">
+            <input
+              type="radio"
+              name="shipping"
+              value="INPOST"
+              checked={shipping === 'INPOST'}
+              onChange={(e) => setShipping(e.target.value)}
+              className="w-4 h-4"
+            />
+            <span>Kurier InPost - {formatPrice(SHIPPING_OPTIONS.INPOST.cost)}</span>
+          </label>
+        </>
+      )}
+    </div>
+  );
 
   const renderOrderSummary = () => (
     <div className="space-y-3 sm:space-y-4 mt-4 sm:mt-6">
@@ -70,8 +150,14 @@ const OrderSummary = ({
 
       <div className="flex justify-between text-sm sm:text-base">
         <span>Wysyłka:</span>
-        <span>{formatPrice(DISCOUNT_CONFIG.shippingCost)}</span>
+        <span>{isFreeShipping ? 'Darmowa' : formatPrice(getShippingCost(subtotal, shipping))}</span>
       </div>
+
+      {!isFreeShipping && (
+        <div className="text-sm text-gray-600 italic">
+          * Darmowa dostawa dla zamówień powyżej {formatPrice(DISCOUNT_CONFIG.freeShippingThreshold)}
+        </div>
+      )}
 
       {!discountApplied && (
         <DiscountInput 
@@ -81,23 +167,11 @@ const OrderSummary = ({
         />
       )}
 
-      <div className="space-y-2 pt-4 border-t">
-        <label className="flex items-center gap-2 text-sm sm:text-base">
-          <input
-            type="radio"
-            name="shipping"
-            value="DPD"
-            checked={shipping === 'DPD'}
-            onChange={(e) => setShipping(e.target.value)}
-            className="w-4 h-4"
-          />
-          <span>Kurier DPD - {formatPrice(DISCOUNT_CONFIG.shippingCost)}</span>
-        </label>
-      </div>
+      {renderShippingOptions()}
 
       <div className="flex justify-between font-bold text-base sm:text-lg pt-4 border-t">
         <span>Do zapłaty:</span>
-        <span>{formatPrice(total)}</span>
+        <span>{formatPrice(total + (isFreeShipping ? 0 : getShippingCost(subtotal, shipping)))}</span>
       </div>
     </div>
   );

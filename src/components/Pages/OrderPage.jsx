@@ -14,7 +14,10 @@ import {
   formatOrderItems,
   validateForm,
   validateDiscountCode,
-  DISCOUNT_CONFIG
+  DISCOUNT_CONFIG,
+  SHIPPING_OPTIONS,
+  getShippingCost,
+  isEligibleForFreeShipping
 } from './OrderUtils';
 import { initiatePayment } from './PaymentService';
 
@@ -27,7 +30,7 @@ const INITIAL_FORM_STATE = {
   city: '',
   phone: '',
   email: '',
-  notes: '' // Make sure this is included
+  notes: ''
 };
 
 const OrderPage = () => {
@@ -39,14 +42,13 @@ const OrderPage = () => {
   const [notification, setNotification] = useState(null);
   const [formData, setFormData] = useState(INITIAL_FORM_STATE);
 
-  // Redirect if cart is empty
   useEffect(() => {
     if (!state.cart?.length) {
       navigate('/cart');
     }
   }, [state.cart, navigate]);
 
-  // Calculate order totals
+  // Calculate order totals with shipping
   const { subtotal, discountAmount, total } = calculateTotals(
     state.cart,
     state.isDiscountApplied
@@ -83,57 +85,70 @@ const OrderPage = () => {
     }
   };
 
-  const createOrderData = (orderNumber) => ({
-    orderNumber,
-    status: 'pending',
-    subtotal: Number(subtotal).toFixed(2),
-    total: Number(total).toFixed(2),
-    discountApplied: state.isDiscountApplied,
-    discountAmount: Number(discountAmount).toFixed(2),
-    shippingCost: DISCOUNT_CONFIG.shippingCost.toFixed(2),
-    createdAt: new Date().toISOString(),
-    lastUpdateTime: new Date().toISOString(),
-    items: formatOrderItems(state.cart),
-    shipping,
-    payuOrderId: null,
-    paymentStatus: 'PENDING',
-    ...formData
-  });
-
-  const createPaymentData = (orderNumber) => ({
-    orderData: {
+  const createOrderData = (orderNumber) => {
+    const isFreeShipping = isEligibleForFreeShipping(subtotal);
+    const shippingCost = isFreeShipping ? 0 : getShippingCost(subtotal, shipping);
+    
+    return {
       orderNumber,
-      cart: state.cart.map(item => ({
-        name: item.name,
-        quantity: item.quantity,
-        price: item.price.toString()
-      })),
-      total: total.toString(),
-      subtotal: subtotal.toString(),
-      shipping,
+      status: 'pending',
+      subtotal: Number(subtotal).toFixed(2),
+      total: (Number(total) + shippingCost).toFixed(2),
       discountApplied: state.isDiscountApplied,
-      discountAmount: discountAmount.toString(),
-      items: state.cart.map(item => 
-        `${item.name} (${item.quantity}x po ${item.price})`
-      ).join('\n')
-    },
-    customerData: {
-      Imie: formData.firstName?.trim(),
-      Nazwisko: formData.lastName?.trim(),
-      Email: formData.email?.trim().toLowerCase(),
-      Telefon: formData.phone?.trim(),
-      Ulica: formData.street?.trim(),
-      'Kod pocztowy': formData.postal?.trim(),
-      Miasto: formData.city?.trim()
-    },
-    isAuthenticated: !!user,
-    userId: user?.id
-  });
+      discountAmount: Number(discountAmount).toFixed(2),
+      shippingCost: shippingCost.toFixed(2),
+      createdAt: new Date().toISOString(),
+      lastUpdateTime: new Date().toISOString(),
+      items: formatOrderItems(state.cart),
+      shipping,
+      payuOrderId: null,
+      paymentStatus: 'PENDING',
+      ...formData
+    };
+  };
+
+  const createPaymentData = (orderNumber) => {
+    const isFreeShipping = isEligibleForFreeShipping(subtotal);
+    const shippingCost = isFreeShipping ? 0 : getShippingCost(subtotal, shipping);
+    const finalTotal = total + shippingCost;
+
+    return {
+      orderData: {
+        orderNumber,
+        cart: state.cart.map(item => ({
+          name: item.name,
+          quantity: item.quantity,
+          price: item.price.toString()
+        })),
+        total: finalTotal.toString(),
+        subtotal: subtotal.toString(),
+        shipping,
+        shippingCost: shippingCost.toString(),
+        discountApplied: state.isDiscountApplied,
+        discountAmount: discountAmount.toString(),
+        items: state.cart.map(item => 
+          `${item.name} (${item.quantity}x po ${item.price})`
+        ).join('\n')
+      },
+      customerData: {
+        Imie: formData.firstName?.trim(),
+        Nazwisko: formData.lastName?.trim(),
+        Email: formData.email?.trim().toLowerCase(),
+        Telefon: formData.phone?.trim(),
+        Ulica: formData.street?.trim(),
+        'Kod pocztowy': formData.postal?.trim(),
+        Miasto: formData.city?.trim(),
+        Firma: formData.company?.trim() || '',
+        Uwagi: formData.notes?.trim() || ''
+      },
+      isAuthenticated: !!user,
+      userId: user?.id
+    };
+  };
 
   const handleSubmitOrder = async (e) => {
     e.preventDefault();
     
-    // Validate form
     const errors = validateForm(formData);
     if (errors.length > 0) {
       showNotification(errors[0]);
@@ -144,11 +159,9 @@ const OrderPage = () => {
     setNotification(null);
 
     try {
-      // Generate order number and prepare data
       const orderNumber = generateOrderNumber();
       const orderData = createOrderData(orderNumber);
       
-      // Store backup
       const backupKey = `order_backup_${orderNumber}`;
       localStorage.setItem(backupKey, JSON.stringify({
         ...orderData,
@@ -156,19 +169,17 @@ const OrderPage = () => {
         paymentStatus: 'PENDING'
       }));
 
-      // Log order creation attempt
       console.log('Creating order:', {
         orderNumber,
         total,
+        shipping,
         isAuthenticated: !!user,
         time: new Date().toISOString()
       });
 
-      // Initiate payment
       const paymentData = createPaymentData(orderNumber);
       const response = await initiatePayment(paymentData);
       
-      // Log successful payment initiation
       console.log('Payment initiated:', {
         orderNumber,
         payuOrderId: response.orderId,
@@ -177,7 +188,6 @@ const OrderPage = () => {
       });
 
       if (response.redirectUrl) {
-        // Store order reference in session storage
         sessionStorage.setItem('lastOrder', JSON.stringify({
           orderNumber,
           payuOrderId: response.orderId,
@@ -185,7 +195,6 @@ const OrderPage = () => {
           status: 'PENDING'
         }));
 
-        // Redirect to payment gateway
         window.location.href = response.redirectUrl;
       } else {
         throw new Error('Nie otrzymano linku do płatności');
@@ -206,7 +215,6 @@ const OrderPage = () => {
     }
   };
 
-  // Show loading state if cart is empty
   if (!state.cart?.length) {
     return (
       <>
