@@ -18,11 +18,14 @@ import AboutUs from './components/Pages/About';
 import PrivacyPolicy from './components/Pages/Policy';
 import PrivateRoute, { RedirectIfAuthenticated } from './PrivateRoute';
 import ProductPage from './components/Pages/ProductPage';
+import SessionManager from './SessionManager'; // Import the session manager
 
 const App = () => {
   return (
     <Router>
       <AuthProvider>
+        {/* Add SessionManager to handle logout on tab close and inactivity */}
+        <SessionManager />
         <CartProvider>
           <Routes>
             <Route path="/" element={<HomePage />} />

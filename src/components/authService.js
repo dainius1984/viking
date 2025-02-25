@@ -35,7 +35,9 @@ export const checkAppwriteSession = async () => {
 export const loginUser = async (email, password) => {
   try {
     // Attempt to create an Appwrite session with provided credentials
-    const session = await account.createEmailPasswordSession(email, password);
+    // Setting 3rd parameter to true makes this a "session only" cookie
+    // that will be destroyed when browser is closed
+    const session = await account.createEmailPasswordSession(email, password, true);
     
     if (!session) {
       throw new Error('Failed to create Appwrite session');
