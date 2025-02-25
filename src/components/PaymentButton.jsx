@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuth } from './AuthContext';
 // Fix import paths - adjust these based on your actual file structure
 import { initiatePayment } from './Pages/PaymentService';
@@ -12,6 +12,13 @@ const PaymentButton = ({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const { user } = useAuth();  // Get authentication context
+
+  useEffect(() => {
+    // Debug logging when formData changes - helps track shipping selection
+    if (formData && formData.shipping) {
+      console.log('Current shipping selection:', formData.shipping);
+    }
+  }, [formData]);
 
   const validateFormData = () => {
     const requiredFields = [
@@ -41,48 +48,57 @@ const PaymentButton = ({
 
       setLoading(true);
 
-// In PaymentButton.jsx
-const paymentData = {
-  orderData: {
-    ...orderData,
-    notes: formData.notes,
-    shipping: formData.shipping || 'DPD' // Make sure shipping is passed
-  },
-  customerData: {
-    Imie: formData.firstName?.trim(),
-    Nazwisko: formData.lastName?.trim(),
-    Email: formData.email?.trim().toLowerCase(),
-    Telefon: formData.phone?.trim(),
-    Ulica: formData.street?.trim(),
-    'Kod pocztowy': formData.postal?.trim(),
-    Miasto: formData.city?.trim(),
-    Firma: formData.company?.trim() || '', // Make sure company is passed
-    Uwagi: formData.notes?.trim() || ''
-  },
-  isAuthenticated: !!user,
-  userId: user?.$id || null
-  };
-  
-      console.log('Full payment data:', paymentData);
+      // Get shipping method - make sure it's defined and not empty
+      const shippingMethod = formData.shipping || 'DPD';
+      
+      console.log('Selected shipping method for payment:', shippingMethod);
+
+      const paymentData = {
+        orderData: {
+          ...orderData,
+          notes: formData.notes,
+          shipping: shippingMethod // Ensure shipping is passed correctly
+        },
+        customerData: {
+          Imie: formData.firstName?.trim(),
+          Nazwisko: formData.lastName?.trim(),
+          Email: formData.email?.trim().toLowerCase(),
+          Telefon: formData.phone?.trim(),
+          Ulica: formData.street?.trim(),
+          'Kod pocztowy': formData.postal?.trim(),
+          Miasto: formData.city?.trim(),
+          Firma: formData.company?.trim() || '', 
+          Uwagi: formData.notes?.trim() || ''
+        },
+        isAuthenticated: !!user,
+        userId: user?.$id || null
+      };
+      
+      console.log('Full payment data:', {
+        ...paymentData,
+        shipping: paymentData.orderData.shipping // Log explicitly for confirmation
+      });
       
       const paymentResponse = await initiatePayment(paymentData);
       
       if (paymentResponse.redirectUrl) {
         // Store order reference in session storage
-// In PaymentButton.jsx, modify the sessionStorage save:
-sessionStorage.setItem('lastOrder', JSON.stringify({
-  orderNumber: orderData.orderNumber,
-  payuOrderId: paymentResponse.orderId,  // Add this
-  date: new Date().toISOString(),
-  status: 'PENDING'  // Add initial status
-}));
+        sessionStorage.setItem('lastOrder', JSON.stringify({
+          orderNumber: paymentResponse.orderNumber || orderData.orderNumber,
+          payuOrderId: paymentResponse.orderId,
+          date: new Date().toISOString(),
+          status: 'PENDING',
+          shipping: shippingMethod // Store shipping method in session storage for reference
+        }));
 
-// Also add better error logging
-console.log('Payment response:', {
-  orderNumber: orderData.orderNumber,
-  payuOrderId: paymentResponse.payuOrderId,
-  redirectUrl: !!paymentResponse.redirectUrl
-});
+        // Also add better error logging
+        console.log('Payment response:', {
+          orderNumber: paymentResponse.orderNumber || orderData.orderNumber,
+          payuOrderId: paymentResponse.orderId,
+          redirectUrl: !!paymentResponse.redirectUrl,
+          shipping: shippingMethod
+        });
+        
         // Redirect to payment gateway
         window.location.href = paymentResponse.redirectUrl;
       } else {
@@ -102,6 +118,13 @@ console.log('Payment response:', {
       {error && (
         <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-600 text-sm rounded-md">
           {error}
+        </div>
+      )}
+      
+      {/* Debug info - remove in production */}
+      {process.env.NODE_ENV !== 'production' && (
+        <div className="mb-2 p-2 bg-blue-50 text-xs border border-blue-200 rounded-md">
+          Current shipping method: {formData.shipping || 'DPD (default)'}
         </div>
       )}
       
