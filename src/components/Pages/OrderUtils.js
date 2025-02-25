@@ -6,8 +6,8 @@ export const SHIPPING_OPTIONS = {
     name: 'Kurier DPD',
     cost: 14.99
   },
-  DPD_PICKUP: {
-    id: 'DPD_PICKUP',
+  DPD_ZA_POBRANIEM: {
+    id: 'DPD_ZA_POBRANIEM',
     name: 'Kurier DPD - za pobraniem',
     cost: 14.99
   },

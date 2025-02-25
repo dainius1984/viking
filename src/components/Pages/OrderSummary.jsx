@@ -92,8 +92,8 @@ const OrderSummary = ({
             <input
               type="radio"
               name="shipping"
-              value="DPD_PICKUP"
-              checked={shipping === 'DPD_PICKUP'}
+              value="DPD_ZA_POBRANIEM"
+              checked={shipping === 'DPD_ZA_POBRANIEM'}
               onChange={handleShippingChange}
               className="w-4 h-4"
             />
@@ -128,12 +128,12 @@ const OrderSummary = ({
             <input
               type="radio"
               name="shipping"
-              value="DPD_PICKUP"
-              checked={shipping === 'DPD_PICKUP'}
+              value="DPD_ZA_POBRANIEM"
+              checked={shipping === 'DPD_ZA_POBRANIEM'}
               onChange={handleShippingChange}
               className="w-4 h-4"
             />
-            <span>Kurier DPD - za pobraniem - {formatPrice(SHIPPING_OPTIONS.DPD_PICKUP.cost)}</span>
+            <span>Kurier DPD - za pobraniem - {formatPrice(SHIPPING_OPTIONS.DPD_ZA_POBRANIEM.cost)}</span>
           </label>
           <label className="flex items-center gap-2 text-sm sm:text-base">
             <input
