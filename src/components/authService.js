@@ -1,6 +1,9 @@
 // authService.js
 import { account, ID } from './appwrite';
 
+// Storage key for payment flow state
+const PAYMENT_FLOW_KEY = 'in_payment_flow';
+
 /**
  * Checks if there is an active Appwrite session
  * Used to verify if a user is currently logged in
@@ -34,10 +37,13 @@ export const checkAppwriteSession = async () => {
  */
 export const loginUser = async (email, password) => {
   try {
-    // Attempt to create an Appwrite session with provided credentials
-    // Setting 3rd parameter to true makes this a "session only" cookie
-    // that will be destroyed when browser is closed
-    const session = await account.createEmailPasswordSession(email, password, true);
+    // Check if we're in the payment flow - if so, create a persistent session
+    // otherwise, create a session-only cookie that will be destroyed when browser is closed
+    const inPaymentFlow = localStorage.getItem(PAYMENT_FLOW_KEY) === 'true';
+    const sessionOnly = !inPaymentFlow;
+    
+    console.log('Creating session with sessionOnly:', sessionOnly, 'inPaymentFlow:', inPaymentFlow);
+    const session = await account.createEmailPasswordSession(email, password, sessionOnly);
     
     if (!session) {
       throw new Error('Failed to create Appwrite session');
@@ -101,6 +107,8 @@ export const logoutUser = async () => {
   try {
     // Delete the current session
     await account.deleteSession('current');
+    // Also clear any payment flow marker
+    localStorage.removeItem(PAYMENT_FLOW_KEY);
     return { success: true };
   } catch (error) {
     return { 
@@ -108,4 +116,24 @@ export const logoutUser = async () => {
       error: error.message 
     };
   }
+};
+
+/**
+ * Set payment flow state to maintain session during payment process
+ * @param {boolean} isInPaymentFlow Whether user is entering payment flow
+ */
+export const setPaymentFlowState = (isInPaymentFlow) => {
+  if (isInPaymentFlow) {
+    localStorage.setItem(PAYMENT_FLOW_KEY, 'true');
+  } else {
+    localStorage.removeItem(PAYMENT_FLOW_KEY);
+  }
+};
+
+/**
+ * Check if user is in payment flow
+ * @returns {boolean} True if in payment flow
+ */
+export const isInPaymentFlow = () => {
+  return localStorage.getItem(PAYMENT_FLOW_KEY) === 'true';
 };

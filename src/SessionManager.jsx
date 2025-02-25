@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { useAuth } from './components/AuthContext';
+import { isInPaymentFlow } from './authService';
 
 // Inactivity timeout in milliseconds (5 minutes)
 const INACTIVITY_TIMEOUT = 5 * 60 * 1000;
@@ -14,18 +15,28 @@ const SessionManager = () => {
     
     // Function to handle user activity
     const resetInactivityTimer = () => {
+      // Skip setting timer if user is in payment flow
+      if (isInPaymentFlow()) {
+        console.log('User is in payment flow, skipping inactivity timer');
+        return;
+      }
+
       clearTimeout(inactivityTimer);
       inactivityTimer = setTimeout(() => {
-        console.log('User inactive for too long, logging out...');
-        logout();
+        // Double-check that we're not in payment flow before logging out
+        if (!isInPaymentFlow()) {
+          console.log('User inactive for too long, logging out...');
+          logout();
+        }
       }, INACTIVITY_TIMEOUT);
     };
 
     // Function to handle tab close
     const handleTabClose = (event) => {
-      // Attempt to logout when tab is closed
-      if (user) {
+      // Skip logout if user is in payment flow
+      if (user && !isInPaymentFlow()) {
         // Note: This is best-effort and may not complete before tab closes
+        console.log('Tab closing, attempting logout');
         logout();
       }
     };

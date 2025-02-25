@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from './AuthContext';
+import { setPaymentFlowState } from './authService'; // Import the new function
 // Fix import paths - adjust these based on your actual file structure
 import { initiatePayment } from './Pages/PaymentService';
 
@@ -52,6 +53,11 @@ const PaymentButton = ({
       const shippingMethod = formData.shipping || 'DPD';
       
       console.log('Selected shipping method for payment:', shippingMethod);
+
+      // Mark that we're entering payment flow - this will preserve session across redirects
+      if (user) {
+        setPaymentFlowState(true);
+      }
 
       const paymentData = {
         orderData: {
@@ -108,6 +114,9 @@ const PaymentButton = ({
     } catch (error) {
       console.error('Payment error:', error);
       setError(error.message || 'Wystąpił błąd podczas inicjowania płatności. Spróbuj ponownie.');
+      
+      // If there's an error, remove the payment flow state
+      setPaymentFlowState(false);
     } finally {
       setLoading(false);
     }

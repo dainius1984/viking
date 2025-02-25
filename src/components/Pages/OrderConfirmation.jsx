@@ -1,119 +1,149 @@
-import React, { useEffect, useState } from 'react';
+// OrderConfirmation.jsx
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { useAuth } from '../AuthContext';
+import { useCart } from '../../context/CartContext';
+import { setPaymentFlowState } from '../authService'; // Import the function
 import TopNavBar from '../Headers/TopNavBar';
 import Header from '../Headers/Header';
 import Footer from '../Footer/Footer';
-import { FaCheckCircle, FaHome, FaFileAlt, FaEnvelope } from 'react-icons/fa';
 
 const OrderConfirmation = () => {
-  const { user } = useAuth();
-  const [orderDetails, setOrderDetails] = useState(null);
+  const { dispatch } = useCart();
+  const [orderData, setOrderData] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Get order details from session storage first
-    const lastOrder = sessionStorage.getItem('lastOrder');
-    if (lastOrder) {
-      try {
-        const parsedOrder = JSON.parse(lastOrder);
-        setOrderDetails(parsedOrder);
-      } catch (error) {
-        console.error('Error parsing order from session storage:', error);
+    try {
+      // End the payment flow - return to normal session behavior
+      setPaymentFlowState(false);
+      
+      // Get order data from session storage
+      const storedOrder = sessionStorage.getItem('lastOrder');
+      if (storedOrder) {
+        const parsedOrder = JSON.parse(storedOrder);
+        setOrderData(parsedOrder);
+        
+        // Clear the cart after successful order
+        dispatch({ type: 'CLEAR_CART' });
       }
+    } catch (error) {
+      console.error('Error retrieving order data:', error);
+    } finally {
+      setLoading(false);
     }
+  }, [dispatch]);
 
-    // Get backup from localStorage if session storage is empty
-    if (!lastOrder) {
-      const orderBackupKeys = Object.keys(localStorage).filter(
-        key => key.startsWith('order_backup_')
-      );
+  if (loading) {
+    return (
+      <>
+        <TopNavBar />
+        <Header />
+        <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-800"></div>
+        </div>
+        <Footer />
+      </>
+    );
+  }
 
-      if (orderBackupKeys.length > 0) {
-        const latestOrderBackupKey = orderBackupKeys.sort().pop();
-        try {
-          const orderData = JSON.parse(
-            localStorage.getItem(latestOrderBackupKey)
-          );
-          setOrderDetails(orderData);
-          // Clean up the backup
-          localStorage.removeItem(latestOrderBackupKey);
-        } catch (error) {
-          console.error('Error parsing order backup:', error);
-        }
-      }
-    }
-  }, []); // Empty dependency array - only run once
-
-  const orderDate = new Date().toLocaleDateString('pl-PL');
-  const estimatedDelivery = new Date(Date.now() + 5 * 24 * 60 * 60 * 1000).toLocaleDateString('pl-PL');
+  if (!orderData) {
+    return (
+      <>
+        <TopNavBar />
+        <Header />
+        <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center p-4">
+          <div className="bg-white p-6 rounded-lg shadow-md max-w-lg w-full text-center">
+            <h1 className="text-xl font-semibold mb-4">Nie znaleziono danych zamówienia</h1>
+            <p className="text-gray-600 mb-6">
+              Nie mogliśmy znaleźć informacji o Twoim zamówieniu. Jeśli właśnie dokonałeś zakupu,
+              sprawdź swoją skrzynkę e-mail w celu potwierdzenia lub skontaktuj się z nami.
+            </p>
+            <Link 
+              to="/" 
+              className="inline-block bg-green-700 text-white px-6 py-2 rounded-md hover:bg-green-800 transition-colors"
+            >
+              Wróć do strony głównej
+            </Link>
+          </div>
+        </div>
+        <Footer />
+      </>
+    );
+  }
 
   return (
     <>
       <TopNavBar />
       <Header />
-      <div className="min-h-screen bg-gray-50">
-        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 md:py-10">
-          <div className="bg-white p-6 sm:p-8 md:p-12 rounded-xl sm:rounded-2xl shadow-md sm:shadow-lg text-center">
-            <div className="animate-[scale-up_0.5s_ease-out] text-green-800">
-              <FaCheckCircle className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 mx-auto mb-4 sm:mb-6" />
+      <div className="min-h-screen bg-gray-50 py-12">
+        <div className="max-w-3xl mx-auto px-4">
+          <div className="bg-white rounded-lg shadow-md p-6 md:p-8">
+            <div className="flex items-center justify-center mb-6">
+              <div className="bg-green-100 p-3 rounded-full">
+                <svg 
+                  className="w-10 h-10 text-green-600"
+                  fill="none" 
+                  stroke="currentColor" 
+                  viewBox="0 0 24 24" 
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path 
+                    strokeLinecap="round" 
+                    strokeLinejoin="round" 
+                    strokeWidth="2" 
+                    d="M5 13l4 4L19 7"
+                  />
+                </svg>
+              </div>
             </div>
-
-            <h1 className="text-xl sm:text-2xl md:text-3xl font-semibold text-gray-900 mb-3 sm:mb-4">
+            
+            <h1 className="text-2xl md:text-3xl font-bold text-center mb-6">
               Dziękujemy za złożenie zamówienia!
             </h1>
-            <p className="text-base sm:text-lg text-gray-600 mb-2 sm:mb-3">
-              Twoje zamówienie zostało przyjęte do realizacji.
-            </p>
-            <p className="text-base sm:text-lg text-gray-600 mb-6 sm:mb-8">
-              Wkrótce otrzymasz email z potwierdzeniem zamówienia na podany adres.
-            </p>
-
-            <div className="bg-gray-50 p-4 sm:p-6 rounded-lg sm:rounded-xl mb-6 sm:mb-8 text-left">
-              <div className="font-mono text-base sm:text-lg font-semibold text-green-800 mb-3 sm:mb-4">
-                Numer zamówienia: {orderDetails?.orderNumber || 'Loading...'}
+            
+            <div className="border-t border-b border-gray-200 py-4 my-6">
+              <div className="flex flex-col md:flex-row justify-between mb-4">
+                <div>
+                  <h2 className="font-semibold text-gray-700">Numer zamówienia:</h2>
+                  <p className="text-gray-600">{orderData.orderNumber}</p>
+                </div>
+                <div className="mt-4 md:mt-0">
+                  <h2 className="font-semibold text-gray-700">Data zamówienia:</h2>
+                  <p className="text-gray-600">
+                    {new Date(orderData.date).toLocaleDateString()}
+                  </p>
+                </div>
               </div>
               
-              <div className="space-y-3 sm:space-y-4">
-                <div className="flex flex-col sm:flex-row sm:justify-between py-2 border-b border-gray-200 last:border-0 gap-1 sm:gap-4">
-                  <span className="text-gray-600 text-sm sm:text-base">Data złożenia:</span>
-                  <span className="font-medium text-gray-900 text-sm sm:text-base">{orderDate}</span>
+              <div className="mb-4">
+                <h2 className="font-semibold text-gray-700">Status płatności:</h2>
+                <div className="flex items-center mt-1">
+                  <span className="inline-block w-3 h-3 bg-yellow-500 rounded-full mr-2"></span>
+                  <span className="text-gray-600">Oczekująca</span>
                 </div>
-                
-                <div className="flex flex-col sm:flex-row sm:justify-between py-2 border-b border-gray-200 last:border-0 gap-1 sm:gap-4">
-                  <span className="text-gray-600 text-sm sm:text-base">Przewidywana data dostawy:</span>
-                  <span className="font-medium text-gray-900 text-sm sm:text-base">{estimatedDelivery}</span>
-                </div>
-                
-                <div className="flex flex-col sm:flex-row sm:justify-between py-2 border-b border-gray-200 last:border-0 gap-1 sm:gap-4">
-                  <span className="text-gray-600 text-sm sm:text-base">Status:</span>
-                  <span className="font-medium text-green-800 text-sm sm:text-base">W trakcie realizacji</span>
-                </div>
+                <p className="text-sm text-gray-500 mt-1">
+                  Po potwierdzeniu płatności, wyślemy Ci e-mail z potwierdzeniem.
+                </p>
               </div>
             </div>
-
-            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center mb-6 sm:mb-8">
+            
+            <div className="text-center mb-6">
+              <p className="text-gray-600 mb-6">
+                Na Twój adres e-mail zostało wysłane potwierdzenie zamówienia
+                wraz ze szczegółami dotyczącymi płatności i dostawy.
+              </p>
+              
               <Link 
                 to="/" 
-                className="inline-flex items-center justify-center gap-2 px-4 sm:px-6 py-2.5 sm:py-3 bg-green-800 text-white text-sm sm:text-base font-medium rounded-lg transition-all duration-200 hover:bg-green-900 hover:-translate-y-0.5 hover:shadow-lg w-full sm:w-auto"
+                className="inline-block bg-green-700 text-white px-6 py-3 rounded-md hover:bg-green-800 transition-colors"
               >
-                <FaHome className="w-4 h-4" />
-                Powrót do strony głównej
+                Kontynuuj zakupy
               </Link>
-              
-              {user && (
-                <Link 
-                  to="/account" 
-                  className="inline-flex items-center justify-center gap-2 px-4 sm:px-6 py-2.5 sm:py-3 border-2 border-green-800 text-green-800 text-sm sm:text-base font-medium rounded-lg transition-all duration-200 hover:bg-green-50 w-full sm:w-auto"
-                >
-                  <FaFileAlt className="w-4 h-4" />
-                  Moje zamówienia
-                </Link>
-              )}
             </div>
-
-            <div className="flex items-center justify-center text-xs sm:text-sm text-gray-500">
-              <FaEnvelope className="w-3 h-3 sm:w-4 sm:h-4 mr-1.5 sm:mr-2" />
-              Kopia potwierdzenia została wysłana na Twój adres email
+            
+            <div className="text-sm text-gray-500 text-center">
+              <p>Masz pytania dotyczące zamówienia?</p>
+              <p>Skontaktuj się z nami: <a href="mailto:contact@example.com" className="text-green-600 hover:underline">contact@example.com</a></p>
             </div>
           </div>
         </div>
