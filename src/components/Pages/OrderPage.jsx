@@ -30,14 +30,14 @@ const INITIAL_FORM_STATE = {
   city: '',
   phone: '',
   email: '',
-  notes: ''
+  notes: '',
+  shipping: 'DPD' // Add default shipping to formData
 };
 
 const OrderPage = () => {
   const { state, dispatch } = useCart();
   const { user } = useAuth();
   const navigate = useNavigate();
-  const [shipping, setShipping] = useState('DPD');
   const [loading, setLoading] = useState(false);
   const [notification, setNotification] = useState(null);
   const [formData, setFormData] = useState(INITIAL_FORM_STATE);
@@ -67,6 +67,15 @@ const OrderPage = () => {
     }));
   };
 
+  // Handle shipping method change
+  const handleShippingChange = (method) => {
+    console.log('Shipping method changed to:', method);
+    setFormData(prev => ({
+      ...prev,
+      shipping: method
+    }));
+  };
+
   const handleApplyDiscount = (code) => {
     if (state.isDiscountApplied) {
       showNotification('Kod rabatowy został już wykorzystany w tym zamówieniu.', 'error', 3000);
@@ -87,7 +96,7 @@ const OrderPage = () => {
 
   const createOrderData = (orderNumber) => {
     const isFreeShipping = isEligibleForFreeShipping(subtotal);
-    const shippingCost = isFreeShipping ? 0 : getShippingCost(subtotal, shipping);
+    const shippingCost = isFreeShipping ? 0 : getShippingCost(subtotal, formData.shipping);
     
     return {
       orderNumber,
@@ -100,7 +109,7 @@ const OrderPage = () => {
       createdAt: new Date().toISOString(),
       lastUpdateTime: new Date().toISOString(),
       items: formatOrderItems(state.cart),
-      shipping,
+      shipping: formData.shipping, // Use formData.shipping
       payuOrderId: null,
       paymentStatus: 'PENDING',
       ...formData
@@ -109,7 +118,7 @@ const OrderPage = () => {
 
   const createPaymentData = (orderNumber) => {
     const isFreeShipping = isEligibleForFreeShipping(subtotal);
-    const shippingCost = isFreeShipping ? 0 : getShippingCost(subtotal, shipping);
+    const shippingCost = isFreeShipping ? 0 : getShippingCost(subtotal, formData.shipping);
     const finalTotal = total + shippingCost;
 
     return {
@@ -122,7 +131,7 @@ const OrderPage = () => {
         })),
         total: finalTotal.toString(),
         subtotal: subtotal.toString(),
-        shipping,
+        shipping: formData.shipping, // Use formData.shipping
         shippingCost: shippingCost.toString(),
         discountApplied: state.isDiscountApplied,
         discountAmount: discountAmount.toString(),
@@ -172,7 +181,7 @@ const OrderPage = () => {
       console.log('Creating order:', {
         orderNumber,
         total,
-        shipping,
+        shipping: formData.shipping, // Log the shipping method from formData
         isAuthenticated: !!user,
         time: new Date().toISOString()
       });
@@ -184,6 +193,7 @@ const OrderPage = () => {
         orderNumber,
         payuOrderId: response.orderId,
         hasRedirectUrl: !!response.redirectUrl,
+        shipping: formData.shipping, // Log the shipping method
         time: new Date().toISOString()
       });
 
@@ -192,7 +202,8 @@ const OrderPage = () => {
           orderNumber,
           payuOrderId: response.orderId,
           date: new Date().toISOString(),
-          status: 'PENDING'
+          status: 'PENDING',
+          shipping: formData.shipping // Store shipping in session storage
         }));
 
         window.location.href = response.redirectUrl;
@@ -258,8 +269,8 @@ const OrderPage = () => {
                   discountAmount={discountAmount}
                   discountPercentage={DISCOUNT_CONFIG.percentage}
                   total={total}
-                  shipping={shipping}
-                  setShipping={setShipping}
+                  shipping={formData.shipping} // Pass shipping from formData
+                  setShipping={handleShippingChange} // Use the new handler
                   loading={loading}
                   onApplyDiscount={handleApplyDiscount}
                   formData={formData}

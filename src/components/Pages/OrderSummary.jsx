@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   formatPrice, 
   DISCOUNT_CONFIG,
@@ -25,6 +25,11 @@ const OrderSummary = ({
 }) => {
   const [discountCode, setDiscountCode] = useState('');
   const isFreeShipping = isEligibleForFreeShipping(subtotal);
+  
+  // Log when shipping option changes
+  useEffect(() => {
+    console.log('OrderSummary - Current shipping method:', shipping);
+  }, [shipping]);
 
   const handleApplyDiscount = () => {
     if (!onApplyDiscount) return;
@@ -32,26 +37,41 @@ const OrderSummary = ({
     setDiscountCode('');
   };
 
-  const prepareOrderData = () => ({
-    date: new Date().toISOString(),
-    status: 'new',
-    total: total.toString(),
-    shipping,
-    cart: cart.map(item => ({
-      name: item.name,
-      quantity: item.quantity,
-      price: item.price.toString()
-    })),
-    subtotal: subtotal.toString(),
-    discountApplied,
-    discountAmount: discountAmount.toString(),
-    items: cart.map(item => 
-      `${item.name} (${item.quantity}x po ${formatPrice(item.price)})`
-    ).join('\n'),
-    paymentStatus: 'PENDING',
-    lastUpdateTime: new Date().toISOString(),
-    shippingCost: isFreeShipping ? '0' : SHIPPING_OPTIONS[shipping].cost.toString()
-  });
+  // Handle shipping method change
+  const handleShippingChange = (e) => {
+    const selectedShipping = e.target.value;
+    console.log('OrderSummary - Shipping changed to:', selectedShipping);
+    setShipping(selectedShipping);
+  };
+
+  const prepareOrderData = () => {
+    // Make sure shipping cost is correctly calculated
+    const shippingCost = isFreeShipping ? 0 : SHIPPING_OPTIONS[shipping]?.cost || 0;
+    const finalTotal = (Number(total) + shippingCost).toFixed(2);
+    
+    console.log('OrderSummary - Preparing order data with shipping:', shipping);
+    
+    return {
+      date: new Date().toISOString(),
+      status: 'new',
+      total: finalTotal,
+      shipping: shipping, // Explicitly include shipping method
+      cart: cart.map(item => ({
+        name: item.name,
+        quantity: item.quantity,
+        price: item.price.toString()
+      })),
+      subtotal: subtotal.toString(),
+      discountApplied,
+      discountAmount: discountAmount.toString(),
+      items: cart.map(item => 
+        `${item.name} (${item.quantity}x po ${formatPrice(item.price)})`
+      ).join('\n'),
+      paymentStatus: 'PENDING',
+      lastUpdateTime: new Date().toISOString(),
+      shippingCost: shippingCost.toString()
+    };
+  };
 
   const renderShippingOptions = () => (
     <div className="space-y-2 pt-4 border-t">
@@ -63,7 +83,7 @@ const OrderSummary = ({
               name="shipping"
               value="DPD"
               checked={shipping === 'DPD'}
-              onChange={(e) => setShipping(e.target.value)}
+              onChange={handleShippingChange}
               className="w-4 h-4"
             />
             <span>Kurier DPD - Darmowa wysyłka</span>
@@ -74,7 +94,7 @@ const OrderSummary = ({
               name="shipping"
               value="DPD_PICKUP"
               checked={shipping === 'DPD_PICKUP'}
-              onChange={(e) => setShipping(e.target.value)}
+              onChange={handleShippingChange}
               className="w-4 h-4"
             />
             <span>Kurier DPD - za pobraniem - Darmowa wysyłka</span>
@@ -85,7 +105,7 @@ const OrderSummary = ({
               name="shipping"
               value="INPOST"
               checked={shipping === 'INPOST'}
-              onChange={(e) => setShipping(e.target.value)}
+              onChange={handleShippingChange}
               className="w-4 h-4"
             />
             <span>Kurier InPost - Darmowa wysyłka</span>
@@ -99,7 +119,7 @@ const OrderSummary = ({
               name="shipping"
               value="DPD"
               checked={shipping === 'DPD'}
-              onChange={(e) => setShipping(e.target.value)}
+              onChange={handleShippingChange}
               className="w-4 h-4"
             />
             <span>Kurier DPD - {formatPrice(SHIPPING_OPTIONS.DPD.cost)}</span>
@@ -110,7 +130,7 @@ const OrderSummary = ({
               name="shipping"
               value="DPD_PICKUP"
               checked={shipping === 'DPD_PICKUP'}
-              onChange={(e) => setShipping(e.target.value)}
+              onChange={handleShippingChange}
               className="w-4 h-4"
             />
             <span>Kurier DPD - za pobraniem - {formatPrice(SHIPPING_OPTIONS.DPD_PICKUP.cost)}</span>
@@ -121,12 +141,19 @@ const OrderSummary = ({
               name="shipping"
               value="INPOST"
               checked={shipping === 'INPOST'}
-              onChange={(e) => setShipping(e.target.value)}
+              onChange={handleShippingChange}
               className="w-4 h-4"
             />
             <span>Kurier InPost - {formatPrice(SHIPPING_OPTIONS.INPOST.cost)}</span>
           </label>
         </>
+      )}
+      
+      {/* Debug indicator in development */}
+      {process.env.NODE_ENV !== 'production' && (
+        <div className="mt-2 text-xs text-gray-500">
+          Wybrana opcja dostawy: {shipping}
+        </div>
       )}
     </div>
   );
@@ -173,6 +200,15 @@ const OrderSummary = ({
     </div>
   );
 
+  // Calculate the final order data
+  const orderData = prepareOrderData();
+  
+  // Create enhanced formData with shipping included
+  const enhancedFormData = {
+    ...formData,
+    shipping: shipping // Explicitly include shipping in formData
+  };
+
   return (
     <div className="lg:sticky lg:top-5 w-full">
       <div className="bg-white p-4 sm:p-6 lg:p-8 rounded-lg shadow-sm">
@@ -186,8 +222,8 @@ const OrderSummary = ({
 
         {renderOrderSummary()}
         <PaymentButton 
-          orderData={prepareOrderData()}
-          formData={formData}
+          orderData={orderData}
+          formData={enhancedFormData}
           loading={loading}
           isDisabled={cart.length === 0}
         />
