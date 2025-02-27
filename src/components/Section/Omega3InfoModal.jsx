@@ -46,7 +46,7 @@ const Omega3InfoModal = ({ isOpen, onClose }) => {
     >
       <div 
         ref={modalRef}
-        className="bg-white rounded-2xl max-w-3xl w-full max-h-[90vh] overflow-auto shadow-xl my-4"
+        className="bg-white rounded-2xl max-w-3xl w-full max-h-[90vh] overflow-auto shadow-xl my-4 modal-content"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="sticky top-0 bg-white z-10 flex justify-between items-center p-4 md:p-5 border-b border-gray-100">
@@ -54,7 +54,7 @@ const Omega3InfoModal = ({ isOpen, onClose }) => {
             <div className="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center mr-3">
               <span className="text-xl">🧐</span>
             </div>
-            <h3 className="text-xl md:text-2xl font-bold text-gray-800">Jak sprawdzić poziom Omega-3?</h3>
+            <h3 className="text-xl md:text-2xl font-bold text-emerald-800">Jak sprawdzić poziom Omega-3?</h3>
           </div>
           <button 
             onClick={onClose}
@@ -65,7 +65,7 @@ const Omega3InfoModal = ({ isOpen, onClose }) => {
           </button>
         </div>
         
-        <div className="p-4 md:p-6">
+        <div className="p-4 md:p-6 modal-body">
           <div className="prose max-w-none">
             <div className="mb-6 bg-green-50 p-4 rounded-xl border-l-4 border-green-600">
               <p className="text-gray-700">
@@ -146,7 +146,7 @@ const Omega3InfoModal = ({ isOpen, onClose }) => {
             </div>
           </div>
           
-          <div className="mt-8 flex flex-col sm:flex-row justify-center gap-4">
+          <div className="mt-8 flex flex-col sm:flex-row justify-center gap-4 modal-actions">
             <button
               onClick={onClose}
               className="order-2 sm:order-1 px-6 py-3 bg-gray-200 text-gray-700 font-medium rounded-lg hover:bg-gray-300 transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2"
@@ -155,8 +155,11 @@ const Omega3InfoModal = ({ isOpen, onClose }) => {
             </button>
             <a
               href="https://familybalance.pl/category/testy"
-              onClick={() => window.scrollTo(0, 0)}
-              className="order-1 sm:order-2 px-6 py-3 bg-[#006400] text-white font-semibold rounded-lg hover:bg-[#008000] transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-[#006400] focus:ring-offset-2 flex items-center justify-center no-underline"
+              onClick={() => {
+                window.scrollTo(0, 0);
+                onClose();
+              }}
+              className="order-1 sm:order-2 px-6 py-3 bg-emerald-800 text-white font-semibold rounded-lg hover:bg-emerald-900 transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-emerald-800 focus:ring-offset-2 flex items-center justify-center no-underline pulse-animation"
             >
               Zamów BalanceTest
               <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 ml-2" viewBox="0 0 20 20" fill="currentColor">

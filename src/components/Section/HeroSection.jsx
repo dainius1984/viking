@@ -19,16 +19,37 @@ const HeroSection = () => {
         <p className="text-[clamp(1rem,2.5vw,1.25rem)] mb-8">
           Wzmocnij zdrowie dzięki naturze!
         </p>
-        <Link 
-          to="/category" 
-          className="inline-block bg-[#0a683f] text-white border-2 border-transparent px-9 py-4 
-            text-lg font-semibold rounded-full transition-all duration-300 uppercase tracking-wider
-            shadow-[0_4px_15px_rgba(10,104,63,0.3)]
-            hover:bg-[#055229] hover:-translate-y-0.5 hover:shadow-[0_6px_20px_rgba(10,104,63,0.4)]
-            active:translate-y-0.5 active:shadow-[0_2px_10px_rgba(10,104,63,0.2)]"
-        >
-          Zobacz Produkty
-        </Link>
+        
+        <div className="flex flex-col sm:flex-row justify-center items-center gap-4 sm:gap-6">
+          <Link 
+            to="/category" 
+            className="inline-block bg-[#0a683f] text-white border-2 border-transparent px-7 py-3.5 
+              text-lg font-semibold rounded-full transition-all duration-300 uppercase tracking-wider
+              shadow-[0_4px_15px_rgba(10,104,63,0.3)] w-full sm:w-auto
+              hover:bg-[#055229] hover:-translate-y-0.5 hover:shadow-[0_6px_20px_rgba(10,104,63,0.4)]
+              active:translate-y-0.5 active:shadow-[0_2px_10px_rgba(10,104,63,0.2)]"
+          >
+            Zobacz Produkty
+          </Link>
+          
+          <Link 
+            to="/health-protocol" 
+            className="inline-block bg-transparent text-white border-2 border-white px-7 py-3.5 
+              text-lg font-semibold rounded-full transition-all duration-300 uppercase tracking-wider
+              shadow-[0_4px_15px_rgba(255,255,255,0.15)] w-full sm:w-auto
+              hover:bg-white/10 hover:-translate-y-0.5 hover:shadow-[0_6px_20px_rgba(255,255,255,0.2)]
+              active:translate-y-0.5 active:shadow-[0_2px_10px_rgba(255,255,255,0.1)]"
+          >
+            Protokół Zdrowia
+          </Link>
+        </div>
+        
+        <div className="mt-8 animate-bounce opacity-70">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mx-auto">
+            <path d="M7 13l5 5 5-5"></path>
+            <path d="M7 7l5 5 5-5"></path>
+          </svg>
+        </div>
       </div>
     </div>
   );

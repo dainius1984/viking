@@ -9,6 +9,7 @@ import OrderPage from './components/Pages/OrderPage';
 import OrderConfirmation from './components/Pages/OrderConfirmation';
 import Wishlist from './components/Pages/Wishlist';
 import Blog from './components/Pages/Blog';
+import HealthProtocolPage from './components/Pages/HealthProtocolPage';
 import Article from './components/Pages/Article';
 import AuthPage from './components/Pages/AuthPage';
 import AccountPage from './components/Pages/AccountPage';
@@ -40,6 +41,7 @@ const App = () => {
             <Route path="/regulamin" element={<Regulamin />} />
             <Route path="/policy" element={<PrivacyPolicy />} />
             <Route path="/article/:id" element={<Article />} />
+            <Route path="/health-protocol" element={<HealthProtocolPage />} />
             <Route path="/product/:id" element={<ProductPage />} />
             <Route 
               path="/auth" 

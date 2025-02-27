@@ -16,7 +16,7 @@ const SessionManager = () => {
     // Function to handle user activity
     const resetInactivityTimer = () => {
       // Skip setting timer if user is in payment flow
-      if (isInPaymentFlow()) {
+      if (isInPaymentFlow()) { 
         console.log('User is in payment flow, skipping inactivity timer');
         return;
       }
