@@ -277,7 +277,11 @@ const HealthProtocolPage = () => {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div className="bg-white p-6 rounded-xl shadow-lg shadow-black/5">
               <div className="flex items-center mb-4">
-                <div className="w-12 h-12 bg-gray-200 rounded-full mr-4"></div>
+              <img 
+  src="/img/products/1.jfif" 
+  alt="Anna K." 
+  className="w-12 h-12 rounded-full object-cover mr-4"
+/>
                 <div>
                   <h4 className="font-bold text-gray-800">Anna K.</h4>
                   <p className="text-gray-500 text-sm">Klient od 6 miesięcy</p>
@@ -290,7 +294,11 @@ const HealthProtocolPage = () => {
             
             <div className="bg-white p-6 rounded-xl shadow-lg shadow-black/5">
               <div className="flex items-center mb-4">
-                <div className="w-12 h-12 bg-gray-200 rounded-full mr-4"></div>
+              <img 
+  src="/img/products/1.jfif" 
+  alt="Anna K." 
+  className="w-12 h-12 rounded-full object-cover mr-4"
+/>
                 <div>
                   <h4 className="font-bold text-gray-800">Marek W.</h4>
                   <p className="text-gray-500 text-sm">Klient od roku</p>
@@ -303,7 +311,11 @@ const HealthProtocolPage = () => {
             
             <div className="bg-white p-6 rounded-xl shadow-lg shadow-black/5">
               <div className="flex items-center mb-4">
-                <div className="w-12 h-12 bg-gray-200 rounded-full mr-4"></div>
+              <img 
+  src="/img/products/1.jfif" 
+  alt="Anna K." 
+  className="w-12 h-12 rounded-full object-cover mr-4"
+/>
                 <div>
                   <h4 className="font-bold text-gray-800">Katarzyna M.</h4>
                   <p className="text-gray-500 text-sm">Klient od 8 miesięcy</p>
