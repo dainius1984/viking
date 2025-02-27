@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { useAuth } from './components/AuthContext';
-import { isInPaymentFlow } from './authService';
+import { isInPaymentFlow } from './components/authService';
 
 // Inactivity timeout in milliseconds (5 minutes)
 const INACTIVITY_TIMEOUT = 5 * 60 * 1000;

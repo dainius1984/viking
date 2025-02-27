@@ -2,13 +2,15 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useCart } from '../../context/CartContext';
+import { useAuth } from '../AuthContext';
 import { setPaymentFlowState } from '../authService'; // Import the function
 import TopNavBar from '../Headers/TopNavBar';
 import Header from '../Headers/Header';
 import Footer from '../Footer/Footer';
 
 const OrderConfirmation = () => {
-  const { dispatch } = useCart();
+  const { state, dispatch, clearCart } = useCart(); // Get clearCart function from context
+  const { user } = useAuth(); // Get user to check authentication status
   const [orderData, setOrderData] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -23,15 +25,16 @@ const OrderConfirmation = () => {
         const parsedOrder = JSON.parse(storedOrder);
         setOrderData(parsedOrder);
         
-        // Clear the cart after successful order
-        dispatch({ type: 'CLEAR_CART' });
+        // Clear the cart for both guest and logged-in users
+        console.log('Clearing cart after successful order');
+        clearCart(); // This function handles both user types
       }
     } catch (error) {
-      console.error('Error retrieving order data:', error);
+      console.error('Error retrieving order data or clearing cart:', error);
     } finally {
       setLoading(false);
     }
-  }, [dispatch]);
+  }, [clearCart]);
 
   if (loading) {
     return (

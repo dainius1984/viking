@@ -14,7 +14,7 @@ const HeroSection = () => {
       {/* Content */}
       <div className="relative z-[2] max-w-[800px] px-5 animate-fadeInUp">
         <h1 className="text-[clamp(2rem,5vw,3rem)] font-bold mb-5">
-          Wegański Suplement Diety
+          Naturalne Suplementy Diety
         </h1>
         <p className="text-[clamp(1rem,2.5vw,1.25rem)] mb-8">
           Wzmocnij zdrowie dzięki naturze!
