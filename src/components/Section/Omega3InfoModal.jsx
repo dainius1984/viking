@@ -4,7 +4,7 @@ import { X } from 'lucide-react';
 const Omega3InfoModal = ({ isOpen, onClose }) => {
   const modalRef = useRef(null);
 
-  // Handle ESC key to close the modal
+  // Handle ESC key to close the modal and lock scroll
   useEffect(() => {
     const handleEsc = (e) => {
       if (e.key === 'Escape' && isOpen) onClose();
@@ -15,11 +15,18 @@ const Omega3InfoModal = ({ isOpen, onClose }) => {
     // Lock body scroll when modal is open
     if (isOpen) {
       document.body.style.overflow = 'hidden';
+      
+      // Add padding right to body to prevent layout shift when scrollbar disappears
+      const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
+      if (scrollbarWidth > 0) {
+        document.body.style.paddingRight = `${scrollbarWidth}px`;
+      }
     }
     
     return () => {
       window.removeEventListener('keydown', handleEsc);
       document.body.style.overflow = 'auto';
+      document.body.style.paddingRight = '0';
     };
   }, [isOpen, onClose]);
 
@@ -146,14 +153,16 @@ const Omega3InfoModal = ({ isOpen, onClose }) => {
             >
               Zamknij
             </button>
-            <button
-              className="order-1 sm:order-2 px-6 py-3 bg-[#006400] text-white font-semibold rounded-lg hover:bg-[#008000] transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-[#006400] focus:ring-offset-2 flex items-center justify-center"
+            <a
+              href="https://familybalance.pl/category/testy"
+              onClick={() => window.scrollTo(0, 0)}
+              className="order-1 sm:order-2 px-6 py-3 bg-[#006400] text-white font-semibold rounded-lg hover:bg-[#008000] transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-[#006400] focus:ring-offset-2 flex items-center justify-center no-underline"
             >
               Zamów BalanceTest
               <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 ml-2" viewBox="0 0 20 20" fill="currentColor">
                 <path fillRule="evenodd" d="M10.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L12.586 11H5a1 1 0 110-2h7.586l-2.293-2.293a1 1 0 010-1.414z" clipRule="evenodd" />
               </svg>
-            </button>
+            </a>
           </div>
         </div>
       </div>

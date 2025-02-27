@@ -73,16 +73,18 @@ const HealthyLifestyleBanner = () => {
                     Czy wiesz, że możesz sprawdzić swój poziom Omega-3?
                   </span>
                 </div>
-                <button 
-                  onClick={openModal}
-                  className="bg-[#006400] hover:bg-[#008000] text-white font-medium text-sm md:text-base py-2 px-4 rounded-md transition-all duration-300 whitespace-nowrap flex items-center justify-center flex-shrink-0 w-full sm:w-auto focus:outline-none focus:ring-2 focus:ring-[#006400] focus:ring-offset-2"
-                  aria-label="Sprawdź jak zbadać poziom Omega-3"
-                >
-                  Sprawdź jak to zrobić
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                  </svg>
-                </button>
+                <div className="w-full sm:w-auto">
+                  <button 
+                    onClick={openModal}
+                    className="bg-[#006400] hover:bg-[#008000] text-white font-medium text-sm md:text-base py-2 px-4 rounded-md transition-all duration-300 whitespace-nowrap flex items-center justify-center flex-shrink-0 w-full focus:outline-none focus:ring-2 focus:ring-[#006400] focus:ring-offset-2"
+                    aria-label="Sprawdź jak zbadać poziom Omega-3"
+                  >
+                    Sprawdź jak to zrobić
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                    </svg>
+                  </button>
+                </div>
               </div>
             </div>
           </div>
