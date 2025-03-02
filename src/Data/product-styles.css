@@ -217,6 +217,7 @@
     flex-direction: column;
     gap: 1rem;
     margin-top: 1.5rem;
+    margin-bottom: 2rem;
   }
 
   .benefit-card {
@@ -246,13 +247,26 @@
   }
 
   /* Modal specific styles */
+  .product-description-container {
+    max-width: 100%;
+    margin-top: 1rem;
+  }
+  
+  .product-description-container .product-title {
+    margin-top: 0;
+  }
+  
   .product-description-container .benefits-container {
     margin-top: 1.5rem;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 1rem;
   }
 
   .product-description-container .benefit-card {
     flex-direction: row;
     align-items: center;
+    height: 100%;
   }
 
   /* Responsive adjustments */
@@ -266,12 +280,16 @@
       flex: 1 1 calc(33.333% - 1rem);
       min-width: 200px;
     }
+    
+    .product-description-container {
+      padding-top: 1rem;
+    }
   }
 
   /* Specific styles for the modal view */
   @media (max-width: 767px) {
     .product-description-container .benefits-container {
-      flex-direction: column;
+      grid-template-columns: 1fr;
     }
     
     .product-description-container .benefit-card {
