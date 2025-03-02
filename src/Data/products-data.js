@@ -132,7 +132,30 @@ const products = [
     price: '65.00',
     image: '/img/products/5.png',
     category: categories.find(category => category.slug === 'suplementy-omega-3').slug,
-    description: 'Zinzino BalanceOil+ to synergiczne połączenie wysokiej jakości oleju z ryb, bogatego w kwasy tłuszczowe omega-3 EPA i DHA i specjalnie dobranej oliwy z pierwszego tłoczenia o wysokiej zawartości polifenoli. BalanceOil+ bezpiecznie dostosowuje i utrzymuje prawidłowy poziom EPA + DHA i kwasów tłuszczowych omega-6:3 w organizmie. BalanceOil+ wspomaga optymalną pracę mózgu i prawidłową pracę serca i wzmacnia układ odpornościowy.'
+    description: `<div class="product-description">
+      <h2 class="product-title">BalanceOil+ 100ml</h2>
+      
+      <p class="product-intro">Nasza flagowa seria w pełni naturalnych suplementów diety o zrównoważonej zawartości polifenoli i kwasów omega. Ta innowacyjna mieszanka wysokiej jakości, stworzona na bazie naszej wyjątkowej, naukowej formuły z dodatkiem olejów pozyskanych z dziko odławianych małych ryb oraz oliwy extra virgin wytłoczonej z niedojrzałych jeszcze oliwek dostarcza dużą ilość polifenoli, zapewniając skuteczne przyswajanie i ochronę lipidów we krwi.</p>
+      
+      <p>Bezpiecznie podnosi i utrzymuje poziom kwasów Omega-3 w organizmie, regulując stosunek Omega-6:3 i zapewniając ich korzystne stężenie dla Twojego cholesterolu, serca i mózgu.</p>
+      
+      <div class="benefits-container">
+        <div class="benefit-card">
+          <div class="benefit-icon">❤️</div>
+          <h4>Wspomaga prawidłowe funkcjonowanie serca</h4>
+        </div>
+        
+        <div class="benefit-card">
+          <div class="benefit-icon">🛡️</div>
+          <h4>Wspomaga prawidłowe funkcjonowanie układu odpornościowego</h4>
+        </div>
+        
+        <div class="benefit-card">
+          <div class="benefit-icon">🧠</div>
+          <h4>Wspomaga prawidłowe funkcjonowanie mózgu</h4>
+        </div>
+      </div>
+    </div>`
   },
   {
     id: 6,

@@ -113,10 +113,6 @@ const HealthProtocolPage = () => {
                     </h3>
                   </div>
                   
-                  <p className="text-gray-600 mb-6 line-clamp-3">
-                    {product.description || "Opis produktu będzie dodany wkrótce."}
-                  </p>
-                  
                   <div className="flex items-center justify-between">
                     <div className="text-2xl font-bold text-emerald-800">
                       {product.price} zł

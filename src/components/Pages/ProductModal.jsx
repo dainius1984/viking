@@ -94,7 +94,7 @@ const ProductModal = ({ product, onClose }) => {
   };
 
   return (
-    <div className="fixed inset-0 bg-black/70 flex justify-center items-center z-50 p-5">
+    <div className="fixed inset-0 bg-black/70 flex justify-center items-center z-50 p-5" onClick={onClose}>
       <motion.div 
         className="bg-white rounded-lg max-w-5xl w-full max-h-[90vh] overflow-y-auto relative"
         initial={{ opacity: 0, y: -20 }}
@@ -104,7 +104,7 @@ const ProductModal = ({ product, onClose }) => {
         onClick={(e) => e.stopPropagation()}
       >
         <button 
-          className="absolute right-5 top-5 text-2xl text-gray-600 hover:text-gray-800 transition-colors duration-300 hover:rotate-90 transform z-10"
+          className="sticky top-5 right-5 float-right text-2xl text-gray-600 hover:text-gray-800 transition-colors duration-300 hover:rotate-90 transform z-10 bg-white/80 p-2 rounded-full shadow-md"
           onClick={onClose}
         >
           <X size={24} />
@@ -136,7 +136,7 @@ const ProductModal = ({ product, onClose }) => {
           </div>
           
           {/* Product Info Section */}
-          <div className="flex-1">
+          <div className="flex-1 overflow-y-auto">
             <motion.h2
               className="text-2xl text-gray-800 mb-2"
               initial={{ opacity: 0, x: -20 }}
@@ -174,7 +174,7 @@ const ProductModal = ({ product, onClose }) => {
             >
               <h3 className="text-lg font-semibold text-gray-800 mb-3">Opis produktu</h3>
               <div 
-                className="text-gray-600 leading-relaxed"
+                className="text-gray-600 leading-relaxed product-description-container"
                 dangerouslySetInnerHTML={{ __html: product.description || 'Brak opisu produktu.' }}
               />
             </motion.div>
