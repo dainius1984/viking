@@ -159,73 +159,67 @@ const ProductModal = ({ product, onClose }) => {
                 </motion.p>
               )}
 
-              <motion.p 
-                className="text-2xl md:text-3xl font-bold text-green-800 my-5"
+              <motion.div 
+                className="flex items-center justify-between my-5"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ duration: 0.3, delay: 0.3 }}
               >
-                {product.price} zł
-              </motion.p>
+                <p className="text-2xl md:text-3xl font-bold text-green-800">
+                  {product.price} zł
+                </p>
+                
+                <span className="inline-flex items-center bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-medium">
+                  <Check size={16} className="mr-1" />
+                  Dostępny
+                </span>
+              </motion.div>
               
               {/* Product Details - Shipping, Returns, etc. */}
               <motion.div
-                className="mt-6 space-y-3"
+                className="mt-8 space-y-4"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ duration: 0.3, delay: 0.35 }}
               >
                 <div className="flex items-center text-gray-700">
-                  <span className="inline-flex items-center justify-center bg-green-100 text-green-800 rounded-full w-6 h-6 mr-3 flex-shrink-0">
-                    <Check size={14} />
+                  <span className="inline-flex items-center justify-center bg-green-100 text-green-800 rounded-full w-8 h-8 mr-4 flex-shrink-0">
+                    <Check size={16} />
                   </span>
-                  <span className="text-sm">Darmowa dostawa od 300 zł</span>
+                  <span className="text-base">Darmowa dostawa od 300 zł</span>
                 </div>
                 
                 <div className="flex items-center text-gray-700">
-                  <span className="inline-flex items-center justify-center bg-green-100 text-green-800 rounded-full w-6 h-6 mr-3 flex-shrink-0">
-                    <Check size={14} />
+                  <span className="inline-flex items-center justify-center bg-green-100 text-green-800 rounded-full w-8 h-8 mr-4 flex-shrink-0">
+                    <Check size={16} />
                   </span>
-                  <span className="text-sm">Wysyłka w 24h</span>
+                  <span className="text-base">Wysyłka w 24h</span>
                 </div>
                 
                 <div className="flex items-center text-gray-700">
-                  <span className="inline-flex items-center justify-center bg-green-100 text-green-800 rounded-full w-6 h-6 mr-3 flex-shrink-0">
-                    <Check size={14} />
+                  <span className="inline-flex items-center justify-center bg-green-100 text-green-800 rounded-full w-8 h-8 mr-4 flex-shrink-0">
+                    <Check size={16} />
                   </span>
-                  <span className="text-sm">14 dni na zwrot</span>
+                  <span className="text-base">14 dni na zwrot</span>
                 </div>
               </motion.div>
               
               {/* Satisfaction Guarantee */}
               <motion.div
-                className="mt-6 grid grid-cols-2 gap-4 text-center"
+                className="mt-8 grid grid-cols-2 gap-6 text-center"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ duration: 0.3, delay: 0.4 }}
               >
-                <div className="bg-gray-50 p-3 rounded-lg">
-                  <p className="text-green-800 font-bold text-lg">100%</p>
-                  <p className="text-gray-600 text-xs">Satysfakcji</p>
+                <div className="bg-gray-50 p-4 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300">
+                  <p className="text-green-800 font-bold text-xl">100%</p>
+                  <p className="text-gray-600 text-sm">Satysfakcji</p>
                 </div>
                 
-                <div className="bg-gray-50 p-3 rounded-lg">
-                  <p className="text-green-800 font-bold text-lg">14 dni</p>
-                  <p className="text-gray-600 text-xs">Na zwrot</p>
+                <div className="bg-gray-50 p-4 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300">
+                  <p className="text-green-800 font-bold text-xl">14 dni</p>
+                  <p className="text-gray-600 text-sm">Na zwrot</p>
                 </div>
-              </motion.div>
-              
-              {/* Available Badge */}
-              <motion.div
-                className="mt-6"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 0.3, delay: 0.45 }}
-              >
-                <span className="inline-flex items-center bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm">
-                  <Check size={14} className="mr-1" />
-                  Dostępny
-                </span>
               </motion.div>
             </div>
           </div>

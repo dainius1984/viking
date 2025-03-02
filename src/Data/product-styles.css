@@ -271,17 +271,44 @@
   }
 
   /* Product Modal Responsive Styles */
+  .product-modal-details {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+  }
+  
+  .product-modal-details .space-y-4 > div {
+    transition: transform 0.2s ease;
+  }
+  
+  .product-modal-details .space-y-4 > div:hover {
+    transform: translateX(4px);
+  }
+  
   @media (max-width: 640px) {
-    .product-modal-details .mt-6 {
-      margin-top: 0.75rem;
+    .product-modal-details .mt-8 {
+      margin-top: 1rem;
     }
     
-    .product-modal-details .space-y-3 {
+    .product-modal-details .space-y-4 {
       margin-bottom: 1rem;
+      gap: 0.75rem;
     }
     
-    .product-modal-details .text-sm {
-      font-size: 0.8125rem;
+    .product-modal-details .text-base {
+      font-size: 0.875rem;
+    }
+    
+    .product-modal-details .gap-6 {
+      gap: 0.75rem;
+    }
+    
+    .product-modal-details .p-4 {
+      padding: 0.75rem;
+    }
+    
+    .product-modal-details .text-xl {
+      font-size: 1.1rem;
     }
   }
 
@@ -300,6 +327,10 @@
     .product-description-container {
       padding-top: 0;
     }
+    
+    .product-modal-details {
+      padding-left: 0.5rem;
+    }
   }
 
   /* Specific styles for the modal view */
@@ -314,6 +345,16 @@
     
     .product-description-container p {
       margin-bottom: 0.75rem;
+    }
+    
+    .product-modal-details .flex.items-center.justify-between {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.5rem;
+    }
+    
+    .product-modal-details .flex.items-center.justify-between > span {
+      align-self: flex-start;
     }
   }
 
