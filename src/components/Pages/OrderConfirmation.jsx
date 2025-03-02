@@ -11,6 +11,7 @@ const OrderConfirmation = () => {
   const { clearCart } = useCart(); // Remove unused state and dispatch
   const [orderData, setOrderData] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [hasCleared, setHasCleared] = useState(false);
 
   useEffect(() => {
     try {
@@ -19,20 +20,21 @@ const OrderConfirmation = () => {
       
       // Get order data from session storage
       const storedOrder = sessionStorage.getItem('lastOrder');
-      if (storedOrder) {
+      if (storedOrder && !hasCleared) {
         const parsedOrder = JSON.parse(storedOrder);
         setOrderData(parsedOrder);
         
-        // Clear the cart for both guest and logged-in users
+        // Clear the cart only once
         console.log('Clearing cart after successful order');
         clearCart(); // This function handles both user types
+        setHasCleared(true);
       }
     } catch (error) {
       console.error('Error retrieving order data or clearing cart:', error);
     } finally {
       setLoading(false);
     }
-  }, [clearCart]);
+  }, [clearCart, hasCleared]);
 
   if (loading) {
     return (
