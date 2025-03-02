@@ -341,5 +341,6 @@ const products = [
       </div>
     </div>`
   }
+]
 
 export default products;
