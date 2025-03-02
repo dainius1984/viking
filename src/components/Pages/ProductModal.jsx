@@ -138,7 +138,7 @@ const ProductModal = ({ product, onClose }) => {
             </div>
             
             {/* Product Info Section - Basic Info */}
-            <div>
+            <div className="product-modal-details">
               <motion.h2
                 className="text-2xl text-gray-800 mb-2"
                 initial={{ opacity: 0, x: -20 }}
@@ -167,17 +167,77 @@ const ProductModal = ({ product, onClose }) => {
               >
                 {product.price} zł
               </motion.p>
+              
+              {/* Product Details - Shipping, Returns, etc. */}
+              <motion.div
+                className="mt-6 space-y-3"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.3, delay: 0.35 }}
+              >
+                <div className="flex items-center text-gray-700">
+                  <span className="inline-flex items-center justify-center bg-green-100 text-green-800 rounded-full w-6 h-6 mr-3 flex-shrink-0">
+                    <Check size={14} />
+                  </span>
+                  <span className="text-sm">Darmowa dostawa od 300 zł</span>
+                </div>
+                
+                <div className="flex items-center text-gray-700">
+                  <span className="inline-flex items-center justify-center bg-green-100 text-green-800 rounded-full w-6 h-6 mr-3 flex-shrink-0">
+                    <Check size={14} />
+                  </span>
+                  <span className="text-sm">Wysyłka w 24h</span>
+                </div>
+                
+                <div className="flex items-center text-gray-700">
+                  <span className="inline-flex items-center justify-center bg-green-100 text-green-800 rounded-full w-6 h-6 mr-3 flex-shrink-0">
+                    <Check size={14} />
+                  </span>
+                  <span className="text-sm">14 dni na zwrot</span>
+                </div>
+              </motion.div>
+              
+              {/* Satisfaction Guarantee */}
+              <motion.div
+                className="mt-6 grid grid-cols-2 gap-4 text-center"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.3, delay: 0.4 }}
+              >
+                <div className="bg-gray-50 p-3 rounded-lg">
+                  <p className="text-green-800 font-bold text-lg">100%</p>
+                  <p className="text-gray-600 text-xs">Satysfakcji</p>
+                </div>
+                
+                <div className="bg-gray-50 p-3 rounded-lg">
+                  <p className="text-green-800 font-bold text-lg">14 dni</p>
+                  <p className="text-gray-600 text-xs">Na zwrot</p>
+                </div>
+              </motion.div>
+              
+              {/* Available Badge */}
+              <motion.div
+                className="mt-6"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.3, delay: 0.45 }}
+              >
+                <span className="inline-flex items-center bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm">
+                  <Check size={14} className="mr-1" />
+                  Dostępny
+                </span>
+              </motion.div>
             </div>
           </div>
           
           {/* Full width description section that goes below the image and basic info */}
           <motion.div 
-            className="mt-8 w-full"
+            className="mt-4 w-full"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.3, delay: 0.4 }}
           >
-            <h3 className="text-lg font-semibold text-gray-800 mb-3">Opis produktu</h3>
+            <h3 className="text-lg font-semibold text-gray-800 mb-2">Opis produktu</h3>
             <div 
               className="text-gray-600 leading-relaxed product-description-container"
               dangerouslySetInnerHTML={{ __html: product.description || 'Brak opisu produktu.' }}
