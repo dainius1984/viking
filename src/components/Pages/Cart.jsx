@@ -6,7 +6,6 @@ import TopNavBar from '../Headers/TopNavBar';
 import Header from '../Headers/Header';
 import Footer from '../Footer/Footer';
 import ProductGrid from '../Section/ProductGrid';
-import { useAuth } from '../AuthContext';
 import { 
   DISCOUNT_CONFIG, 
   calculateTotals, 
@@ -17,7 +16,6 @@ import './Cart.css';
 
 const Cart = () => {
   const { state, dispatch } = useCart();
-  const { user } = useAuth();
   const navigate = useNavigate();
   const [removingItems, setRemovingItems] = useState(new Set());
   const [notification, setNotification] = useState(null);

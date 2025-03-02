@@ -15,7 +15,6 @@ import {
   validateForm,
   validateDiscountCode,
   DISCOUNT_CONFIG,
-  SHIPPING_OPTIONS,
   getShippingCost,
   isEligibleForFreeShipping
 } from './OrderUtils';
@@ -31,7 +30,7 @@ const INITIAL_FORM_STATE = {
   phone: '',
   email: '',
   notes: '',
-  shipping: 'DPD' // Add default shipping to formData
+  shipping: 'DPD' // Default shipping method
 };
 
 const OrderPage = () => {
@@ -42,6 +41,7 @@ const OrderPage = () => {
   const [notification, setNotification] = useState(null);
   const [formData, setFormData] = useState(INITIAL_FORM_STATE);
 
+  // Redirect if cart is empty
   useEffect(() => {
     if (!state.cart?.length) {
       navigate('/cart');
@@ -54,11 +54,13 @@ const OrderPage = () => {
     state.isDiscountApplied
   );
 
+  // Notification handler
   const showNotification = (message, type = 'error', duration = 5000) => {
     setNotification({ type, message });
     setTimeout(() => setNotification(null), duration);
   };
 
+  // Form input handler
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({
@@ -67,7 +69,7 @@ const OrderPage = () => {
     }));
   };
 
-  // Handle shipping method change
+  // Shipping method handler
   const handleShippingChange = (method) => {
     console.log('Shipping method changed to:', method);
     setFormData(prev => ({
@@ -76,6 +78,7 @@ const OrderPage = () => {
     }));
   };
 
+  // Discount code handler
   const handleApplyDiscount = (code) => {
     if (state.isDiscountApplied) {
       showNotification('Kod rabatowy został już wykorzystany w tym zamówieniu.', 'error', 3000);
@@ -94,6 +97,7 @@ const OrderPage = () => {
     }
   };
 
+  // Create order data object
   const createOrderData = (orderNumber) => {
     const isFreeShipping = isEligibleForFreeShipping(subtotal);
     const shippingCost = isFreeShipping ? 0 : getShippingCost(subtotal, formData.shipping);
@@ -109,13 +113,14 @@ const OrderPage = () => {
       createdAt: new Date().toISOString(),
       lastUpdateTime: new Date().toISOString(),
       items: formatOrderItems(state.cart),
-      shipping: formData.shipping, // Use formData.shipping
+      shipping: formData.shipping,
       payuOrderId: null,
       paymentStatus: 'PENDING',
       ...formData
     };
   };
 
+  // Create payment data object
   const createPaymentData = (orderNumber) => {
     const isFreeShipping = isEligibleForFreeShipping(subtotal);
     const shippingCost = isFreeShipping ? 0 : getShippingCost(subtotal, formData.shipping);
@@ -131,7 +136,7 @@ const OrderPage = () => {
         })),
         total: finalTotal.toString(),
         subtotal: subtotal.toString(),
-        shipping: formData.shipping, // Use formData.shipping
+        shipping: formData.shipping,
         shippingCost: shippingCost.toString(),
         discountApplied: state.isDiscountApplied,
         discountAmount: discountAmount.toString(),
@@ -155,6 +160,7 @@ const OrderPage = () => {
     };
   };
 
+  // Handle order submission
   const handleSubmitOrder = async (e) => {
     e.preventDefault();
     
@@ -171,6 +177,7 @@ const OrderPage = () => {
       const orderNumber = generateOrderNumber();
       const orderData = createOrderData(orderNumber);
       
+      // Create backup in localStorage
       const backupKey = `order_backup_${orderNumber}`;
       localStorage.setItem(backupKey, JSON.stringify({
         ...orderData,
@@ -181,7 +188,7 @@ const OrderPage = () => {
       console.log('Creating order:', {
         orderNumber,
         total,
-        shipping: formData.shipping, // Log the shipping method from formData
+        shipping: formData.shipping,
         isAuthenticated: !!user,
         time: new Date().toISOString()
       });
@@ -193,7 +200,7 @@ const OrderPage = () => {
         orderNumber,
         payuOrderId: response.orderId,
         hasRedirectUrl: !!response.redirectUrl,
-        shipping: formData.shipping, // Log the shipping method
+        shipping: formData.shipping,
         time: new Date().toISOString()
       });
 
@@ -203,7 +210,7 @@ const OrderPage = () => {
           payuOrderId: response.orderId,
           date: new Date().toISOString(),
           status: 'PENDING',
-          shipping: formData.shipping // Store shipping in session storage
+          shipping: formData.shipping
         }));
 
         window.location.href = response.redirectUrl;
@@ -226,6 +233,7 @@ const OrderPage = () => {
     }
   };
 
+  // Loading state
   if (!state.cart?.length) {
     return (
       <>
@@ -242,25 +250,32 @@ const OrderPage = () => {
     );
   }
 
+  // Notification component
+  const NotificationComponent = () => notification && (
+    <div className={`fixed bottom-4 right-4 z-50 transition-all duration-300 transform ${
+      notification ? 'translate-y-0 opacity-100' : 'translate-y-2 opacity-0'
+    }`}>
+      <div className={`px-6 py-3 rounded-lg shadow-lg ${
+        notification.type === 'error' ? 'bg-red-500' : 'bg-green-600'
+      } text-white text-sm sm:text-base max-w-xs sm:max-w-md`}>
+        {notification.message}
+      </div>
+    </div>
+  );
+
   return (
     <>
       <TopNavBar />
       <Header />
       <div className="min-h-screen bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10">
-          <h1 className="text-xl sm:text-2xl lg:text-3xl font-semibold mb-6 sm:mb-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 lg:py-10">
+          <h1 className="text-xl sm:text-2xl lg:text-3xl font-semibold mb-4 sm:mb-6 lg:mb-8">
             Zamówienie {user ? '(Zalogowany)' : '(Gość)'}
           </h1>
           
-          <div className="mt-4 sm:mt-6">
+          <div className="mt-4">
             <form onSubmit={handleSubmitOrder} className="grid grid-cols-1 lg:grid-cols-[1.5fr,1fr] gap-6 lg:gap-10">
-              <div className="order-2 lg:order-1">
-                <BillingForm 
-                  formData={formData}
-                  handleInputChange={handleInputChange}
-                />
-              </div>
-              
+              {/* Order summary appears first on mobile for better UX */}
               <div className="order-1 lg:order-2">
                 <OrderSummary
                   cart={state.cart}
@@ -269,27 +284,25 @@ const OrderPage = () => {
                   discountAmount={discountAmount}
                   discountPercentage={DISCOUNT_CONFIG.percentage}
                   total={total}
-                  shipping={formData.shipping} // Pass shipping from formData
-                  setShipping={handleShippingChange} // Use the new handler
+                  shipping={formData.shipping}
+                  setShipping={handleShippingChange}
                   loading={loading}
                   onApplyDiscount={handleApplyDiscount}
                   formData={formData}
                 />
               </div>
+              
+              {/* Billing form appears second on mobile */}
+              <div className="order-2 lg:order-1">
+                <BillingForm 
+                  formData={formData}
+                  handleInputChange={handleInputChange}
+                />
+              </div>
             </form>
           </div>
 
-          {notification && (
-            <div className={`fixed bottom-4 right-4 z-50 transition-all duration-300 transform ${
-              notification ? 'translate-y-0 opacity-100' : 'translate-y-2 opacity-0'
-            }`}>
-              <div className={`px-6 py-3 rounded-lg shadow-lg ${
-                notification.type === 'error' ? 'bg-red-500' : 'bg-green-600'
-              } text-white text-sm sm:text-base`}>
-                {notification.message}
-              </div>
-            </div>
-          )}
+          <NotificationComponent />
         </div>
       </div>
       <Footer />

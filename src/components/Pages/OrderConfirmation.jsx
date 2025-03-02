@@ -2,15 +2,13 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useCart } from '../../context/CartContext';
-import { useAuth } from '../AuthContext';
 import { setPaymentFlowState } from '../authService'; // Import the function
 import TopNavBar from '../Headers/TopNavBar';
 import Header from '../Headers/Header';
 import Footer from '../Footer/Footer';
 
 const OrderConfirmation = () => {
-  const { state, dispatch, clearCart } = useCart(); // Get clearCart function from context
-  const { user } = useAuth(); // Get user to check authentication status
+  const { clearCart } = useCart(); // Remove unused state and dispatch
   const [orderData, setOrderData] = useState(null);
   const [loading, setLoading] = useState(true);
 
