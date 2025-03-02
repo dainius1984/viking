@@ -1,10 +1,11 @@
 import categories from './category-data';
+import './product-styles.css';
 
 const products = [
   {
     id: 1,
     name: 'BalanceOil+300ml Cytrynowy',
-    price: '165.00',
+    price: '175.00',
     image: '/img/products/1.png',
     category: categories.find(category => category.slug === 'suplementy-omega-3').slug,
     description: 'Zinzino BalanceOil+ to synergiczne połączenie wysokiej jakości oleju z ryb, bogatego w kwasy tłuszczowe omega-3 EPA i DHA i specjalnie dobranej oliwy z pierwszego tłoczenia o wysokiej zawartości polifenoli. BalanceOil+ bezpiecznie dostosowuje i utrzymuje prawidłowy poziom EPA + DHA i kwasów tłuszczowych omega-6:3 w organizmie. BalanceOil+ wspomaga optymalną pracę mózgu i prawidłową pracę serca i wzmacnia układ odpornościowy.'
@@ -12,7 +13,7 @@ const products = [
   {
     id: 2,
     name: 'BalanceOil+300ml Grejpfrut, Cytryna i Limonka',
-    price: '165.00',
+    price: '175.00',
     image: '/img/products/2.png',
     category: categories.find(category => category.slug === 'suplementy-omega-3').slug,
     description: 'Zinzino BalanceOil+ to synergiczne połączenie wysokiej jakości oleju z ryb, bogatego w kwasy tłuszczowe omega-3 EPA i DHA i specjalnie dobranej oliwy z pierwszego tłoczenia o wysokiej zawartości polifenoli. BalanceOil+ bezpiecznie dostosowuje i utrzymuje prawidłowy poziom EPA + DHA i kwasów tłuszczowych omega-6:3 w organizmie. BalanceOil+ wspomaga optymalną pracę mózgu i prawidłową pracę serca i wzmacnia układ odpornościowy.'
@@ -20,7 +21,7 @@ const products = [
   {
     id: 3,
     name: 'BalanceOil+300ml Pomarańcza, Cytryna i Mięta',
-    price: '165.00',
+    price: '175.00',
     image: '/img/products/3.png',
     category: categories.find(category => category.slug === 'suplementy-omega-3').slug,
     description: 'Zinzino BalanceOil+ to synergiczne połączenie wysokiej jakości oleju z ryb, bogatego w kwasy tłuszczowe omega-3 EPA i DHA i specjalnie dobranej oliwy z pierwszego tłoczenia o wysokiej zawartości polifenoli. BalanceOil+ bezpiecznie dostosowuje i utrzymuje prawidłowy poziom EPA + DHA i kwasów tłuszczowych omega-6:3 w organizmie. BalanceOil+ wspomaga optymalną pracę mózgu i prawidłową pracę serca i wzmacnia układ odpornościowy.'
@@ -28,7 +29,7 @@ const products = [
   {
     id: 4,
     name: 'BalanceOil+300ml Tutti Frutti',
-    price: '165.00',
+    price: '175.00',
     image: '/img/products/4.png',
     category: categories.find(category => category.slug === 'suplementy-omega-3').slug,
     description: 'Zinzino BalanceOil+ to synergiczne połączenie wysokiej jakości oleju z ryb, bogatego w kwasy tłuszczowe omega-3 EPA i DHA i specjalnie dobranej oliwy z pierwszego tłoczenia o wysokiej zawartości polifenoli. BalanceOil+ bezpiecznie dostosowuje i utrzymuje prawidłowy poziom EPA + DHA i kwasów tłuszczowych omega-6:3 w organizmie. BalanceOil+ wspomaga optymalną pracę mózgu i prawidłową pracę serca i wzmacnia układ odpornościowy.'
@@ -36,7 +37,7 @@ const products = [
   {
     id: 5,
     name: 'BalanceOil+100ml Pomarańcza, Cytryna i Mięta',
-    price: '60.00',
+    price: '65.00',
     image: '/img/products/5.png',
     category: categories.find(category => category.slug === 'suplementy-omega-3').slug,
     description: 'Zinzino BalanceOil+ to synergiczne połączenie wysokiej jakości oleju z ryb, bogatego w kwasy tłuszczowe omega-3 EPA i DHA i specjalnie dobranej oliwy z pierwszego tłoczenia o wysokiej zawartości polifenoli. BalanceOil+ bezpiecznie dostosowuje i utrzymuje prawidłowy poziom EPA + DHA i kwasów tłuszczowych omega-6:3 w organizmie. BalanceOil+ wspomaga optymalną pracę mózgu i prawidłową pracę serca i wzmacnia układ odpornościowy.'
@@ -44,7 +45,7 @@ const products = [
   {
     id: 6,
     name: 'BalanceOil+300ml AquaX',
-    price: '190.00',
+    price: '209.00',
     image: '/img/products/6.png',
     category: categories.find(category => category.slug === 'suplementy-omega-3').slug,
     description: 'AquaX to przełom w wiedzy o omega-3. AquaX jest formą BalanceOil+ zawierającą Aquacelle, wyjątkowy, naturalny emulgator, który rozpuszcza BalanceOil+ w wodzie. Znacznie poprawia smak i konsystencję produktu, a w wielu przypadkach wchłanianie omega-3. Wymieszaj dzienną dawkę BalanceOil+ AquaX w wodzie lub innym wybranym płynie i przekonaj się sam jak zanika smak i tłuste wrażenie typowe dla oleju. Po prostu wstrząśnij butelką, a następnie wlej, wymieszaj, wypij i rozkoszuj się smakiem!'
@@ -52,7 +53,7 @@ const products = [
   {
     id: 7,
     name: 'BalanceOil+Premium 300ml',
-    price: '220.00',
+    price: '250.00',
     image: '/img/products/7.png',
     category: categories.find(category => category.slug === 'suplementy-omega-3').slug,
     description: 'Wyższa jakość klasy premium. BalanceOil+ Premium jest nową odsłoną naszego w pełni naturalnego suplementu diety o zrównoważonej zawartości polifenoli i kwasów omega. Ta wyjątkowa i innowacyjna mieszanka wykorzystująca oliwę R.E.V.O.O. dostarcza solidnych zasobów polifenoli i substancji odżywczych pochodzenia roślinnego. To właśnie dlatego BalanceOil+ Premium umożliwia wydajniejsze i skuteczniejsze niż kiedykolwiek wchłanianie i ochronę lipidów krwi; bezpiecznie podnosi stężenie kwasów Omega-3, dostosowuje współczynnik kwasów Omega-6:3, zapewnia ich korzystne stężenia dla Twojego poziomu cholesterolu, serca, i mózgu.'
@@ -60,7 +61,7 @@ const products = [
   {
     id: 8,
     name: 'Essent+Premium',
-    price: '200.00',
+    price: '220.00',
     image: '/img/products/8.jpeg',
     category: categories.find(category => category.slug === 'suplementy-omega-3').slug,
     description: 'Nowa generacja suplementów diety. Ten ultraczysty, testowany molekularnie suplement diety z polifenolami i kwasami Omega Balans bezpiecznie dostosowuje i utrzymuje balans Omega-6:3, jednocześnie chroniąc komórki przed utlenianiem1 i wspomagając prawidłowe funkcjonowanie mózgu, serca i układu odpornościowego. Essent to synergiczna mieszanka skoncentrowanego wysokiej klasy oleju rybnego o wysokiej zawartości tłuszczu w kwasów tłuszczowych Omega-3 EPA i DHA, z dodatkiem oliwy z oliwek z pierwszego tłoczenia, ekstraktu z owoców drzewa oliwnego oraz kakao — wszystkie te składniki dostarczają dużej ilości polifenoli.'
@@ -76,7 +77,7 @@ const products = [
   {
     id: 10,
     name: 'Protect +',
-    price: '170.00',
+    price: '175.00',
     image: '/img/products/10.jpg',
     category: categories.find(category => category.slug === 'suplementy-na-odpornosc').slug,
     description: 'Protect+ to w pełni naturalny suplement diety, który wspiera prawidłowe funkcjonowanie układu odpornościowego, co korzystnie wpływa na samopoczucie i chroni przed chorobami. Zawiera skuteczne wegańskie witaminy D3 i C, które przyczyniają się do prawidłowego funkcjonowania układu odpornościowego, a także silnie działające, potwierdzone klinicznie 1-3, 1-6 beta-glukany.Protect działa najlepiej, gdy jest przyjmowany codziennie, ponieważ kluczowe komórki odporności nieswoistej są odnawiane co 1–2 dni i potrzebują pobudzenia, aby mogły skutecznie funkcjonować'
@@ -84,7 +85,7 @@ const products = [
   {
     id: 11,
     name: 'Viva +',
-    price: '120.00',
+    price: '125.00',
     image: '/img/products/11.png',
     category: categories.find(category => category.slug === 'suplementy-przywracajace-zdrowie').slug,
     description: 'Naturalny suplement diety Viva+ opracowany z myślą o zwalczaniu stresu, poprawianiu nastroju i samopoczucia. Preparat ten wspiera również zdrowe funkcjonowanie układu nerwowego i mózgu, przyczyniając się do zmniejszania oznak zmęczenia i znużenia. Viva+ to połączenie affronu®, standaryzowanego i opatentowanego ekstraktu ze znamion wysokiej jakości czystego szafranu (Crocus sativus L) pochodzącego z Hiszpanii, kompleksu witamin z grupy B uzyskanych z ziaren gryki, magnezu z wody morskiej, jodu oraz witaminy C z aceroli. Wszystkie te składniki poprawiają ogólny stan zdrowia, wspólnie zawiązując łagodny lecz potężny sojusz.'
@@ -92,7 +93,7 @@ const products = [
   {
     id: 12,
     name: 'Xtend',
-    price: '120.00',
+    price: '129.00',
     image: '/img/products/12.jpg',
     category: categories.find(category => category.slug === 'suplementy-na-odpornosc').slug,
     description: 'Xtend, nasz najbardziej zaawansowany suplement immunologiczny i odżywczy, jest wyjątkowym źródłem mikro- i fitoskładników, w tym 23 niezbędnych witamin i minerałów, a także oczyszczonych 1-3, 1-6 beta glukanów pochodzących z drożdży piekarskich, chroniących i odnawiających komórki oraz tkanki. Xtend to idealne uzupełnienie BalanceOil i ZinoBiotic w ramach Twojego protokołu zdrowotnego.'
@@ -100,15 +101,15 @@ const products = [
   {
     id: 13,
     name: 'Xtend +',
-    price: '170.00',
+    price: '129.00',
     image: '/img/products/13.jpg',
     category: categories.find(category => category.slug === 'suplementy-na-odpornosc').slug,
-    description: 'Xtend+ to wegański suplement diety odżywiający organizm i stymulujący odporność, który zawiera wyłącznie składniki pochodzenia naturalnego. Produkt doskonale uzupełnia BalanceOil i ZinoBiotic. Stworzony, by wspierać nasz wrodzony układ odpornościowy, zawiera mikro- i fitoskładniki, w tym 22 podstawowe witaminy i minerały oraz oczyszczone 1-3, 1-6 beta-glukany z drożdży piekarskich. Xtend+ ma formę łatwych do połknięcia wegańskich kapsułek. Przez „naturalne" rozumie się, że witaminy są pozyskiwane ze źródeł naturalnych, na przykład z jagód aceroli (witamina C) i gryki (witaminy z grupy B). Także minerały będą pochodzenia naturalnego. To pozwoli nam zachować wszystkie fitoskładniki odżywcze. Ponadto zastąpiliśmy nieaktywne składniki , takie jak środki przeciwzbrylające i wypełniające potrzebne w procesie produkcyjnym (tzw. substancje pomocnicze), naturalnymi zamiennikami pochodzącymi z kokosa, ryżu i ziemniaków'
+    description: 'Xtend+ to wegański suplement diety odżywiający organizm i stymulujący odporność, który zawiera wyłącznie składniki pochodzenia naturalnego. Produkt doskonale uzupełnia BalanceOil i ZinoBiotic. Stworzony, by wspierać nasz wrodzony układ odpornościowy, zawiera mikro- i fitoskładniki, w tym 22 podstawowe witaminy i minerały oraz oczyszczone 1-3, 1-6 beta-glukany z drożdży piekarskich. Xtend+ ma formę łatwych do połknięcia wegańskich kapsułek. Przez "naturalne" rozumie się, że witaminy są pozyskiwane ze źródeł naturalnych, na przykład z jagód aceroli (witamina C) i gryki (witaminy z grupy B). Także minerały będą pochodzenia naturalnego. To pozwoli nam zachować wszystkie fitoskładniki odżywcze. Ponadto zastąpiliśmy nieaktywne składniki , takie jak środki przeciwzbrylające i wypełniające potrzebne w procesie produkcyjnym (tzw. substancje pomocnicze), naturalnymi zamiennikami pochodzącymi z kokosa, ryżu i ziemniaków'
   },
   {
     id: 14,
     name: 'Zinobiotic +',
-    price: '120.00',
+    price: '129.00',
     image: '/img/products/14.jpg',
     category: categories.find(category => category.slug === 'blonnik-dla-jelit').slug,
     description: 'ZinoBiotic+ to specjalna mieszanka 8 naturalnych rodzajów błonnika pokarmowego. Są one metabolizowane w okrężnicy (jelito grube), gdzie wspierają rozrost zdrowych bakterii. ZinoBiotic+ pomaga ograniczyć skoki poziomu cukru we krwi po posiłkach, i utrzymać właściwy poziom cholesterolu. Błonnik wspomaga zdrowe funkcjonowanie jelit.'
@@ -116,7 +117,7 @@ const products = [
   {
     id: 15,
     name: 'Zinogene +',
-    price: '230.00',
+    price: '249.00',
     image: '/img/products/15.png',
     category: categories.find(category => category.slug === 'suplementy-przywracajace-zdrowie').slug,
     description: 'ZinoGene+ to suplementy diety bazujące na przełomowej i innowacyjnej technologii. To przełomowe odkrycie naukowe bazujące na złożonej formule fukoidyny czyli naturalnych polisacharydach z wodorostów morskich, polifenolach, witaminie C oraz cynku wspomagającego syntezę DNA i podział komórek. Nagromadzenie niewłaściwie funkcjonujących komórek oraz pogarszające się właściwości regeneracyjne to nieodzowna część procesu starzenia. Tempo starzenia się zależy od ilości składników odżywczych w naszej diecie. Dlatego opracowaliśmy suplement ZinoGene+.'
@@ -124,7 +125,7 @@ const products = [
   {
     id: 16,
     name: 'Zinoshine +',
-    price: '65.00',
+    price: '75.00',
     image: '/img/products/16.png',
     category: categories.find(category => category.slug === 'suplementy-na-odpornosc').slug,
     description: 'To unikalny suplement diety z witaminą D3 i magnezem o szerokim spektrum działania. Opatentowana mieszanka została opracowana, aby wspierać układ odpornościowy, zmniejszać uczucie zmęczenia i znużenia oraz wspomagać mięśnie, kości i zęby.'

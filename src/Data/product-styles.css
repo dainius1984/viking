@@ -1,0 +1,25 @@
+.benefits-list {
+    list-style-type: none;
+    padding: 0;
+    margin: 20px 0;
+  }
+  
+  .benefits-list li {
+    display: flex;
+    align-items: center;
+    margin-bottom: 12px;
+    padding: 10px;
+    border-radius: 8px;
+    background-color: rgba(0, 0, 0, 0.03);
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  
+  .benefits-list li:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .benefit-icon {
+    font-size: 24px;
+    margin-right: 12px;
+  }
