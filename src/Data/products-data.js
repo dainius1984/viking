@@ -104,7 +104,87 @@ const products = [
     price: '129.00',
     image: '/img/products/13.jpg',
     category: categories.find(category => category.slug === 'suplementy-na-odpornosc').slug,
-    description: 'Xtend+ to wegański suplement diety odżywiający organizm i stymulujący odporność, który zawiera wyłącznie składniki pochodzenia naturalnego. Produkt doskonale uzupełnia BalanceOil i ZinoBiotic. Stworzony, by wspierać nasz wrodzony układ odpornościowy, zawiera mikro- i fitoskładniki, w tym 22 podstawowe witaminy i minerały oraz oczyszczone 1-3, 1-6 beta-glukany z drożdży piekarskich. Xtend+ ma formę łatwych do połknięcia wegańskich kapsułek. Przez "naturalne" rozumie się, że witaminy są pozyskiwane ze źródeł naturalnych, na przykład z jagód aceroli (witamina C) i gryki (witaminy z grupy B). Także minerały będą pochodzenia naturalnego. To pozwoli nam zachować wszystkie fitoskładniki odżywcze. Ponadto zastąpiliśmy nieaktywne składniki , takie jak środki przeciwzbrylające i wypełniające potrzebne w procesie produkcyjnym (tzw. substancje pomocnicze), naturalnymi zamiennikami pochodzącymi z kokosa, ryżu i ziemniaków'
+    description: `<div class="product-description">
+      <h2 class="product-title">ZINZINO XTEND+</h2>
+      <p class="product-subtitle">W PEŁNI NATURALNY SUPLEMENT DIETY WSPOMAGAJĄCY ODPORNOŚĆ</p>
+      
+      <p>Xtend+ to wegański suplement diety odżywiający organizm i stymulujący odporność, który zawiera wyłącznie składniki pochodzenia naturalnego. Produkt doskonale uzupełnia BalanceOil i ZinoBiotic. Stworzony, by wspierać nasz wrodzony układ odpornościowy, zawiera mikro- i fitoskładniki, w tym 22 podstawowe witaminy i minerały oraz oczyszczone 1-3, 1-6 beta-glukany z drożdży piekarskich.</p>
+      
+      <div class="product-info">
+        <p><strong>Zawartość:</strong> 60 kapsułek o łącznej masie netto 45 g</p>
+      </div>
+      
+      <h3 class="benefits-heading">NAJWAŻNIEJSZE KORZYŚCI:</h3>
+      <ul class="benefits-list">
+        <li><span class="benefit-icon">⚡</span> <strong>Więcej energii</strong></li>
+        <li><span class="benefit-icon">🦴</span> <strong>Poprawa funkcjonowania kości i stawów</strong></li>
+        <li><span class="benefit-icon">🛡️</span> <strong>Wzmocnienie układu odpornościowego</strong></li>
+        <li><span class="benefit-icon">🔄</span> <strong>Zapewnia kompleksową dawkę czynników żywieniowych niezbędnych do wzrostu i naprawy tkanek</strong></li>
+      </ul>
+      
+      <div class="feature-box">
+        <h3>WEGAŃSKA FORMUŁA</h3>
+        <p>Xtend+ ma formę łatwych do połknięcia wegańskich kapsułek. Przez „naturalne" rozumie się, że witaminy są pozyskiwane ze źródeł naturalnych, na przykład z jagód aceroli (witamina C) i gryki (witaminy z grupy B). Także minerały są pochodzenia naturalnego.</p>
+      </div>
+      
+      <div class="benefits-grid">
+        <div class="benefit-card">
+          <div class="benefit-icon-large">🌱</div>
+          <h4>100% NATURALNE</h4>
+          <p>Wszystkie składniki są pozyskiwane ze źródeł naturalnych, co pozwala zachować wszystkie fitoskładniki odżywcze.</p>
+        </div>
+        
+        <div class="benefit-card">
+          <div class="benefit-icon-large">🛡️</div>
+          <h4>WSPARCIE ODPORNOŚCI</h4>
+          <p>Zawiera oczyszczone 1-3, 1-6 beta-glukany z drożdży piekarskich, które skutecznie wspierają układ odpornościowy.</p>
+        </div>
+        
+        <div class="benefit-card">
+          <div class="benefit-icon-large">🔄</div>
+          <h4>KOMPLEKSOWE ODŻYWIANIE</h4>
+          <p>22 podstawowe witaminy i minerały zapewniają kompleksowe wsparcie dla organizmu.</p>
+        </div>
+      </div>
+      
+      <div class="ingredients-section">
+        <h3>NATURALNE SKŁADNIKI</h3>
+        <p>Zastąpiliśmy nieaktywne składniki, takie jak środki przeciwzbrylające i wypełniające potrzebne w procesie produkcyjnym (tzw. substancje pomocnicze), naturalnymi zamiennikami pochodzącymi z:</p>
+        <ul class="ingredients-list">
+          <li><span class="check-icon">✓</span> Kokosa</li>
+          <li><span class="check-icon">✓</span> Ryżu</li>
+          <li><span class="check-icon">✓</span> Ziemniaków</li>
+        </ul>
+      </div>
+      
+      <div class="features-grid">
+        <div class="feature-item">
+          <h4>WEGAŃSKIE</h4>
+          <p>Formuła w 100% wegańska, odpowiednia dla osób na diecie roślinnej.</p>
+        </div>
+        
+        <div class="feature-item">
+          <h4>NATURALNE ŹRÓDŁA</h4>
+          <p>Witamina C z jagód aceroli, witaminy z grupy B z gryki oraz minerały z naturalnych źródeł.</p>
+        </div>
+        
+        <div class="feature-item">
+          <h4>ŁATWE STOSOWANIE</h4>
+          <p>Wygodna forma łatwych do połknięcia kapsułek, idealna do codziennego stosowania.</p>
+        </div>
+        
+        <div class="feature-item">
+          <h4>KOMPLEKSOWE WSPARCIE</h4>
+          <p>Doskonałe uzupełnienie BalanceOil i ZinoBiotic w ramach kompleksowego protokołu zdrowotnego.</p>
+        </div>
+      </div>
+      
+      <div class="dosage-section">
+        <h3>ZALECANE STOSOWANIE:</h3>
+        <p>Dorośli i dzieci powyżej 12 roku życia: 2 kapsułki dziennie. Nie przekraczać zalecanej porcji do spożycia w ciągu dnia.</p>
+        <p class="warning">Suplement diety nie może być stosowany jako substytut zróżnicowanej diety. Zrównoważony sposób żywienia i zdrowy tryb życia są ważne.</p>
+      </div>
+    </div>`
   },
   {
     id: 14,
