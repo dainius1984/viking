@@ -124,7 +124,7 @@ const products = [
       
       <div class="feature-box">
         <h3>WEGAŃSKA FORMUŁA</h3>
-        <p>Xtend+ ma formę łatwych do połknięcia wegańskich kapsułek. Przez „naturalne" rozumie się, że witaminy są pozyskiwane ze źródeł naturalnych, na przykład z jagód aceroli (witamina C) i gryki (witaminy z grupy B). Także minerały są pochodzenia naturalnego.</p>
+        <p>Xtend+ ma formę łatwych do połknięcia wegańskich kapsułek. Przez "naturalne" rozumie się, że witaminy są pozyskiwane ze źródeł naturalnych, na przykład z jagód aceroli (witamina C) i gryki (witaminy z grupy B). Także minerały są pochodzenia naturalnego.</p>
       </div>
       
       <div class="benefits-grid">
@@ -216,7 +216,77 @@ const products = [
     price: '418.00',
     image: '/img/products/HP.png',
     category: categories.find(category => category.slug === 'suplementy-na-odpornosc').slug,
-    description: 'Opis produktu będzie dodany wkrótce.'
+    description: `<div class="product-description">
+      <h2 class="product-title">HEALTH PROTOCOL – KLUCZ DO ZDROWIA I RÓWNOWAGI W CODZIENNYM ŻYCIU</h2>
+      
+      <p class="product-intro">W dobie współczesnych wyzwań nasze zdrowie staje się coraz bardziej podatne na działanie negatywnych czynników, takich jak przewlekły stres, niewłaściwie zbilansowana dieta, siedzący tryb życia czy wszechobecne zanieczyszczenia środowiska. Każdego dnia docierają do nas informacje o nowych cudownych dietach, suplementach i metodach na poprawę samopoczucia, co często prowadzi do dezorientacji.</p>
+      
+      <p><strong>Jak w gąszczu tych propozycji odnaleźć rozwiązanie, które naprawdę działa i przynosi długotrwałe korzyści?</strong> Odpowiedzią jest Health Protocol – kompleksowe podejście oparte na solidnych podstawach naukowych, które harmonizuje naturalne składniki z najnowszymi odkryciami medycyny i dietetyki, oferując wsparcie dla organizmu w kluczowych aspektach zdrowia.</p>
+      
+      <div class="protocol-intro">
+        <h3>Health Protocol wyróżnia się holistycznym podejściem, koncentrując się na trzech filarach dobrego samopoczucia:</h3>
+      </div>
+      
+      <div class="pillars-container">
+        <div class="pillar-card">
+          <div class="pillar-icon">⚖️</div>
+          <h4>Równowaga kwasów tłuszczowych Omega-6 do Omega-3</h4>
+          <p>Współczesna dieta często charakteryzuje się nadmiarem kwasów Omega-6 (obecnych w olejach roślinnych czy przetworzonej żywności) przy jednoczesnym niedoborze Omega-3 (znajdujących się m.in. w tłustych rybach czy siemieniu lnianym). Taki brak równowagi może prowadzić do stanów zapalnych w organizmie, które są podłożem wielu chorób przewlekłych.</p>
+          <p><strong>Health Protocol pomaga przywrócić optymalny stosunek tych kwasów</strong>, wspierając funkcjonowanie układu nerwowego, sercowo-naczyniowego oraz poprawiając zdolności regeneracyjne organizmu.</p>
+        </div>
+        
+        <div class="pillar-card">
+          <div class="pillar-icon">🦠</div>
+          <h4>Zdrowie jelit</h4>
+          <p>Jelita są nie tylko centrum trawienia, ale także kluczowym elementem układu odpornościowego i miejscem, gdzie zachodzi produkcja wielu ważnych neuroprzekaźników, takich jak serotonina.</p>
+          <p><strong>Health Protocol wykorzystuje naturalne składniki</strong>, takie jak probiotyki, prebiotyki i błonnik, aby wspierać mikrobiom jelitowy, poprawiać trawienie, redukować stany zapalne i zwiększać wchłanianie składników odżywczych.</p>
+        </div>
+        
+        <div class="pillar-card">
+          <div class="pillar-icon">🛡️</div>
+          <h4>Wzmocnienie układu odpornościowego</h4>
+          <p>W obliczu codziennych wyzwań, takich jak zmienne warunki pogodowe, kontakt z patogenami czy stres, odporność jest naszą tarczą ochronną.</p>
+          <p><strong>Health Protocol dostarcza organizmowi niezbędnych witamin, minerałów i antyoksydantów</strong> (np. witaminy C, D, cynku czy polifenoli), które działają synergicznie, wzmacniając naturalne mechanizmy obronne i pomagając w szybszej regeneracji.</p>
+        </div>
+      </div>
+      
+      <div class="unique-features">
+        <h3>Co wyróżnia Health Protocol?</h3>
+        <ul class="features-list">
+          <li><span class="feature-icon">✅</span> <strong>Skuteczność</strong> - potwierdzona badaniami naukowymi i doświadczeniem klinicznym</li>
+          <li><span class="feature-icon">✅</span> <strong>Uniwersalność</strong> - odpowiedni dla różnych grup wiekowych i stylów życia</li>
+          <li><span class="feature-icon">✅</span> <strong>Prostota wdrożenia</strong> - nie wymaga drastycznych zmian ani skomplikowanych planów</li>
+          <li><span class="feature-icon">✅</span> <strong>Naturalne składniki</strong> - działające w zgodzie z fizjologią organizmu</li>
+          <li><span class="feature-icon">✅</span> <strong>Holistyczne podejście</strong> - uwzględniające wzajemne powiązania między różnymi układami ciała</li>
+        </ul>
+      </div>
+      
+      <div class="target-groups">
+        <h3>Dla kogo jest Health Protocol?</h3>
+        <div class="groups-container">
+          <div class="group-item">
+            <h4>Dla osób aktywnych</h4>
+            <p>Chcących utrzymać energię i witalność na wysokim poziomie</p>
+          </div>
+          <div class="group-item">
+            <h4>Dla zapracowanych</h4>
+            <p>Szukających prostego i skutecznego rozwiązania w zabieganym życiu</p>
+          </div>
+          <div class="group-item">
+            <h4>Dla zmagających się z przewlekłym zmęczeniem</h4>
+            <p>Potrzebujących wsparcia w odzyskaniu równowagi i sił witalnych</p>
+          </div>
+          <div class="group-item">
+            <h4>Dla świadomych zdrowotnie</h4>
+            <p>Inwestujących w swoje zdrowie długoterminowo</p>
+          </div>
+        </div>
+      </div>
+      
+      <div class="conclusion">
+        <p>Health Protocol to nie kolejna dieta czy chwilowy trend – to <strong>styl życia</strong>, który pozwala odzyskać kontrolę nad zdrowiem, wspiera równowagę wewnętrzną i buduje solidne fundamenty dla długowieczności. Poprzez połączenie nauki i natury, ten protokół staje się kluczem do harmonii w zabieganym świecie, oferując nie tylko lepsze samopoczucie dziś, ale i inwestycję w zdrowie na lata.</p>
+      </div>
+    </div>`
   },
   {
     id: 18,
