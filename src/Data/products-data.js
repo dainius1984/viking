@@ -96,7 +96,7 @@ const products = [
     price: '129.00',
     image: '/img/products/12.jpg',
     category: categories.find(category => category.slug === 'suplementy-na-odpornosc').slug,
-    description: 'Xtend, nasz najbardziej zaawansowany suplement immunologiczny i odżywczy, jest wyjątkowym źródłem mikro- i fitoskładników, w tym 23 niezbędnych witamin i minerałów, a także oczyszczonych 1-3, 1-6 beta glukanów pochodzących z drożdży piekarskich, chroniących i odnawiających komórki oraz tkanki. Xtend to idealne uzupełnienie BalanceOil i ZinoBiotic w ramach Twojego protokołu zdrowotnego.'
+    description: 'Xtend, nasz najbardziej zaawansowany suplement immunologiczny i odżywczy, jest wyjątkowym źródłem mikro- i fitoskładników, w tym 23 niezbędnych witamin i minerałów, a także oczyszczonych 1-3, 1-6 beta glukanów pochodzących z drożdży piekarskich, chroniących i odnawiających komórki oraz tkanki. Xtend to idealne uzupełnienie BalanceOil i ZinoBiotic w ramach Twojego protokołu zdrowotnego.\n\nZawartość: 60 tabletek, waga netto 45 g\n\n<h4 class="benefits-heading">NAJWAŻNIEJSZE KORZYŚCI:</h4>\n<ul class="benefits-list">\n  <li><span class="benefit-icon">⚡</span> <strong>Więcej energii</strong></li>\n  <li><span class="benefit-icon">🦴</span> <strong>Poprawa funkcjonowania kości i stawów</strong></li>\n  <li><span class="benefit-icon">🛡️</span> <strong>Wzmocnienie układu odpornościowego</strong></li>\n  <li><span class="benefit-icon">🔄</span> <strong>Zapewnia kompleksową dawkę składników odżywczych niezbędnych do wzrostu i naprawy tkanek</strong></li>\n</ul>'
   },
   {
     id: 13,
