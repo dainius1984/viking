@@ -191,7 +191,7 @@ const ProductPage = () => {
                     <div className="w-6 h-6 rounded-full bg-emerald-100 flex-shrink-0 flex items-center justify-center mt-0.5">
                       <Check size={16} className="text-emerald-800" />
                     </div>
-                    <p className="text-gray-600 leading-relaxed">Darmowa dostawa od 200 zł</p>
+                    <p className="text-gray-600 leading-relaxed">Darmowa dostawa od 300 zł</p>
                   </div>
                   <div className="flex items-start gap-3">
                     <div className="w-6 h-6 rounded-full bg-emerald-100 flex-shrink-0 flex items-center justify-center mt-0.5">
