@@ -5,6 +5,7 @@ import Footer from '../Footer/Footer';
 import TopNavBar from '../Headers/TopNavBar';
 import Omega3InfoModal from '../Section/Omega3InfoModal';
 import ProductModal from './ProductModal';
+import products from '../../Data/products-data'; // Import products from your data file
 
 const HealthProtocolPage = () => {
   const [showModal, setShowModal] = useState(false);
@@ -19,48 +20,8 @@ const HealthProtocolPage = () => {
     setShowModal(false);
   };
 
-  // Product details
-  const products = [
-    {
-      id: 'balance-oil',
-      name: 'BalanceOil+',
-      price: '159,00',
-      image: '/img/products/balance.webp',
-      category: 'suplementy',
-      description: 'Dostarcza wysokiej jakości Omega-3 z mórz norweskich, wspomaga równowagę kwasów tłuszczowych, redukuje stany zapalne i poprawia funkcjonowanie organizmu.',
-      properties: {
-        'Pojemność': '300 ml',
-        'Składniki': 'Olej rybny, olej z oliwek, witamina D3',
-        'Zalecana dawka': '0,1 ml na kg masy ciała'
-      }
-    },
-    {
-      id: 'zinobiotic',
-      name: 'ZinoBiotic+',
-      price: '149,00',
-      image: '/img/products/ZinzinoBiotic.jfif',
-      category: 'suplementy',
-      description: 'Kompleks naturalnych błonników wspierający zdrowie jelit, mikrobiom i trawienie, co ma kluczowe znaczenie dla odporności i metabolizmu.',
-      properties: {
-        'Waga': '180g',
-        'Składniki': 'Błonnik z kukurydzy, błonnik z cykorii, błonnik owsiany, błonnik jabłkowy',
-        'Zalecana dawka': '6g dziennie'
-      }
-    },
-    {
-      id: 'xtend',
-      name: 'Xtend+',
-      price: '179,00',
-      image: '/img/products/xtend.webp',
-      category: 'suplementy',
-      description: 'Zaawansowany kompleks witamin, minerałów i przeciwutleniaczy, który wzmacnia układ odpornościowy, wspiera regenerację komórek i działa przeciwstarzeniowo.',
-      properties: {
-        'Ilość kapsułek': '60',
-        'Składniki': 'Witaminy, minerały, przeciwutleniacze',
-        'Zalecana dawka': '2 kapsułki dziennie'
-      }
-    }
-  ];
+  // Filter only the two new products (ID 17 and 18)
+  const protocolProducts = products.filter(product => product.id === 17 || product.id === 18);
 
   const openProductModal = (product) => {
     setSelectedProduct(product);
@@ -102,87 +63,39 @@ const HealthProtocolPage = () => {
         </div>
 
         {/* Products Section */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
-          {/* Product 1 */}
-          <div 
-            className="bg-white rounded-md shadow-lg shadow-black/5 overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-1 cursor-pointer"
-            onClick={() => openProductModal(products[0])}
-          >
-            <div className="h-[300px] overflow-hidden flex items-center justify-center p-4 bg-white">
-              <img 
-                src="/img/products/balance.webp" 
-                alt="BalanceOil+" 
-                className="max-h-full max-w-full object-contain"
-                onError={(e) => {
-                  e.target.onerror = null;
-                  e.target.src = 'https://via.placeholder.com/300x300?text=BalanceOil+';
-                }}
-              />
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-16">
+          {/* Map through the filtered products */}
+          {protocolProducts.map(product => (
+            <div 
+              key={product.id}
+              className="bg-white rounded-md shadow-lg shadow-black/5 overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-1 cursor-pointer"
+              onClick={() => openProductModal(product)}
+            >
+              <div className="h-[300px] overflow-hidden flex items-center justify-center p-4 bg-white">
+                <img 
+                  src={product.image} 
+                  alt={product.name} 
+                  className="max-h-full max-w-full object-contain"
+                  onError={(e) => {
+                    e.target.onerror = null;
+                    e.target.src = `https://via.placeholder.com/300x300?text=${encodeURIComponent(product.name)}`;
+                  }}
+                />
+              </div>
+              <div className="p-6">
+                <h3 className="text-xl font-bold text-emerald-800 mb-3 flex items-start">
+                  <span className="text-green-500 mr-2 flex-shrink-0">✅</span>
+                  {product.name}
+                </h3>
+                <p className="text-gray-700">
+                  {product.description}
+                </p>
+                <div className="mt-4 text-xl font-bold text-emerald-800">
+                  {product.price} zł
+                </div>
+              </div>
             </div>
-            <div className="p-6">
-              <h3 className="text-xl font-bold text-emerald-800 mb-3 flex items-start">
-                <span className="text-green-500 mr-2 flex-shrink-0">✅</span>
-                BalanceOil+
-              </h3>
-              <p className="text-gray-700">
-                Dostarcza wysokiej jakości Omega-3 z mórz norweskich, wspomaga równowagę kwasów tłuszczowych, redukuje stany zapalne i poprawia funkcjonowanie organizmu.
-              </p>
-            </div>
-          </div>
-
-          {/* Product 2 */}
-          <div 
-            className="bg-white rounded-md shadow-lg shadow-black/5 overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-1 cursor-pointer"
-            onClick={() => openProductModal(products[1])}
-          >
-            <div className="h-[300px] overflow-hidden flex items-center justify-center p-4 bg-white">
-              <img 
-                src="/img/products/ZinzinoBiotic.jfif" 
-                alt="ZinoBiotic+" 
-                className="max-h-full max-w-full object-contain"
-                onError={(e) => {
-                  e.target.onerror = null;
-                  e.target.src = 'https://via.placeholder.com/300x300?text=ZinoBiotic+';
-                }}
-              />
-            </div>
-            <div className="p-6">
-              <h3 className="text-xl font-bold text-emerald-800 mb-3 flex items-start">
-                <span className="text-green-500 mr-2 flex-shrink-0">✅</span>
-                ZinoBiotic+
-              </h3>
-              <p className="text-gray-700">
-                Kompleks naturalnych błonników wspierający zdrowie jelit, mikrobiom i trawienie, co ma kluczowe znaczenie dla odporności i metabolizmu.
-              </p>
-            </div>
-          </div>
-
-          {/* Product 3 */}
-          <div 
-            className="bg-white rounded-md shadow-lg shadow-black/5 overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-1 cursor-pointer"
-            onClick={() => openProductModal(products[2])}
-          >
-            <div className="h-[300px] overflow-hidden flex items-center justify-center p-4 bg-white">
-              <img 
-                src="/img/products/xtend.webp" 
-                alt="Xtend+" 
-                className="max-h-full max-w-full object-contain"
-                onError={(e) => {
-                  e.target.onerror = null;
-                  e.target.src = 'https://via.placeholder.com/300x300?text=Xtend+';
-                }}
-              />
-            </div>
-            <div className="p-6">
-              <h3 className="text-xl font-bold text-emerald-800 mb-3 flex items-start">
-                <span className="text-green-500 mr-2 flex-shrink-0">✅</span>
-                Xtend+
-              </h3>
-              <p className="text-gray-700">
-                Zaawansowany kompleks witamin, minerałów i przeciwutleniaczy, który wzmacnia układ odpornościowy, wspiera regenerację komórek i działa przeciwstarzeniowo.
-              </p>
-            </div>
-          </div>
+          ))}
         </div>
 
         {/* Benefits Section */}

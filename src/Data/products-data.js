@@ -129,6 +129,22 @@ const products = [
     image: '/img/products/16.png',
     category: categories.find(category => category.slug === 'suplementy-na-odpornosc').slug,
     description: 'To unikalny suplement diety z witaminą D3 i magnezem o szerokim spektrum działania. Opatentowana mieszanka została opracowana, aby wspierać układ odpornościowy, zmniejszać uczucie zmęczenia i znużenia oraz wspomagać mięśnie, kości i zęby.'
+  },
+  {
+    id: 17,
+    name: 'Protokół zdrowia',
+    price: '418.00',
+    image: '/img/products/HP.png',
+    category: categories.find(category => category.slug === 'suplementy-na-odpornosc').slug,
+    description: 'Opis produktu będzie dodany wkrótce.'
+  },
+  {
+    id: 18,
+    name: 'Zestaw BalanceOil+ z testem',
+    price: '600.00',
+    image: '/img/products/EO.png',
+    category: categories.find(category => category.slug === 'suplementy-na-odpornosc').slug,
+    description: 'Opis produktu będzie dodany wkrótce.'
   }
 ];
 
