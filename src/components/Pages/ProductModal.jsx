@@ -173,7 +173,10 @@ const ProductModal = ({ product, onClose }) => {
               transition={{ duration: 0.3, delay: 0.4 }}
             >
               <h3 className="text-lg font-semibold text-gray-800 mb-3">Opis produktu</h3>
-              <p className="text-gray-600 leading-relaxed">{product.description || 'Brak opisu produktu.'}</p>
+              <div 
+                className="text-gray-600 leading-relaxed"
+                dangerouslySetInnerHTML={{ __html: product.description || 'Brak opisu produktu.' }}
+              />
             </motion.div>
 
             {product.properties && (
