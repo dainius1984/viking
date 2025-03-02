@@ -63,39 +63,76 @@ const HealthProtocolPage = () => {
         </div>
 
         {/* Products Section */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-16">
-          {/* Map through the filtered products */}
-          {protocolProducts.map(product => (
-            <div 
-              key={product.id}
-              className="bg-white rounded-md shadow-lg shadow-black/5 overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-1 cursor-pointer"
-              onClick={() => openProductModal(product)}
-            >
-              <div className="h-[300px] overflow-hidden flex items-center justify-center p-4 bg-white">
-                <img 
-                  src={product.image} 
-                  alt={product.name} 
-                  className="max-h-full max-w-full object-contain"
-                  onError={(e) => {
-                    e.target.onerror = null;
-                    e.target.src = `https://via.placeholder.com/300x300?text=${encodeURIComponent(product.name)}`;
-                  }}
-                />
-              </div>
-              <div className="p-6">
-                <h3 className="text-xl font-bold text-emerald-800 mb-3 flex items-start">
-                  <span className="text-green-500 mr-2 flex-shrink-0">✅</span>
-                  {product.name}
-                </h3>
-                <p className="text-gray-700">
-                  {product.description}
-                </p>
-                <div className="mt-4 text-xl font-bold text-emerald-800">
-                  {product.price} zł
+        <div className="mb-16">
+          <h2 className="text-2xl md:text-3xl font-bold text-center text-gray-800 mb-8 font-serif">
+            Nasze rekomendowane produkty
+          </h2>
+          <p className="text-center text-gray-600 max-w-3xl mx-auto mb-12">
+            Wybierz jeden z naszych starannie dobranych zestawów, które zapewnią Ci kompleksowe wsparcie dla Twojego zdrowia.
+          </p>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-10 max-w-5xl mx-auto">
+            {/* Map through the filtered products */}
+            {protocolProducts.map(product => (
+              <div 
+                key={product.id}
+                className="bg-white rounded-xl shadow-lg shadow-emerald-100/80 overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-2 cursor-pointer group border border-gray-100"
+                onClick={() => openProductModal(product)}
+              >
+                {/* Product Badge */}
+                <div className="relative">
+                  <div className="absolute top-4 left-4 bg-emerald-100 text-emerald-800 text-xs font-bold uppercase tracking-wider py-1 px-2 rounded-full z-10">
+                    Polecany
+                  </div>
+                  
+                  {/* Image Container with Fixed Aspect Ratio */}
+                  <div className="relative pt-[75%] bg-gradient-to-b from-gray-50 to-white overflow-hidden">
+                    <div className="absolute inset-0 flex items-center justify-center p-8">
+                      <img 
+                        src={product.image} 
+                        alt={product.name} 
+                        className="max-h-full max-w-full object-contain transform transition-transform duration-500 group-hover:scale-105"
+                        onError={(e) => {
+                          e.target.onerror = null;
+                          e.target.src = `https://via.placeholder.com/300x300?text=${encodeURIComponent(product.name)}`;
+                        }}
+                      />
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="p-6 md:p-8">
+                  <div className="flex items-start mb-4">
+                    <span className="bg-green-100 text-green-600 p-1 rounded-full flex-shrink-0 mr-3 mt-1">
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                      </svg>
+                    </span>
+                    <h3 className="text-xl font-bold text-gray-800 group-hover:text-emerald-800 transition-colors duration-300">
+                      {product.name}
+                    </h3>
+                  </div>
+                  
+                  <p className="text-gray-600 mb-6 line-clamp-3">
+                    {product.description || "Opis produktu będzie dodany wkrótce."}
+                  </p>
+                  
+                  <div className="flex items-center justify-between">
+                    <div className="text-2xl font-bold text-emerald-800">
+                      {product.price} zł
+                    </div>
+                    
+                    <div className="bg-emerald-50 text-emerald-800 py-1 px-3 rounded-full text-sm font-medium flex items-center">
+                      <span>Szczegóły</span>
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 ml-1 group-hover:translate-x-1 transition-transform duration-300" viewBox="0 0 20 20" fill="currentColor">
+                        <path fillRule="evenodd" d="M10.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L12.586 11H5a1 1 0 110-2h7.586l-2.293-2.293a1 1 0 010-1.414z" clipRule="evenodd" />
+                      </svg>
+                    </div>
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
 
         {/* Benefits Section */}
