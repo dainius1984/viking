@@ -195,30 +195,33 @@ const ProductModal = ({ product, onClose }) => {
                   </span>
                   <span className="text-base">Wysyłka w 24h</span>
                 </div>
-                
-                <div className="flex items-center text-gray-700">
-                  <span className="inline-flex items-center justify-center bg-green-100 text-green-800 rounded-full w-8 h-8 mr-4 flex-shrink-0">
-                    <Check size={16} />
-                  </span>
-                  <span className="text-base">14 dni na zwrot</span>
-                </div>
+
               </motion.div>
               
-              {/* Satisfaction Guarantee */}
+              {/* Satisfaction Guarantee Cards */}
               <motion.div
-                className="mt-8 grid grid-cols-2 gap-6 text-center"
+                className="mt-8 grid grid-cols-1 sm:grid-cols-2 gap-4"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ duration: 0.3, delay: 0.4 }}
               >
-                <div className="bg-gray-50 p-4 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300">
-                  <p className="text-green-800 font-bold text-xl">100%</p>
-                  <p className="text-gray-600 text-sm">Satysfakcji</p>
+                <div className="bg-green-50 p-6 rounded-lg shadow-sm hover:shadow-md transition-all duration-300 border border-green-100 flex flex-col items-center text-center">
+                  <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mb-3">
+                    <Check size={24} className="text-green-700" />
+                  </div>
+                  <h4 className="text-green-800 font-semibold text-lg mb-2">14 dni na zwrot</h4>
+                  <p className="text-green-700 text-sm">Gwarantujemy bezproblemowy zwrot w ciągu 14 dni</p>
                 </div>
-                
-                <div className="bg-gray-50 p-4 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300">
-                  <p className="text-green-800 font-bold text-xl">14 dni</p>
-                  <p className="text-gray-600 text-sm">Na zwrot</p>
+
+                <div className="bg-green-50 p-6 rounded-lg shadow-sm hover:shadow-md transition-all duration-300 border border-green-100 flex flex-col items-center text-center">
+                  <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mb-3">
+                    <svg className="w-6 h-6 text-green-700" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                      <path d="M9 12L11 14L15 10" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
+                  </div>
+                  <h4 className="text-green-800 font-semibold text-lg mb-2">100% satysfakcji</h4>
+                  <p className="text-green-700 text-sm">Gwarantujemy najwyższą jakość produktów</p>
                 </div>
               </motion.div>
             </div>
@@ -231,9 +234,9 @@ const ProductModal = ({ product, onClose }) => {
             animate={{ opacity: 1 }}
             transition={{ duration: 0.3, delay: 0.4 }}
           >
-            <h3 className="text-lg font-semibold text-gray-800 mb-2">Opis produktu</h3>
+            {/* <h3 className="text-lg font-semibold text-gray-800 mb-2">Opis produktu</h3> */}
             <div 
-              className="text-gray-600 leading-relaxed product-description-container"
+              className="text-gray-600 leading-relaxed product-description-container prose prose-green max-w-none"
               dangerouslySetInnerHTML={{ __html: product.description || 'Brak opisu produktu.' }}
             />
           </motion.div>

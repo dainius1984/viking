@@ -261,9 +261,6 @@ const ProductPage = () => {
 
           {/* Product Description */}
           <div className="mt-12 pt-8 border-t border-gray-100">
-            <h2 className="text-xl font-bold text-emerald-800 font-serif mb-4">
-              Szczegółowy opis
-            </h2>
             <div 
               className="prose max-w-none text-gray-600"
               dangerouslySetInnerHTML={{ __html: product.description }}
