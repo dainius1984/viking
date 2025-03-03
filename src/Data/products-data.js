@@ -580,7 +580,7 @@ const products = [
   {
     id: 17,
     name: 'Health Protocol',
-    price: '1200.00',
+    price: '418.00',
     image: '/img/products/HP.png',
     category: categories.find(category => category.slug === 'suplementy-na-odpornosc').slug,
     description: `<div class="product-description">

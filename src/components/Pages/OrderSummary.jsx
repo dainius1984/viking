@@ -81,8 +81,8 @@ const OrderSummary = ({
             <input
               type="radio"
               name="shipping"
-              value="DPD"
-              checked={shipping === 'DPD'}
+              value="DPD_DAMORWA_WYSYLKA"
+              checked={shipping === 'DPD_DAMORWA_WYSYLKA'}
               onChange={handleShippingChange}
               className="w-4 h-4"
             />
@@ -92,8 +92,8 @@ const OrderSummary = ({
             <input
               type="radio"
               name="shipping"
-              value="DPD_ZA_POBRANIEM"
-              checked={shipping === 'DPD_ZA_POBRANIEM'}
+              value="DPD_DARMOWA_WYSYLKA"
+              checked={shipping === 'DPD_DARMOWA_WYSYLKA'}
               onChange={handleShippingChange}
               className="w-4 h-4"
             />
@@ -103,8 +103,8 @@ const OrderSummary = ({
             <input
               type="radio"
               name="shipping"
-              value="INPOST"
-              checked={shipping === 'INPOST'}
+              value="INPOST_DARMOWA_WYSYLKA"
+              checked={shipping === 'INPOST_DARMOWA_WYSYLKA'}
               onChange={handleShippingChange}
               className="w-4 h-4"
             />
