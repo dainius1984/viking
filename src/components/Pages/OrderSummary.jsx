@@ -91,7 +91,7 @@ const OrderSummary = ({
           <label className="flex items-center gap-2 text-sm sm:text-base">
             <input
               type="radio"
-              name="shipping"
+              name="shipping" 
               value="DPD_DARMOWA_WYSYLKA"
               checked={shipping === 'DPD_DARMOWA_WYSYLKA'}
               onChange={handleShippingChange}

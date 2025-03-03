@@ -114,7 +114,7 @@ const ProductModal = ({ product, onClose }) => {
           {/* Responsive layout container */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
             {/* Image Section */}
-            <div className="relative">
+            <div className="relative flex flex-col">
               <div className="relative bg-gray-50 p-5 rounded-lg min-h-[300px] md:min-h-[400px] flex items-center justify-center group hover:scale-[1.02] transition-transform duration-300">
                 <motion.img 
                   src={product.image} 
@@ -135,6 +135,57 @@ const ProductModal = ({ product, onClose }) => {
                   <span>Kliknij aby powiększyć</span>
                 </div>
               </div>
+              
+              {/* Buttons directly under image */}
+              <motion.div 
+                className="flex gap-3 mt-4"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.3, delay: 0.35 }}
+              >
+                <button 
+                  className={`flex-1 py-2 px-4 rounded border font-medium text-sm
+                    flex items-center justify-center gap-2 transition-all duration-300
+                    ${isAddedToCart 
+                      ? 'bg-green-700 text-white border-green-700 cursor-not-allowed'
+                      : 'border-green-700 text-green-700 hover:bg-green-700 hover:text-white'
+                    }`}
+                  onClick={addToCart}
+                  disabled={isAddedToCart}
+                >
+                  {isAddedToCart ? (
+                    <span className="flex items-center gap-2">
+                      <Check size={14} />
+                      Dodano do koszyka
+                    </span>
+                  ) : (
+                    'Dodaj do koszyka'
+                  )}
+                </button>
+
+                <button 
+                  className={`flex-1 py-2 px-4 rounded border font-medium text-sm
+                    flex items-center justify-center gap-2 transition-all duration-300
+                    ${isAddedToWishlist
+                      ? 'bg-pink-600 text-white border-pink-600 cursor-not-allowed'
+                      : 'border-pink-600 text-pink-600 hover:bg-pink-600 hover:text-white'
+                    }`}
+                  onClick={addToWishlist}
+                  disabled={isAddedToWishlist}
+                >
+                  {isAddedToWishlist ? (
+                    <span className="flex items-center gap-2">
+                      <Heart size={14} />
+                      Dodano do ulubionych
+                    </span>
+                  ) : (
+                    <>
+                      <Heart size={14} />
+                      Dodaj do ulubionych
+                    </>
+                  )}
+                </button>
+              </motion.div>
             </div>
             
             {/* Product Info Section - Basic Info */}
@@ -174,8 +225,8 @@ const ProductModal = ({ product, onClose }) => {
                   Dostępny
                 </span>
               </motion.div>
-              
-              {/* Product Details - Shipping, Returns, etc. */}
+
+              {/* Shipping Benefits */}
               <motion.div
                 className="mt-8 space-y-4"
                 initial={{ opacity: 0 }}
@@ -195,9 +246,8 @@ const ProductModal = ({ product, onClose }) => {
                   </span>
                   <span className="text-base">Wysyłka w 24h</span>
                 </div>
-
               </motion.div>
-              
+
               {/* Satisfaction Guarantee Cards */}
               <motion.div
                 className="mt-8 grid grid-cols-1 sm:grid-cols-2 gap-4"
@@ -234,41 +284,25 @@ const ProductModal = ({ product, onClose }) => {
             animate={{ opacity: 1 }}
             transition={{ duration: 0.3, delay: 0.4 }}
           >
-            {/* <h3 className="text-lg font-semibold text-gray-800 mb-2">Opis produktu</h3> */}
             <div 
               className="text-gray-600 leading-relaxed product-description-container prose prose-green max-w-none"
               dangerouslySetInnerHTML={{ __html: product.description || 'Brak opisu produktu.' }}
             />
           </motion.div>
 
-          {product.properties && (
-            <motion.div 
-              className="space-y-2 my-6"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.3, delay: 0.5 }}
-            >
-              {Object.entries(product.properties).map(([key, value]) => (
-                <div key={key} className="flex text-sm">
-                  <span className="font-semibold text-gray-800 w-32">{key}:</span>
-                  <span className="text-gray-600">{value}</span>
-                </div>
-              ))}
-            </motion.div>
-          )}
-
+          {/* Bottom buttons */}
           <motion.div 
-            className="flex flex-col sm:flex-row gap-4 mt-8"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.3, delay: 0.6 }}
+            className="flex gap-3 mt-8"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.3, delay: 0.35 }}
           >
             <button 
-              className={`flex-1 py-3 px-5 rounded border-2 font-semibold text-sm
+              className={`flex-1 py-3 px-6 rounded border font-medium
                 flex items-center justify-center gap-2 transition-all duration-300
                 ${isAddedToCart 
                   ? 'bg-green-700 text-white border-green-700 cursor-not-allowed'
-                  : 'border-green-700 text-green-700 hover:bg-green-700 hover:text-white hover:-translate-y-0.5 hover:shadow-lg'
+                  : 'border-green-700 text-green-700 hover:bg-green-700 hover:text-white'
                 }`}
               onClick={addToCart}
               disabled={isAddedToCart}
@@ -284,11 +318,11 @@ const ProductModal = ({ product, onClose }) => {
             </button>
 
             <button 
-              className={`flex-1 py-3 px-5 rounded border-2 font-semibold text-sm
+              className={`flex-1 py-3 px-6 rounded border font-medium
                 flex items-center justify-center gap-2 transition-all duration-300
                 ${isAddedToWishlist
                   ? 'bg-pink-600 text-white border-pink-600 cursor-not-allowed'
-                  : 'border-pink-600 text-pink-600 hover:bg-pink-600 hover:text-white hover:-translate-y-0.5 hover:shadow-lg'
+                  : 'border-pink-600 text-pink-600 hover:bg-pink-600 hover:text-white'
                 }`}
               onClick={addToWishlist}
               disabled={isAddedToWishlist}
@@ -306,6 +340,22 @@ const ProductModal = ({ product, onClose }) => {
               )}
             </button>
           </motion.div>
+
+          {product.properties && (
+            <motion.div 
+              className="space-y-2 my-6"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.3, delay: 0.5 }}
+            >
+              {Object.entries(product.properties).map(([key, value]) => (
+                <div key={key} className="flex text-sm">
+                  <span className="font-semibold text-gray-800 w-32">{key}:</span>
+                  <span className="text-gray-600">{value}</span>
+                </div>
+              ))}
+            </motion.div>
+          )}
         </div>
       </motion.div>
 

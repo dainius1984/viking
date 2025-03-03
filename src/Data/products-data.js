@@ -661,7 +661,7 @@ const products = [
     image: '/img/products/EO.png',
     category: categories.find(category => category.slug === 'suplementy-na-odpornosc').slug,
     description: `<div class="product-description">
-      <h2 class="product-title">ZINZINO BALANCEOIL+ 100ml</h2>
+      <h2 class="product-title">ZINZINO BALANCEOIL +</h2>
       
       <div class="intro-section">
         <p>Zinzino BalanceOil+ to synergiczne połączenie wysokiej jakości oleju z ryb, bogatego w kwasy tłuszczowe omega-3 EPA i DHA i specjalnie dobranej oliwy z pierwszego tłoczenia o wysokiej zawartości polifenoli. BalanceOil+ bezpiecznie dostosowuje i utrzymuje prawidłowy poziom EPA + DHA i kwasów tłuszczowych omega-6:3 w organizmie. BalanceOil+ wspomaga optymalną pracę mózgu i prawidłową pracę serca i wzmacnia układ odpornościowy.</p>
