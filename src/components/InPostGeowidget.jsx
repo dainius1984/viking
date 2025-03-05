@@ -34,73 +34,72 @@ const Modal = ({ isOpen, onClose, children }) => {
 const InPostGeowidget = ({ onPointSelected }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedPoint, setSelectedPoint] = useState(null);
-  const [scriptLoaded, setScriptLoaded] = useState(false);
-  const widgetRef = useRef(null);
   const containerRef = useRef(null);
 
-  // Load script only once when component mounts
   useEffect(() => {
-    if (!document.querySelector('script[src="https://geowidget.inpost.pl/inpost-geowidget.js"]')) {
+    // Load the script only when modal is opened
+    if (isModalOpen) {
       const script = document.createElement('script');
       script.src = 'https://geowidget.inpost.pl/inpost-geowidget.js';
       script.async = true;
+      
       script.onload = () => {
-        setScriptLoaded(true);
-        console.log('InPost Geowidget script loaded');
-      };
-      document.body.appendChild(script);
-    } else {
-      setScriptLoaded(true);
-    }
-
-    // Cleanup function
-    return () => {
-      window.pointSelected = undefined;
-    };
-  }, []);
-
-  // Initialize widget when modal opens and script is loaded
-  useEffect(() => {
-    if (isModalOpen && scriptLoaded) {
-      // Define the callback function
-      window.pointSelected = (event) => {
-        const point = event.detail;
-        console.log('Selected point:', point);
-        setSelectedPoint(point);
-        if (onPointSelected) {
-          onPointSelected(point);
+        if (containerRef.current) {
+          // Clear previous content
+          containerRef.current.innerHTML = '';
+          
+          // Create widget element
+          const widget = document.createElement('inpost-geowidget');
+          
+          // Set required attributes
+          widget.setAttribute('token', process.env.NEXT_PUBLIC_INPOST_GEO_TOKEN);
+          widget.setAttribute('language', 'pl');
+          widget.setAttribute('onpoint', 'handlePointSelected');
+          
+          // Set configuration
+          const widgetConfig = {
+            searchType: "google",
+            mapType: "google",
+            type: ["parcel_locker"],
+            payment: ["parcel_locker"],
+            allowedServices: ["parcel_locker"],
+            showPoints: true,
+            showInputField: true,
+            defaultParams: {
+              relative_point: "52.229676,21.012229", // Default location (Warsaw)
+              max_distance: "10000" // 10km radius
+            }
+          };
+          
+          widget.setAttribute('config', JSON.stringify(widgetConfig));
+          
+          // Add widget to container
+          containerRef.current.appendChild(widget);
+          
+          // Define callback function in window scope
+          window.handlePointSelected = (event) => {
+            const point = event.detail;
+            console.log('Selected point:', point);
+            setSelectedPoint(point);
+            if (onPointSelected) {
+              onPointSelected(point);
+            }
+            setIsModalOpen(false);
+          };
         }
-        setIsModalOpen(false);
       };
 
-      // Force widget refresh if needed
-      if (containerRef.current) {
-        const config = {
-          token: process.env.NEXT_PUBLIC_INPOST_GEO_TOKEN,
-          language: 'pl',
-          onpoint: 'pointSelected',
-          config: {
-            searchType: 'google',
-            mapType: 'google',
-            fields: ['name', 'address', 'location'],
-            points: true
-          }
-        };
+      document.body.appendChild(script);
 
-        // Clear and recreate widget
-        containerRef.current.innerHTML = '';
-        const widget = document.createElement('inpost-geowidget');
-        Object.entries(config).forEach(([key, value]) => {
-          if (key === 'config') {
-            widget.setAttribute(key, JSON.stringify(value));
-          } else {
-            widget.setAttribute(key, value);
-          }
-        });
-        containerRef.current.appendChild(widget);
-      }
+      return () => {
+        // Cleanup
+        if (document.body.contains(script)) {
+          document.body.removeChild(script);
+        }
+        delete window.handlePointSelected;
+      };
     }
-  }, [isModalOpen, scriptLoaded, onPointSelected]);
+  }, [isModalOpen, onPointSelected]);
 
   return (
     <div>
@@ -122,7 +121,10 @@ const InPostGeowidget = ({ onPointSelected }) => {
           <div 
             ref={containerRef}
             className="w-full h-[500px]"
-            style={{ minHeight: '500px' }}
+            style={{ 
+              minHeight: '500px',
+              position: 'relative'
+            }}
           />
         </div>
       </Modal>
