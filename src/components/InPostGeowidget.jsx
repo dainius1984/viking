@@ -38,68 +38,52 @@ const InPostGeowidget = ({ onPointSelected }) => {
 
   useEffect(() => {
     if (isModalOpen) {
-      // Create a script element for the InPost Geowidget
+      // Add CSS
+      const link = document.createElement('link');
+      link.rel = 'stylesheet';
+      link.href = 'https://geowidget.inpost.pl/inpost-geowidget.css';
+      document.head.appendChild(link);
+
+      // Add Script
       const script = document.createElement('script');
       script.src = 'https://geowidget.inpost.pl/inpost-geowidget.js';
-      script.async = true;
+      script.defer = true;
 
-      // Function to initialize the widget
-      const initializeWidget = () => {
+      // Function to handle point selection
+      window.handlePointSelected = (event) => {
+        const point = event.detail;
+        console.log('Selected point:', point);
+        setSelectedPoint(point);
+        if (onPointSelected) {
+          onPointSelected(point);
+        }
+        setIsModalOpen(false);
+      };
+
+      script.onload = () => {
         if (containerRef.current) {
           containerRef.current.innerHTML = '';
           
-          const widgetElement = document.createElement('div');
-          widgetElement.id = 'inpost-geowidget';
-          containerRef.current.appendChild(widgetElement);
-
-          // Define the callback before initializing the widget
-          window.handlePointSelected = (point) => {
-            console.log('Selected point:', point);
-            setSelectedPoint(point);
-            if (onPointSelected) {
-              onPointSelected(point);
-            }
-            setIsModalOpen(false);
-          };
-
-          // Initialize the widget with the official configuration
-          window.InpostGeowidget.init({
-            elementId: 'inpost-geowidget',
-            token: process.env.NEXT_PUBLIC_INPOST_GEO_TOKEN,
-            onPoint: 'handlePointSelected',
-            config: {
-              searchType: "google",
-              mapType: "google",
-              type: ["parcel_locker"],
-              payment: ["parcel_locker"],
-              allowedServices: ["parcel_locker"],
-              showPoints: true,
-              showInputField: true,
-              defaultParams: {
-                relative_point: "52.229676,21.012229",
-                max_distance: "10000"
-              },
-              filters: {
-                showFilters: false
-              }
-            }
-          });
+          // Create the custom element
+          const widget = document.createElement('inpost-geowidget');
+          widget.setAttribute('token', process.env.NEXT_PUBLIC_INPOST_GEO_TOKEN);
+          widget.setAttribute('language', 'pl');
+          widget.setAttribute('config', 'parcelcollect');
+          widget.setAttribute('onpoint', 'handlePointSelected');
+          
+          containerRef.current.appendChild(widget);
         }
       };
 
-      // When the script loads, initialize the widget
-      script.onload = initializeWidget;
-
-      // Add the script to the document
       document.body.appendChild(script);
 
       // Cleanup function
       return () => {
+        if (document.head.contains(link)) {
+          document.head.removeChild(link);
+        }
         if (document.body.contains(script)) {
           document.body.removeChild(script);
-        }
-        if (window.InpostGeowidget) {
-          window.InpostGeowidget.destroy();
         }
         delete window.handlePointSelected;
       };
