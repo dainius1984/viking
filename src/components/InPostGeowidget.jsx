@@ -63,11 +63,34 @@ const InPostGeowidget = ({ onPointSelected }) => {
   // Handle point selection
   const handlePointSelected = useCallback((event) => {
     const point = event.detail;
-    console.log('Selected point:', point);
-    setSelectedPoint(point);
+    
+    // Format the point data for easier use in the order system
+    const formattedPoint = {
+      name: point.name,
+      address: point.address,
+      point_id: point.name, // In InPost, name is typically the point_id
+      city: point.city || '',
+      province: point.province || '',
+      post_code: point.post_code || '',
+      location: {
+        latitude: point.location?.latitude || point.latitude || 0,
+        longitude: point.location?.longitude || point.longitude || 0
+      },
+      // Add any additional fields you need for your order system
+      selected_at: new Date().toISOString()
+    };
+    
+    console.log('Selected point details:', formattedPoint);
+    
+    // Store the formatted point data
+    setSelectedPoint(formattedPoint);
+    
+    // Pass the formatted data to the parent component if callback exists
     if (onPointSelected) {
-      onPointSelected(point);
+      onPointSelected(formattedPoint);
     }
+    
+    // Close the modal
     setIsModalOpen(false);
   }, [onPointSelected]);
   
@@ -103,6 +126,10 @@ const InPostGeowidget = ({ onPointSelected }) => {
       widget.addEventListener('inpost.geowidget.init', (event) => {
         const api = event.detail.api;
         console.log('Geowidget initialized with API:', api);
+        
+        // You can use the API to set initial position or other configurations
+        // For example, center the map on a specific location in Poland:
+        // api.changePosition({ longitude: 19.9449799, latitude: 50.0646501 }, 12);
       });
       
       // Define cleanup function
@@ -161,7 +188,11 @@ const InPostGeowidget = ({ onPointSelected }) => {
 
       {selectedPoint && (
         <div className="mt-2 text-sm text-gray-600">
-          Wybrany paczkomat: {selectedPoint.name} - {selectedPoint.address}
+          <p className="font-medium">Wybrany paczkomat:</p>
+          <p>{selectedPoint.name} - {selectedPoint.address}</p>
+          {selectedPoint.post_code && (
+            <p>{selectedPoint.post_code} {selectedPoint.city}</p>
+          )}
         </div>
       )}
     </div>

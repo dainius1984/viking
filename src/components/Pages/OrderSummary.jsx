@@ -4,7 +4,10 @@ import {
   DISCOUNT_CONFIG,
   SHIPPING_OPTIONS,
   isEligibleForFreeShipping,
-  getShippingCost 
+  getShippingCost,
+  formatDate,
+  generateOrderNumber,
+  cleanPhoneNumber
 } from './OrderUtils';
 import { CartItem } from './CartItem';
 import { DiscountInput } from './DiscountInput';
@@ -50,32 +53,51 @@ const OrderSummary = ({
   const handlePaczkomatSelected = (point) => {
     console.log('Selected Paczkomat:', point);
     setSelectedPaczkomat(point);
-    // Update formData with selected Paczkomat
+    
+    // Update formData with selected Paczkomat details
     if (formData) {
-      formData.paczkomat = point.name;
+      // Store complete paczkomat data
+      formData.paczkomat = {
+        name: point.name,
+        address: point.address,
+        point_id: point.point_id || point.name,
+        city: point.city || '',
+        post_code: point.post_code || '',
+        selected_at: point.selected_at || new Date().toISOString()
+      };
+      
+      // Also store just the ID for backward compatibility
+      formData.paczkomatId = point.point_id || point.name;
+      
+      // Automatically select the InPost Paczkomat shipping option
+      setShipping('INPOST_PACZKOMATY_DARMOWA_WYSYLKA');
     }
   };
 
   const prepareOrderData = () => {
-    // Make sure shipping cost is correctly calculated
-    const shippingCost = isFreeShipping ? 0 : SHIPPING_OPTIONS[shipping]?.cost || 0;
-    const finalTotal = (Number(total) + shippingCost).toFixed(2);
+    const shippingCost = getShippingCost(subtotal, shipping);
+    const finalTotal = total + shippingCost;
     
-    console.log('OrderSummary - Preparing order data with shipping:', shipping);
+    // Get paczkomat details if using InPost Paczkomat
+    const paczkomatDetails = shipping.includes('PACZKOMATY') && selectedPaczkomat 
+      ? `Paczkomat: ${selectedPaczkomat.name} - ${selectedPaczkomat.address}` 
+      : '';
     
     return {
-      date: new Date().toISOString(),
-      status: 'new',
-      total: finalTotal,
-      shipping: shipping, // Explicitly include shipping method
-      cart: cart.map(item => ({
-        name: item.name,
-        quantity: item.quantity,
-        price: item.price.toString()
-      })),
+      orderNumber: generateOrderNumber(),
+      date: formatDate(new Date()),
+      customerName: `${formData.firstName} ${formData.lastName}`,
+      email: formData.email,
+      phone: cleanPhoneNumber(formData.phone),
+      address: formData.address,
+      city: formData.city,
+      postalCode: formData.postalCode,
+      shipping: SHIPPING_OPTIONS[shipping] || shipping,
+      paczkomatDetails: paczkomatDetails,
+      paczkomatId: selectedPaczkomat?.point_id || selectedPaczkomat?.name || '',
       subtotal: subtotal.toString(),
-      discountApplied,
-      discountAmount: discountAmount.toString(),
+      discount: discountApplied ? discountAmount.toString() : '0',
+      total: finalTotal.toString(),
       items: cart.map(item => 
         `${item.name} (${item.quantity}x po ${formatPrice(item.price)})`
       ).join('\n'),
@@ -131,7 +153,7 @@ const OrderSummary = ({
               onChange={handleShippingChange}
               className="w-4 h-4"
             />
-            <span>InPost Paczkomaty - Darmowa wysyłka</span>
+            <span>Paczkomaty InPost {isFreeShipping ? '- Darmowa wysyłka' : '- 14.99 zł'}</span>
           </label>
         </>
       ) : (
@@ -183,19 +205,8 @@ const OrderSummary = ({
         </>
       )}
 
-      {/* Show Geowidget when InPost Paczkomaty is selected */}
-      {(shipping === 'INPOST_PACZKOMATY' || shipping === 'INPOST_PACZKOMATY_DARMOWA_WYSYLKA') && (
-        <div className="mt-4">
-          <InPostGeowidget 
-            onPointSelected={handlePaczkomatSelected}
-          />
-          {!selectedPaczkomat && (
-            <div className="mt-2 text-sm text-red-600">
-              Proszę wybrać paczkomat przed kontynuowaniem zamówienia
-            </div>
-          )}
-        </div>
-      )}
+      {/* Render the InPost Paczkomat widget if this option is selected */}
+      {renderInPostPaczkomatSection()}
       
       {/* Debug indicator in development */}
       {process.env.NODE_ENV !== 'production' && (
@@ -255,6 +266,25 @@ const OrderSummary = ({
   const enhancedFormData = {
     ...formData,
     shipping: shipping // Explicitly include shipping in formData
+  };
+
+  // Render InPost Paczkomat section when that shipping option is selected
+  const renderInPostPaczkomatSection = () => {
+    if (shipping === 'INPOST_PACZKOMATY_DARMOWA_WYSYLKA') {
+      return (
+        <div className="mt-4 p-3 bg-gray-50 rounded-md">
+          <h3 className="font-medium text-sm mb-2">Wybierz paczkomat</h3>
+          <InPostGeowidget onPointSelected={handlePaczkomatSelected} />
+          
+          {selectedPaczkomat && (
+            <div className="mt-2 text-xs text-gray-600 border-t pt-2">
+              <p>Wybrany paczkomat zostanie użyty do dostawy.</p>
+            </div>
+          )}
+        </div>
+      );
+    }
+    return null;
   };
 
   return (
