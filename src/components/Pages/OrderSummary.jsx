@@ -185,12 +185,13 @@ const OrderSummary = ({
 
       {/* Show Geowidget when InPost Paczkomaty is selected */}
       {(shipping === 'INPOST_PACZKOMATY' || shipping === 'INPOST_PACZKOMATY_DARMOWA_WYSYLKA') && (
-        <div className="mt-4 p-4 border rounded-lg">
-          <h3 className="text-sm font-medium mb-2">Wybierz Paczkomat:</h3>
-          <InPostGeowidget onPointSelected={handlePaczkomatSelected} />
-          {selectedPaczkomat && (
-            <div className="mt-2 text-sm text-green-600">
-              Wybrany Paczkomat: {selectedPaczkomat.name} - {selectedPaczkomat.address}
+        <div className="mt-4">
+          <InPostGeowidget 
+            onPointSelected={handlePaczkomatSelected}
+          />
+          {!selectedPaczkomat && (
+            <div className="mt-2 text-sm text-red-600">
+              Proszę wybrać paczkomat przed kontynuowaniem zamówienia
             </div>
           )}
         </div>
