@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, useCallback } from 'react';
 
 const Modal = ({ isOpen, onClose, children }) => {
   if (!isOpen) return null;
@@ -31,112 +31,106 @@ const Modal = ({ isOpen, onClose, children }) => {
   );
 };
 
+// Configuration constants
+const GEOWIDGET_CONFIG = {
+  CSS_URL: 'https://geowidget.inpost-group.com/inpost-geowidget.css',
+  JS_URL: 'https://geowidget.inpost-group.com/inpost-geowidget.js',
+  LANGUAGE: 'pl',
+  COUNTRY: 'PL',
+  CONFIG: 'parcelCollect',
+  EVENT_NAME: 'onpointselect'
+};
+
 const InPostGeowidget = ({ onPointSelected }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedPoint, setSelectedPoint] = useState(null);
   const containerRef = useRef(null);
-  const widgetRef = useRef(null);
-
-  // Load the CSS once when the component mounts
+  
+  // Load CSS only once when component mounts
   useEffect(() => {
-    // Add CSS if it doesn't exist
-    if (!document.querySelector('link[href*="inpost-geowidget.css"]')) {
-      const link = document.createElement('link');
-      link.rel = 'stylesheet';
-      link.href = 'https://sandbox-global-geowidget-sdk.easypack24.net/inpost-geowidget.css';
-      document.head.appendChild(link);
-    }
-
-    // Cleanup function
-    return () => {
-      // We don't remove the CSS as it might be used by other instances
+    const loadCSS = () => {
+      if (!document.querySelector(`link[href="${GEOWIDGET_CONFIG.CSS_URL}"]`)) {
+        const link = document.createElement('link');
+        link.rel = 'stylesheet';
+        link.href = GEOWIDGET_CONFIG.CSS_URL;
+        document.head.appendChild(link);
+      }
     };
+    
+    loadCSS();
   }, []);
-
-  // Handle the modal opening and closing
+  
+  // Handle point selection
+  const handlePointSelected = useCallback((event) => {
+    const point = event.detail;
+    console.log('Selected point:', point);
+    setSelectedPoint(point);
+    if (onPointSelected) {
+      onPointSelected(point);
+    }
+    setIsModalOpen(false);
+  }, [onPointSelected]);
+  
+  // Initialize widget when modal opens
   useEffect(() => {
-    // Define the point selection handler inside the effect to avoid dependency issues
-    const handlePointSelectedEffect = (event) => {
-      const point = event.detail;
-      console.log('Selected point:', point);
-      setSelectedPoint(point);
-      if (onPointSelected) {
-        onPointSelected(point);
-      }
-      setIsModalOpen(false);
-    };
-
-    // Define the widget initialization function inside the effect
-    const initializeWidgetEffect = () => {
-      if (containerRef.current) {
-        containerRef.current.innerHTML = '';
-        
-        // Create the custom element
-        const widget = document.createElement('inpost-geowidget');
-        
-        // Log environment variable status
-        console.log('Environment variables available:', {
-          token: process.env.REACT_APP_INPOST_GEO_TOKEN,
-          isDefined: typeof process.env.REACT_APP_INPOST_GEO_TOKEN !== 'undefined',
-          length: process.env.REACT_APP_INPOST_GEO_TOKEN?.length,
-          test: process.env.REACT_APP_TEST,
-          testIsDefined: typeof process.env.REACT_APP_TEST !== 'undefined'
-        });
-        
-        // Set attributes
-        widget.setAttribute('id', 'geowidget');
-        widget.setAttribute('token', process.env.REACT_APP_INPOST_GEO_TOKEN);
-        widget.setAttribute('language', 'pl');
-        widget.setAttribute('country', 'PL');
-        widget.setAttribute('config', 'parcelCollect');
-        widget.setAttribute('onpoint', 'onpointselect');
-        
-        // Add the widget to the container
-        containerRef.current.appendChild(widget);
-        
-        // Add event listener for point selection
-        document.addEventListener('onpointselect', handlePointSelectedEffect);
-        
-        // Add API access example
-        widget.addEventListener('inpost.geowidget.init', (event) => {
-          // Reference to api object
-          const api = event.detail.api;
-          console.log('Geowidget initialized with API:', api);
-          // You can call API methods here if needed
-          // api.changePosition({ longitude: 20.318968, latitude: 49.731131 }, 16);
-        });
-      }
-    };
-
-    if (isModalOpen) {
-      // Check if script already exists
-      const existingScript = document.querySelector('script[src*="inpost-geowidget.js"]');
+    if (!isModalOpen) return;
+    
+    let cleanup = () => {};
+    
+    const initializeWidget = () => {
+      if (!containerRef.current) return;
       
-      if (!existingScript) {
-        // Add Script if it doesn't exist
-        const script = document.createElement('script');
-        script.src = 'https://sandbox-global-geowidget-sdk.easypack24.net/inpost-geowidget.js';
-        script.defer = true;
-        
-        script.onload = initializeWidgetEffect;
-        document.body.appendChild(script);
-        
-        // Store the script reference
-        widgetRef.current = script;
-      } else {
-        // If script already exists, just initialize the widget
-        initializeWidgetEffect();
-      }
+      containerRef.current.innerHTML = '';
+      
+      // Create widget element
+      const widget = document.createElement('inpost-geowidget');
+      
+      // Set widget attributes
+      widget.setAttribute('id', 'geowidget');
+      widget.setAttribute('token', process.env.REACT_APP_INPOST_GEO_TOKEN);
+      widget.setAttribute('language', GEOWIDGET_CONFIG.LANGUAGE);
+      widget.setAttribute('country', GEOWIDGET_CONFIG.COUNTRY);
+      widget.setAttribute('config', GEOWIDGET_CONFIG.CONFIG);
+      widget.setAttribute('onpoint', GEOWIDGET_CONFIG.EVENT_NAME);
+      
+      // Add widget to container
+      containerRef.current.appendChild(widget);
+      
+      // Add event listeners
+      document.addEventListener(GEOWIDGET_CONFIG.EVENT_NAME, handlePointSelected);
+      
+      // API access
+      widget.addEventListener('inpost.geowidget.init', (event) => {
+        const api = event.detail.api;
+        console.log('Geowidget initialized with API:', api);
+      });
+      
+      // Define cleanup function
+      cleanup = () => {
+        document.removeEventListener(GEOWIDGET_CONFIG.EVENT_NAME, handlePointSelected);
+      };
+    };
+    
+    // Load script if needed
+    const existingScript = document.querySelector(`script[src="${GEOWIDGET_CONFIG.JS_URL}"]`);
+    
+    if (!existingScript) {
+      const script = document.createElement('script');
+      script.src = GEOWIDGET_CONFIG.JS_URL;
+      script.defer = true;
+      script.onload = initializeWidget;
+      document.body.appendChild(script);
+      
+      cleanup = () => {
+        document.removeEventListener(GEOWIDGET_CONFIG.EVENT_NAME, handlePointSelected);
+      };
+    } else {
+      initializeWidget();
     }
     
-    // Cleanup function
-    return () => {
-      // We don't remove the script as it might be used by other instances
-      // Just remove the event listener
-      document.removeEventListener('onpointselect', handlePointSelectedEffect);
-    };
-  }, [isModalOpen, onPointSelected]);
-
+    return cleanup;
+  }, [isModalOpen, handlePointSelected]);
+  
   return (
     <div>
       <button
