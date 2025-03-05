@@ -37,48 +37,23 @@ const InPostGeowidget = ({ onPointSelected }) => {
   const containerRef = useRef(null);
 
   useEffect(() => {
-    // Load the script only when modal is opened
     if (isModalOpen) {
+      // Create a script element for the InPost Geowidget
       const script = document.createElement('script');
       script.src = 'https://geowidget.inpost.pl/inpost-geowidget.js';
       script.async = true;
-      
-      script.onload = () => {
+
+      // Function to initialize the widget
+      const initializeWidget = () => {
         if (containerRef.current) {
-          // Clear previous content
           containerRef.current.innerHTML = '';
           
-          // Create widget element
-          const widget = document.createElement('inpost-geowidget');
-          
-          // Set required attributes
-          widget.setAttribute('token', process.env.NEXT_PUBLIC_INPOST_GEO_TOKEN);
-          widget.setAttribute('language', 'pl');
-          widget.setAttribute('onpoint', 'handlePointSelected');
-          
-          // Set configuration
-          const widgetConfig = {
-            searchType: "google",
-            mapType: "google",
-            type: ["parcel_locker"],
-            payment: ["parcel_locker"],
-            allowedServices: ["parcel_locker"],
-            showPoints: true,
-            showInputField: true,
-            defaultParams: {
-              relative_point: "52.229676,21.012229", // Default location (Warsaw)
-              max_distance: "10000" // 10km radius
-            }
-          };
-          
-          widget.setAttribute('config', JSON.stringify(widgetConfig));
-          
-          // Add widget to container
-          containerRef.current.appendChild(widget);
-          
-          // Define callback function in window scope
-          window.handlePointSelected = (event) => {
-            const point = event.detail;
+          const widgetElement = document.createElement('div');
+          widgetElement.id = 'inpost-geowidget';
+          containerRef.current.appendChild(widgetElement);
+
+          // Define the callback before initializing the widget
+          window.handlePointSelected = (point) => {
             console.log('Selected point:', point);
             setSelectedPoint(point);
             if (onPointSelected) {
@@ -86,15 +61,45 @@ const InPostGeowidget = ({ onPointSelected }) => {
             }
             setIsModalOpen(false);
           };
+
+          // Initialize the widget with the official configuration
+          window.InpostGeowidget.init({
+            elementId: 'inpost-geowidget',
+            token: process.env.NEXT_PUBLIC_INPOST_GEO_TOKEN,
+            onPoint: 'handlePointSelected',
+            config: {
+              searchType: "google",
+              mapType: "google",
+              type: ["parcel_locker"],
+              payment: ["parcel_locker"],
+              allowedServices: ["parcel_locker"],
+              showPoints: true,
+              showInputField: true,
+              defaultParams: {
+                relative_point: "52.229676,21.012229",
+                max_distance: "10000"
+              },
+              filters: {
+                showFilters: false
+              }
+            }
+          });
         }
       };
 
+      // When the script loads, initialize the widget
+      script.onload = initializeWidget;
+
+      // Add the script to the document
       document.body.appendChild(script);
 
+      // Cleanup function
       return () => {
-        // Cleanup
         if (document.body.contains(script)) {
           document.body.removeChild(script);
+        }
+        if (window.InpostGeowidget) {
+          window.InpostGeowidget.destroy();
         }
         delete window.handlePointSelected;
       };
