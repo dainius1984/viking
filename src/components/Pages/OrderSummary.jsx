@@ -270,7 +270,7 @@ const OrderSummary = ({
 
   // Render InPost Paczkomat section when that shipping option is selected
   const renderInPostPaczkomatSection = () => {
-    if (shipping === 'INPOST_PACZKOMATY_DARMOWA_WYSYLKA') {
+    if (shipping === 'INPOST_PACZKOMATY_DARMOWA_WYSYLKA' || shipping === 'INPOST_PACZKOMATY') {
       return (
         <div className="mt-4 p-3 bg-gray-50 rounded-md">
           <h3 className="font-medium text-sm mb-2">Wybierz paczkomat</h3>
@@ -278,7 +278,14 @@ const OrderSummary = ({
           
           {selectedPaczkomat && (
             <div className="mt-2 text-xs text-gray-600 border-t pt-2">
+              <p>Wybrany paczkomat: <strong>{selectedPaczkomat.name}</strong> - {selectedPaczkomat.address}</p>
               <p>Wybrany paczkomat zostanie użyty do dostawy.</p>
+            </div>
+          )}
+          
+          {!selectedPaczkomat && (
+            <div className="mt-2 text-xs text-red-600">
+              <p>Proszę wybrać paczkomat przed kontynuowaniem zamówienia.</p>
             </div>
           )}
         </div>
