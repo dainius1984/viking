@@ -66,10 +66,14 @@ const InPostGeowidget = ({ onPointSelected }) => {
           
           // Create the custom element
           const widget = document.createElement('inpost-geowidget');
-          console.log('InPost Token:', process.env.NEXT_PUBLIC_INPOST_GEO_TOKEN);
+          console.log('Environment variables available:', {
+            token: process.env.NEXT_PUBLIC_INPOST_GEO_TOKEN,
+            isDefined: typeof process.env.NEXT_PUBLIC_INPOST_GEO_TOKEN !== 'undefined',
+            length: process.env.NEXT_PUBLIC_INPOST_GEO_TOKEN?.length
+          });
           widget.setAttribute('token', process.env.NEXT_PUBLIC_INPOST_GEO_TOKEN);
           widget.setAttribute('language', 'pl');
-          widget.setAttribute('config', 'parcelcollect');
+          widget.setAttribute('config', 'parcelCollect');
           widget.setAttribute('onpoint', 'handlePointSelected');
           
           containerRef.current.appendChild(widget);
