@@ -79,8 +79,20 @@ const OrderSummary = ({
     const finalTotal = total + shippingCost;
     
     // Get paczkomat details if using InPost Paczkomat
-    const paczkomatDetails = shipping.includes('PACZKOMATY') && selectedPaczkomat 
-      ? `Paczkomat: ${selectedPaczkomat.name} - ${selectedPaczkomat.address}` 
+    const isPaczkomatShipping = shipping.includes('PACZKOMATY');
+    const paczkomatDetails = isPaczkomatShipping && selectedPaczkomat 
+      ? {
+          name: selectedPaczkomat.name,
+          address: selectedPaczkomat.address,
+          city: selectedPaczkomat.city || '',
+          post_code: selectedPaczkomat.post_code || '',
+          point_id: selectedPaczkomat.point_id || selectedPaczkomat.name
+        }
+      : null;
+    
+    // Format paczkomat details for display
+    const paczkomatDisplayText = isPaczkomatShipping && selectedPaczkomat
+      ? `Paczkomat: ${selectedPaczkomat.name} - ${selectedPaczkomat.address}`
       : '';
     
     return {
@@ -93,7 +105,9 @@ const OrderSummary = ({
       city: formData.city,
       postalCode: formData.postalCode,
       shipping: SHIPPING_OPTIONS[shipping] || shipping,
-      paczkomatDetails: paczkomatDetails,
+      shippingMethod: shipping,
+      paczkomatDetails: paczkomatDisplayText,
+      paczkomat: paczkomatDetails,
       paczkomatId: selectedPaczkomat?.point_id || selectedPaczkomat?.name || '',
       subtotal: subtotal.toString(),
       discount: discountApplied ? discountAmount.toString() : '0',
@@ -232,7 +246,7 @@ const OrderSummary = ({
       )}
 
       <div className="flex justify-between text-sm sm:text-base">
-        <span>Wysyłka:</span>
+        <span>Dostawa:</span>
         <span>{isFreeShipping ? 'Darmowa' : formatPrice(getShippingCost(subtotal, shipping))}</span>
       </div>
 
@@ -253,9 +267,12 @@ const OrderSummary = ({
       {renderShippingOptions()}
 
       <div className="flex justify-between font-bold text-base sm:text-lg pt-4 border-t">
-        <span>Do zapłaty:</span>
-        <span>{formatPrice(total)}</span>
+        <span>Razem:</span>
+        <span>{formatPrice(total + getShippingCost(subtotal, shipping))}</span>
       </div>
+
+      {/* Display selected paczkomat in the order summary */}
+      {renderSelectedPaczkomatSummary()}
     </div>
   );
 
@@ -277,9 +294,20 @@ const OrderSummary = ({
           <InPostGeowidget onPointSelected={handlePaczkomatSelected} />
           
           {selectedPaczkomat && (
-            <div className="mt-2 text-xs text-gray-600 border-t pt-2">
-              <p>Wybrany paczkomat: <strong>{selectedPaczkomat.name}</strong> - {selectedPaczkomat.address}</p>
-              <p>Wybrany paczkomat zostanie użyty do dostawy.</p>
+            <div className="mt-3 text-sm text-gray-700 border-t pt-3">
+              <div className="flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-green-600 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                </svg>
+                <p className="font-medium">Wybrany paczkomat:</p>
+              </div>
+              <div className="ml-7">
+                <p className="font-bold">{selectedPaczkomat.name}</p>
+                <p>{selectedPaczkomat.address}</p>
+                {selectedPaczkomat.post_code && (
+                  <p>{selectedPaczkomat.post_code} {selectedPaczkomat.city}</p>
+                )}
+              </div>
             </div>
           )}
           
@@ -288,6 +316,25 @@ const OrderSummary = ({
               <p>Proszę wybrać paczkomat przed kontynuowaniem zamówienia.</p>
             </div>
           )}
+        </div>
+      );
+    }
+    return null;
+  };
+
+  // Add a function to display the selected paczkomat in the order summary
+  const renderSelectedPaczkomatSummary = () => {
+    if ((shipping === 'INPOST_PACZKOMATY_DARMOWA_WYSYLKA' || shipping === 'INPOST_PACZKOMATY') && selectedPaczkomat) {
+      return (
+        <div className="mt-3 pt-3 border-t border-dashed">
+          <div className="text-sm">
+            <p className="font-medium">Paczkomat:</p>
+            <p className="font-bold">{selectedPaczkomat.name}</p>
+            <p className="text-xs">{selectedPaczkomat.address}</p>
+            {selectedPaczkomat.post_code && (
+              <p className="text-xs">{selectedPaczkomat.post_code} {selectedPaczkomat.city}</p>
+            )}
+          </div>
         </div>
       );
     }

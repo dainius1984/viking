@@ -77,7 +77,9 @@ const InPostGeowidget = ({ onPointSelected }) => {
         longitude: point.location?.longitude || point.longitude || 0
       },
       // Add any additional fields you need for your order system
-      selected_at: new Date().toISOString()
+      selected_at: new Date().toISOString(),
+      // Extract the number from the name (typically the format is "ABC01N")
+      number: point.name || ''
     };
     
     console.log('Selected point details:', formattedPoint);
@@ -193,12 +195,14 @@ const InPostGeowidget = ({ onPointSelected }) => {
       </Modal>
 
       {selectedPoint && (
-        <div className="mt-2 text-sm text-gray-600">
-          <p className="font-medium">Wybrany paczkomat:</p>
-          <p>{selectedPoint.name} - {selectedPoint.address}</p>
+        <div className="mt-2 text-sm text-gray-600 border p-3 rounded-md bg-gray-50">
+          <p className="font-medium text-base">Wybrany paczkomat:</p>
+          <p className="text-lg font-bold text-green-700">{selectedPoint.name}</p>
+          <p>{selectedPoint.address}</p>
           {selectedPoint.post_code && (
             <p>{selectedPoint.post_code} {selectedPoint.city}</p>
           )}
+          <p className="mt-2 text-xs text-gray-500">Wybrano: {new Date(selectedPoint.selected_at).toLocaleString()}</p>
         </div>
       )}
     </div>
