@@ -20,6 +20,7 @@ import PrivacyPolicy from './components/Pages/Policy';
 import PrivateRoute, { RedirectIfAuthenticated } from './PrivateRoute';
 import ProductPage from './components/Pages/ProductPage';
 import SessionManager from './SessionManager'; // Import the session manager
+import EnvTest from './components/EnvTest'; // Import the EnvTest component
 
 const App = () => {
   return (
@@ -43,6 +44,7 @@ const App = () => {
             <Route path="/article/:id" element={<Article />} />
             <Route path="/health-protocol" element={<HealthProtocolPage />} />
             <Route path="/product/:id" element={<ProductPage />} />
+            <Route path="/env-test" element={<EnvTest />} />
             <Route 
               path="/auth" 
               element={

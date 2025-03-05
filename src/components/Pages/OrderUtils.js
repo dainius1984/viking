@@ -220,4 +220,4 @@ export const cleanPhoneNumber = (phone) => {
   return phone.replace(/\s+/g, '').replace(/[^0-9+]/g, '');
 };
 
-console.log('Token available:', !!process.env.NEXT_PUBLIC_INPOST_GEO_TOKEN);
+console.log('Token available:', !!process.env.REACT_APP_INPOST_GEO_TOKEN);
