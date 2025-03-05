@@ -153,7 +153,7 @@ const OrderSummary = ({
               onChange={handleShippingChange}
               className="w-4 h-4"
             />
-            <span>Paczkomaty InPost {isFreeShipping ? '- Darmowa wysyłka' : '- 14.99 zł'}</span>
+            <span>Paczkomaty InPost - Darmowa wysyłka</span>
           </label>
         </>
       ) : (
@@ -200,12 +200,12 @@ const OrderSummary = ({
               onChange={handleShippingChange}
               className="w-4 h-4"
             />
-            <span>InPost Paczkomaty - {formatPrice(SHIPPING_OPTIONS.INPOST_PACZKOMATY.cost)}</span>
+            <span>Paczkomaty InPost - {formatPrice(SHIPPING_OPTIONS.INPOST_PACZKOMATY.cost)}</span>
           </label>
         </>
       )}
 
-      {/* Render the InPost Paczkomat widget if this option is selected */}
+      {/* Always render the InPost Paczkomat widget if either Paczkomat option is selected */}
       {renderInPostPaczkomatSection()}
       
       {/* Debug indicator in development */}
