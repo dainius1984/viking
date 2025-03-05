@@ -66,9 +66,9 @@ const InPostGeowidget = ({ onPointSelected }) => {
     
     // Format the point data for easier use in the order system
     const formattedPoint = {
-      name: point.name,
-      address: point.address,
-      point_id: point.name, // In InPost, name is typically the point_id
+      name: point.name || '',
+      address: point.address || '',
+      point_id: point.name || '', // In InPost, name is typically the point_id
       city: point.city || '',
       province: point.province || '',
       post_code: point.post_code || '',
@@ -88,8 +88,12 @@ const InPostGeowidget = ({ onPointSelected }) => {
     setSelectedPoint(formattedPoint);
     
     // Pass the formatted data to the parent component if callback exists
-    if (onPointSelected) {
-      onPointSelected(formattedPoint);
+    if (onPointSelected && typeof onPointSelected === 'function') {
+      try {
+        onPointSelected(formattedPoint);
+      } catch (error) {
+        console.error('Error in onPointSelected callback:', error);
+      }
     }
     
     // Close the modal

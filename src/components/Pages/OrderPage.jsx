@@ -102,6 +102,19 @@ const OrderPage = () => {
     const isFreeShipping = isEligibleForFreeShipping(subtotal);
     const shippingCost = isFreeShipping ? 0 : getShippingCost(subtotal, formData.shipping);
     
+    // Ensure paczkomat data is properly formatted
+    const paczkomatData = formData.paczkomat ? {
+      name: formData.paczkomat.name || '',
+      address: formData.paczkomat.address || '',
+      point_id: formData.paczkomat.point_id || '',
+      city: formData.paczkomat.city || '',
+      post_code: formData.paczkomat.post_code || '',
+      selected_at: formData.paczkomat.selected_at || ''
+    } : null;
+    
+    // Format items as a string
+    const formattedItems = formatOrderItems(state.cart);
+    
     return {
       orderNumber,
       status: 'pending',
@@ -112,10 +125,13 @@ const OrderPage = () => {
       shippingCost: shippingCost.toFixed(2),
       createdAt: new Date().toISOString(),
       lastUpdateTime: new Date().toISOString(),
-      items: formatOrderItems(state.cart),
+      items: formattedItems,
       shipping: formData.shipping,
       payuOrderId: null,
       paymentStatus: 'PENDING',
+      // Ensure paczkomat data is properly formatted
+      paczkomat: paczkomatData,
+      paczkomatId: formData.paczkomatId || '',
       ...formData
     };
   };

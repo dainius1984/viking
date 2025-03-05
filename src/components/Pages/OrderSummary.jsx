@@ -52,22 +52,32 @@ const OrderSummary = ({
   // Handle Paczkomat selection
   const handlePaczkomatSelected = (point) => {
     console.log('Selected Paczkomat:', point);
-    setSelectedPaczkomat(point);
+    
+    // Ensure point is an object before proceeding
+    if (!point || typeof point !== 'object') {
+      console.error('Invalid point data received:', point);
+      return;
+    }
+    
+    // Create a sanitized copy of the point data
+    const sanitizedPoint = {
+      name: point.name || '',
+      address: point.address || '',
+      point_id: point.point_id || point.name || '',
+      city: point.city || '',
+      post_code: point.post_code || '',
+      selected_at: point.selected_at || new Date().toISOString()
+    };
+    
+    setSelectedPaczkomat(sanitizedPoint);
     
     // Update formData with selected Paczkomat details
     if (formData) {
       // Store complete paczkomat data
-      formData.paczkomat = {
-        name: point.name,
-        address: point.address,
-        point_id: point.point_id || point.name,
-        city: point.city || '',
-        post_code: point.post_code || '',
-        selected_at: point.selected_at || new Date().toISOString()
-      };
+      formData.paczkomat = sanitizedPoint;
       
       // Also store just the ID for backward compatibility
-      formData.paczkomatId = point.point_id || point.name;
+      formData.paczkomatId = sanitizedPoint.point_id;
       
       // Automatically select the InPost Paczkomat shipping option
       setShipping('INPOST_PACZKOMATY_DARMOWA_WYSYLKA');
@@ -95,6 +105,11 @@ const OrderSummary = ({
       ? `Paczkomat: ${selectedPaczkomat.name} - ${selectedPaczkomat.address}`
       : '';
     
+    // Format cart items as a string
+    const formattedItems = cart.map(item => 
+      `${item.name} (${item.quantity}x po ${formatPrice(item.price)})`
+    ).join('\n');
+    
     return {
       orderNumber: generateOrderNumber(),
       date: formatDate(new Date()),
@@ -112,9 +127,7 @@ const OrderSummary = ({
       subtotal: subtotal.toString(),
       discount: discountApplied ? discountAmount.toString() : '0',
       total: finalTotal.toString(),
-      items: cart.map(item => 
-        `${item.name} (${item.quantity}x po ${formatPrice(item.price)})`
-      ).join('\n'),
+      items: formattedItems,
       paymentStatus: 'PENDING',
       lastUpdateTime: new Date().toISOString(),
       shippingCost: shippingCost.toString()
@@ -329,10 +342,10 @@ const OrderSummary = ({
         <div className="mt-3 pt-3 border-t border-dashed">
           <div className="text-sm">
             <p className="font-medium">Paczkomat:</p>
-            <p className="font-bold">{selectedPaczkomat.name}</p>
-            <p className="text-xs">{selectedPaczkomat.address}</p>
+            <p className="font-bold">{selectedPaczkomat.name || ''}</p>
+            <p className="text-xs">{selectedPaczkomat.address || ''}</p>
             {selectedPaczkomat.post_code && (
-              <p className="text-xs">{selectedPaczkomat.post_code} {selectedPaczkomat.city}</p>
+              <p className="text-xs">{selectedPaczkomat.post_code || ''} {selectedPaczkomat.city || ''}</p>
             )}
           </div>
         </div>
