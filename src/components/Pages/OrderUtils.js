@@ -15,6 +15,16 @@ export const SHIPPING_OPTIONS = {
     id: 'INPOST',
     name: 'Kurier InPost',
     cost: 14.99
+  },
+  INPOST_PACZKOMATY: {
+    id: 'INPOST_PACZKOMATY',
+    name: 'InPost Paczkomaty',
+    cost: 14.99
+  },
+  INPOST_PACZKOMATY_DARMOWA_WYSYLKA: {
+    id: 'INPOST_PACZKOMATY_DARMOWA_WYSYLKA',
+    name: 'InPost Paczkomaty - Darmowa wysyłka',
+    cost: 0
   }
 };
 

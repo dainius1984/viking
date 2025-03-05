@@ -110,6 +110,17 @@ const OrderSummary = ({
             />
             <span>Kurier InPost - Darmowa wysyłka</span>
           </label>
+          <label className="flex items-center gap-2 text-sm sm:text-base">
+            <input
+              type="radio"
+              name="shipping"
+              value="INPOST_PACZKOMATY_DARMOWA_WYSYLKA"
+              checked={shipping === 'INPOST_PACZKOMATY_DARMOWA_WYSYLKA'}
+              onChange={handleShippingChange}
+              className="w-4 h-4"
+            />
+            <span>InPost Paczkomaty - Darmowa wysyłka</span>
+          </label>
         </>
       ) : (
         <>
@@ -145,6 +156,17 @@ const OrderSummary = ({
               className="w-4 h-4"
             />
             <span>Kurier InPost - {formatPrice(SHIPPING_OPTIONS.INPOST.cost)}</span>
+          </label>
+          <label className="flex items-center gap-2 text-sm sm:text-base">
+            <input
+              type="radio"
+              name="shipping"
+              value="INPOST_PACZKOMATY"
+              checked={shipping === 'INPOST_PACZKOMATY'}
+              onChange={handleShippingChange}
+              className="w-4 h-4"
+            />
+            <span>InPost Paczkomaty - {formatPrice(SHIPPING_OPTIONS.INPOST_PACZKOMATY.cost)}</span>
           </label>
         </>
       )}
