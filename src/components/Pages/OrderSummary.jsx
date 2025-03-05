@@ -9,6 +9,7 @@ import {
 import { CartItem } from './CartItem';
 import { DiscountInput } from './DiscountInput';
 import PaymentButton from '../PaymentButton';
+import InPostGeowidget from '../InPostGeowidget';
 
 const OrderSummary = ({ 
   cart = [], 
@@ -24,6 +25,7 @@ const OrderSummary = ({
   formData
 }) => {
   const [discountCode, setDiscountCode] = useState('');
+  const [selectedPaczkomat, setSelectedPaczkomat] = useState(null);
   const isFreeShipping = isEligibleForFreeShipping(subtotal);
   
   // Log when shipping option changes
@@ -42,6 +44,16 @@ const OrderSummary = ({
     const selectedShipping = e.target.value;
     console.log('OrderSummary - Shipping changed to:', selectedShipping);
     setShipping(selectedShipping);
+  };
+
+  // Handle Paczkomat selection
+  const handlePaczkomatSelected = (point) => {
+    console.log('Selected Paczkomat:', point);
+    setSelectedPaczkomat(point);
+    // Update formData with selected Paczkomat
+    if (formData) {
+      formData.paczkomat = point.name;
+    }
   };
 
   const prepareOrderData = () => {
@@ -169,6 +181,19 @@ const OrderSummary = ({
             <span>InPost Paczkomaty - {formatPrice(SHIPPING_OPTIONS.INPOST_PACZKOMATY.cost)}</span>
           </label>
         </>
+      )}
+
+      {/* Show Geowidget when InPost Paczkomaty is selected */}
+      {(shipping === 'INPOST_PACZKOMATY' || shipping === 'INPOST_PACZKOMATY_DARMOWA_WYSYLKA') && (
+        <div className="mt-4 p-4 border rounded-lg">
+          <h3 className="text-sm font-medium mb-2">Wybierz Paczkomat:</h3>
+          <InPostGeowidget onPointSelected={handlePaczkomatSelected} />
+          {selectedPaczkomat && (
+            <div className="mt-2 text-sm text-green-600">
+              Wybrany Paczkomat: {selectedPaczkomat.name} - {selectedPaczkomat.address}
+            </div>
+          )}
+        </div>
       )}
       
       {/* Debug indicator in development */}
