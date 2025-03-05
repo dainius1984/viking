@@ -66,6 +66,7 @@ const InPostGeowidget = ({ onPointSelected }) => {
           
           // Create the custom element
           const widget = document.createElement('inpost-geowidget');
+          console.log('InPost Token:', process.env.NEXT_PUBLIC_INPOST_GEO_TOKEN);
           widget.setAttribute('token', process.env.NEXT_PUBLIC_INPOST_GEO_TOKEN);
           widget.setAttribute('language', 'pl');
           widget.setAttribute('config', 'parcelcollect');
