@@ -41,10 +41,17 @@ const GEOWIDGET_CONFIG = {
   EVENT_NAME: 'onpointselect'
 };
 
-const InPostGeowidget = ({ onPointSelected }) => {
+const InPostGeowidget = ({ onPointSelected, selectedPoint: externalSelectedPoint }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedPoint, setSelectedPoint] = useState(null);
+  const [selectedPoint, setSelectedPoint] = useState(externalSelectedPoint || null);
   const containerRef = useRef(null);
+  
+  // Update internal state when external prop changes
+  useEffect(() => {
+    if (externalSelectedPoint) {
+      setSelectedPoint(externalSelectedPoint);
+    }
+  }, [externalSelectedPoint]);
   
   // Load CSS only once when component mounts
   useEffect(() => {
@@ -115,7 +122,11 @@ const InPostGeowidget = ({ onPointSelected }) => {
     const initializeWidget = () => {
       if (!containerRef.current) return;
       
+      // Clear any existing content
       containerRef.current.innerHTML = '';
+      
+      // Register event listener for point selection
+      document.addEventListener(GEOWIDGET_CONFIG.EVENT_NAME, handlePointSelected);
       
       // Create widget element
       const widget = document.createElement('inpost-geowidget');
@@ -128,42 +139,30 @@ const InPostGeowidget = ({ onPointSelected }) => {
       widget.setAttribute('config', GEOWIDGET_CONFIG.CONFIG);
       widget.setAttribute('onpoint', GEOWIDGET_CONFIG.EVENT_NAME);
       
-      // Add widget to container
+      // Append widget to container
       containerRef.current.appendChild(widget);
       
-      // Add event listeners
-      document.addEventListener(GEOWIDGET_CONFIG.EVENT_NAME, handlePointSelected);
-      
-      // API access
-      widget.addEventListener('inpost.geowidget.init', (event) => {
-        const api = event.detail.api;
-        console.log('Geowidget initialized with API:', api);
-        
-        // You can use the API to set initial position or other configurations
-        // For example, center the map on a specific location in Poland:
-        // api.changePosition({ longitude: 19.9449799, latitude: 50.0646501 }, 12);
-      });
-      
-      // Define cleanup function
-      cleanup = () => {
-        document.removeEventListener(GEOWIDGET_CONFIG.EVENT_NAME, handlePointSelected);
-      };
+      console.log('InPost Geowidget initialized');
     };
     
-    // Load script if needed
+    // Check if the script is already loaded
     const existingScript = document.querySelector(`script[src="${GEOWIDGET_CONFIG.JS_URL}"]`);
     
     if (!existingScript) {
       const script = document.createElement('script');
       script.src = GEOWIDGET_CONFIG.JS_URL;
       script.defer = true;
-      script.onload = initializeWidget;
+      script.onload = () => {
+        console.log('InPost Geowidget script loaded');
+        initializeWidget();
+      };
       document.body.appendChild(script);
       
       cleanup = () => {
         document.removeEventListener(GEOWIDGET_CONFIG.EVENT_NAME, handlePointSelected);
       };
     } else {
+      console.log('InPost Geowidget script already loaded');
       initializeWidget();
     }
     
@@ -203,18 +202,6 @@ const InPostGeowidget = ({ onPointSelected }) => {
           />
         </div>
       </Modal>
-
-      {selectedPoint && (
-        <div className="mt-2 text-sm text-gray-600 border p-3 rounded-md bg-gray-50">
-          <p className="font-medium text-base">Wybrany paczkomat:</p>
-          <p className="text-lg font-bold text-green-700">{selectedPoint.name || ''}</p>
-          <p>{typeof selectedPoint.address === 'string' ? selectedPoint.address : ''}</p>
-          {selectedPoint.post_code && (
-            <p>{selectedPoint.post_code || ''} {selectedPoint.city || ''}</p>
-          )}
-          <p className="mt-2 text-xs text-gray-500">Wybrano: {new Date(selectedPoint.selected_at).toLocaleString()}</p>
-        </div>
-      )}
     </div>
   );
 };

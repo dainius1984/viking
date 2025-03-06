@@ -304,25 +304,10 @@ const OrderSummary = ({
       return (
         <div className="mt-4 p-3 bg-gray-50 rounded-md">
           <h3 className="font-medium text-sm mb-2">Wybierz paczkomat</h3>
-          <InPostGeowidget onPointSelected={handlePaczkomatSelected} />
-          
-          {selectedPaczkomat && (
-            <div className="mt-3 text-sm text-gray-700 border-t pt-3">
-              <div className="flex items-center">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-green-600 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                </svg>
-                <p className="font-medium">Wybrany paczkomat:</p>
-              </div>
-              <div className="ml-7">
-                <p className="font-bold">{selectedPaczkomat.name || ''}</p>
-                <p>{typeof selectedPaczkomat.address === 'string' ? selectedPaczkomat.address : ''}</p>
-                {selectedPaczkomat.post_code && (
-                  <p>{selectedPaczkomat.post_code || ''} {selectedPaczkomat.city || ''}</p>
-                )}
-              </div>
-            </div>
-          )}
+          <InPostGeowidget 
+            onPointSelected={handlePaczkomatSelected} 
+            selectedPoint={selectedPaczkomat}
+          />
           
           {!selectedPaczkomat && (
             <div className="mt-2 text-xs text-red-600">
@@ -341,12 +326,19 @@ const OrderSummary = ({
       return (
         <div className="mt-3 pt-3 border-t border-dashed">
           <div className="text-sm">
-            <p className="font-medium">Paczkomat:</p>
-            <p className="font-bold">{selectedPaczkomat.name || ''}</p>
-            <p className="text-xs">{typeof selectedPaczkomat.address === 'string' ? selectedPaczkomat.address : ''}</p>
-            {selectedPaczkomat.post_code && (
-              <p className="text-xs">{selectedPaczkomat.post_code || ''} {selectedPaczkomat.city || ''}</p>
-            )}
+            <div className="flex items-center">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-green-600 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+              </svg>
+              <p className="font-medium">Wybrany paczkomat:</p>
+            </div>
+            <div className="ml-7">
+              <p className="font-bold">{selectedPaczkomat.name || ''}</p>
+              <p className="text-xs">{typeof selectedPaczkomat.address === 'string' ? selectedPaczkomat.address : ''}</p>
+              {selectedPaczkomat.post_code && (
+                <p className="text-xs">{selectedPaczkomat.post_code || ''} {selectedPaczkomat.city || ''}</p>
+              )}
+            </div>
           </div>
         </div>
       );
