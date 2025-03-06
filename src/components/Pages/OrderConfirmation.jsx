@@ -30,9 +30,6 @@ const OrderConfirmation = () => {
             if (paczkomatData) {
               // Add paczkomat data to the order data
               parsedOrder.paczkomat = JSON.parse(paczkomatData);
-              console.log('Retrieved paczkomat data from localStorage:', parsedOrder.paczkomat);
-            } else {
-              console.warn('No paczkomat data found in localStorage for order:', parsedOrder.orderNumber);
             }
           } catch (error) {
             console.error('Error retrieving paczkomat data from localStorage:', error);

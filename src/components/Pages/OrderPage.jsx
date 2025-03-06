@@ -101,65 +101,11 @@ const OrderPage = () => {
     }
   };
 
-  // Create order data object
-  const createOrderData = (orderNumber) => {
-    const isFreeShipping = isEligibleForFreeShipping(subtotal);
-    const shippingCost = isFreeShipping ? 0 : getShippingCost(subtotal, formData.shipping);
-    
-    // Ensure paczkomat data is properly formatted
-    const paczkomatData = formData.paczkomat ? {
-      name: formData.paczkomat.name || '',
-      address: formData.paczkomat.address || '',
-      point_id: formData.paczkomat.point_id || '',
-      city: formData.paczkomat.city || '',
-      post_code: formData.paczkomat.post_code || '',
-      selected_at: formData.paczkomat.selected_at || ''
-    } : null;
-    
-    // Store paczkomat data in localStorage for later use
-    if (paczkomatData) {
-      localStorage.setItem(`paczkomat_data_${orderNumber}`, JSON.stringify(paczkomatData));
-    }
-    
-    // Format items as a string
-    const formattedItems = formatOrderItems(state.cart);
-    
-    // Create a simplified shipping value without paczkomat details
-    const simplifiedShipping = formData.shipping.includes('PACZKOMATY') 
-      ? 'INPOST_PACZKOMATY' 
-      : formData.shipping;
-    
-    return {
-      orderNumber,
-      status: 'pending',
-      subtotal: Number(subtotal).toFixed(2),
-      total: (Number(total) + shippingCost).toFixed(2),
-      discountApplied: state.isDiscountApplied,
-      discountAmount: Number(discountAmount).toFixed(2),
-      shippingCost: shippingCost.toFixed(2),
-      createdAt: new Date().toISOString(),
-      lastUpdateTime: new Date().toISOString(),
-      items: formattedItems,
-      shipping: simplifiedShipping, // Use simplified shipping value
-      payuOrderId: null,
-      paymentStatus: 'PENDING',
-      // Store a flag indicating if paczkomat data exists
-      hasPaczkomatData: !!paczkomatData,
-      // Include basic customer data
-      ...formData
-    };
-  };
-
   // Create payment data object
   const createPaymentData = (orderNumber) => {
     const isFreeShipping = isEligibleForFreeShipping(subtotal);
     const shippingCost = isFreeShipping ? 0 : getShippingCost(subtotal, formData.shipping);
     const finalTotal = total + shippingCost;
-
-    // Create a simplified shipping value without paczkomat details
-    const simplifiedShipping = formData.shipping.includes('PACZKOMATY') 
-      ? 'INPOST_PACZKOMATY' 
-      : formData.shipping;
 
     return {
       orderData: {
@@ -171,12 +117,11 @@ const OrderPage = () => {
         })),
         total: finalTotal.toString(),
         subtotal: subtotal.toString(),
-        shipping: simplifiedShipping, // Use simplified shipping value
+        shipping: formData.shipping,
         shippingCost: shippingCost.toString(),
         discountApplied: state.isDiscountApplied,
         discountAmount: discountAmount.toString(),
         items: formatOrderItems(state.cart)
-        // No paczkomat data sent to backend during payment
       },
       customerData: {
         Imie: formData.firstName?.trim(),
@@ -213,10 +158,9 @@ const OrderPage = () => {
       // Store paczkomat data in localStorage if it exists
       if (formData.paczkomat) {
         localStorage.setItem(`paczkomat_data_${orderNumber}`, JSON.stringify(formData.paczkomat));
-        console.log('Stored paczkomat data in localStorage for later use');
       }
       
-      // Create order data without paczkomat details for payment
+      // Create basic order data
       const orderData = {
         orderNumber,
         status: 'pending',
@@ -228,10 +172,9 @@ const OrderPage = () => {
         createdAt: new Date().toISOString(),
         lastUpdateTime: new Date().toISOString(),
         items: formatOrderItems(state.cart),
-        shipping: formData.shipping.includes('PACZKOMATY') ? 'INPOST_PACZKOMATY' : formData.shipping,
+        shipping: formData.shipping,
         payuOrderId: null,
         paymentStatus: 'PENDING',
-        // Flag to indicate paczkomat data exists in localStorage
         hasPaczkomatData: !!formData.paczkomat
       };
       
@@ -239,7 +182,6 @@ const OrderPage = () => {
       const backupKey = `order_backup_${orderNumber}`;
       localStorage.setItem(backupKey, JSON.stringify({
         ...orderData,
-        ...formData, // Include form data but not paczkomat object
         backupTime: new Date().toISOString(),
         paymentStatus: 'PENDING'
       }));
@@ -254,13 +196,10 @@ const OrderPage = () => {
 
       const paymentData = createPaymentData(orderNumber);
       
-      // Store the complete order data in sessionStorage for order confirmation
+      // Store basic order data for confirmation page
       sessionStorage.setItem('lastOrder', JSON.stringify({
         ...orderData,
-        ...formData, // Include form data but not paczkomat object
-        date: formatDate(new Date()),
-        // Flag to indicate paczkomat data exists in localStorage
-        hasPaczkomatData: !!formData.paczkomat
+        date: formatDate(new Date())
       }));
       
       const response = await initiatePayment(paymentData);
