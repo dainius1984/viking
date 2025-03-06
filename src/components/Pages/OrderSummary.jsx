@@ -69,6 +69,9 @@ const OrderSummary = ({
       selected_at: point.selected_at || new Date().toISOString()
     };
     
+    console.log('Setting selected paczkomat:', sanitizedPoint);
+    
+    // Update state with the selected paczkomat
     setSelectedPaczkomat(sanitizedPoint);
     
     // Update formData with selected Paczkomat details
@@ -82,6 +85,11 @@ const OrderSummary = ({
       // Automatically select the InPost Paczkomat shipping option
       setShipping('INPOST_PACZKOMATY_DARMOWA_WYSYLKA');
     }
+    
+    // Force a re-render
+    setTimeout(() => {
+      console.log('Current selected paczkomat:', selectedPaczkomat);
+    }, 0);
   };
 
   const prepareOrderData = () => {

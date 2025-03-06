@@ -2,30 +2,31 @@ import React, { useEffect, useState, useRef, useCallback } from 'react';
 
 const Modal = ({ isOpen, onClose, children }) => {
   if (!isOpen) return null;
-
+  
+  const handleBackdropClick = (e) => {
+    if (e.target === e.currentTarget) {
+      onClose();
+    }
+  };
+  
   return (
-    <div className="fixed inset-0 z-50 overflow-y-auto">
-      <div className="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-        <div className="fixed inset-0 transition-opacity" aria-hidden="true">
-          <div className="absolute inset-0 bg-gray-500 opacity-75"></div>
+    <div 
+      className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+      onClick={handleBackdropClick}
+    >
+      <div className="bg-white rounded-lg p-6 w-full max-w-3xl max-h-[90vh] overflow-auto">
+        <div className="flex justify-between items-center mb-4">
+          <div></div>
+          <button 
+            onClick={onClose}
+            className="text-gray-500 hover:text-gray-700"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
         </div>
-        <div className="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-3xl sm:w-full">
-          <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
-            <div className="absolute top-0 right-0 pt-4 pr-4">
-              <button
-                type="button"
-                onClick={onClose}
-                className="bg-white rounded-md text-gray-400 hover:text-gray-500 focus:outline-none"
-              >
-                <span className="sr-only">Zamknij</span>
-                <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </button>
-            </div>
-            {children}
-          </div>
-        </div>
+        {children}
       </div>
     </div>
   );
@@ -38,7 +39,7 @@ const GEOWIDGET_CONFIG = {
   LANGUAGE: 'pl',
   COUNTRY: 'PL',
   CONFIG: 'parcelCollect',
-  EVENT_NAME: 'onpointselect'
+  EVENT_NAME: 'inpost.geowidget.pointselected'
 };
 
 const InPostGeowidget = ({ onPointSelected, selectedPoint: externalSelectedPoint }) => {
@@ -69,7 +70,14 @@ const InPostGeowidget = ({ onPointSelected, selectedPoint: externalSelectedPoint
   
   // Handle point selection
   const handlePointSelected = useCallback((event) => {
+    console.log('Point selected event received:', event);
     const point = event.detail;
+    
+    if (!point) {
+      console.error('No point data received in event:', event);
+      return;
+    }
+    
     console.log('Raw point data from InPost:', point);
     
     // Format the point data for easier use in the order system
@@ -115,9 +123,16 @@ const InPostGeowidget = ({ onPointSelected, selectedPoint: externalSelectedPoint
   
   // Initialize widget when modal opens
   useEffect(() => {
-    if (!isModalOpen) return;
+    if (!isModalOpen) {
+      // Clean up event listener when modal closes
+      document.removeEventListener(GEOWIDGET_CONFIG.EVENT_NAME, handlePointSelected);
+      return;
+    }
     
-    let cleanup = () => {};
+    // Register event listener for point selection
+    document.removeEventListener(GEOWIDGET_CONFIG.EVENT_NAME, handlePointSelected);
+    document.addEventListener(GEOWIDGET_CONFIG.EVENT_NAME, handlePointSelected);
+    console.log(`Added event listener for ${GEOWIDGET_CONFIG.EVENT_NAME}`);
     
     const initializeWidget = () => {
       if (!containerRef.current) return;
@@ -125,19 +140,21 @@ const InPostGeowidget = ({ onPointSelected, selectedPoint: externalSelectedPoint
       // Clear any existing content
       containerRef.current.innerHTML = '';
       
-      // Register event listener for point selection
-      document.addEventListener(GEOWIDGET_CONFIG.EVENT_NAME, handlePointSelected);
-      
       // Create widget element
       const widget = document.createElement('inpost-geowidget');
       
       // Set widget attributes
       widget.setAttribute('id', 'geowidget');
-      widget.setAttribute('token', process.env.REACT_APP_INPOST_GEO_TOKEN);
+      widget.setAttribute('token', process.env.REACT_APP_INPOST_GEO_TOKEN || '');
       widget.setAttribute('language', GEOWIDGET_CONFIG.LANGUAGE);
       widget.setAttribute('country', GEOWIDGET_CONFIG.COUNTRY);
       widget.setAttribute('config', GEOWIDGET_CONFIG.CONFIG);
-      widget.setAttribute('onpoint', GEOWIDGET_CONFIG.EVENT_NAME);
+      widget.setAttribute('onpoint', 'pointselected'); // This is the attribute name expected by the widget
+      
+      // Add event listener for widget initialization
+      widget.addEventListener('inpost.geowidget.init', (event) => {
+        console.log('Geowidget initialized:', event);
+      });
       
       // Append widget to container
       containerRef.current.appendChild(widget);
@@ -157,23 +174,26 @@ const InPostGeowidget = ({ onPointSelected, selectedPoint: externalSelectedPoint
         initializeWidget();
       };
       document.body.appendChild(script);
-      
-      cleanup = () => {
-        document.removeEventListener(GEOWIDGET_CONFIG.EVENT_NAME, handlePointSelected);
-      };
     } else {
       console.log('InPost Geowidget script already loaded');
       initializeWidget();
     }
     
-    return cleanup;
+    return () => {
+      // Clean up event listener when component unmounts or modal closes
+      document.removeEventListener(GEOWIDGET_CONFIG.EVENT_NAME, handlePointSelected);
+      console.log(`Removed event listener for ${GEOWIDGET_CONFIG.EVENT_NAME}`);
+    };
   }, [isModalOpen, handlePointSelected]);
   
   return (
     <div>
       <button
         type="button"
-        onClick={() => setIsModalOpen(true)}
+        onClick={() => {
+          console.log('Opening InPost Geowidget modal');
+          setIsModalOpen(true);
+        }}
         className="w-full py-2 px-4 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 flex items-center justify-center"
       >
         {selectedPoint ? (
@@ -189,7 +209,13 @@ const InPostGeowidget = ({ onPointSelected, selectedPoint: externalSelectedPoint
         )}
       </button>
 
-      <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
+      <Modal 
+        isOpen={isModalOpen} 
+        onClose={() => {
+          console.log('Closing InPost Geowidget modal');
+          setIsModalOpen(false);
+        }}
+      >
         <div className="h-[600px] w-full">
           <h2 className="text-lg font-medium mb-4">Wybierz paczkomat</h2>
           <div 
