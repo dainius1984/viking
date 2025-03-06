@@ -80,8 +80,13 @@ const OrderSummary = ({
       // Also store just the ID for backward compatibility
       formData.paczkomatId = sanitizedPoint.point_id;
       
-      // Automatically select the InPost Paczkomat shipping option
-      setShipping('INPOST_PACZKOMATY_DARMOWA_WYSYLKA');
+      // Automatically select the InPost Paczkomat shipping option if not already selected
+      if (!shipping.includes('PACZKOMATY')) {
+        setShipping(isFreeShipping ? 'INPOST_PACZKOMATY_DARMOWA_WYSYLKA' : 'INPOST_PACZKOMATY');
+      }
+      
+      // Also update the formData shipping field to match
+      formData.shipping = shipping;
     }
   };
 

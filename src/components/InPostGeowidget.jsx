@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, useCallback } from 'react';
 
 // Simple modal component
 const Modal = ({ isOpen, onClose, children }) => {
@@ -32,11 +32,20 @@ const Modal = ({ isOpen, onClose, children }) => {
   );
 };
 
+// Configuration constants
+const GEOWIDGET_CONFIG = {
+  CSS_URL: 'https://geowidget.inpost-group.com/inpost-geowidget.css',
+  JS_URL: 'https://geowidget.inpost-group.com/inpost-geowidget.js',
+  LANGUAGE: 'pl',
+  COUNTRY: 'PL',
+  CONFIG: 'parcelCollect',
+  EVENT_NAME: 'inpost-geowidget-selected'
+};
+
 const InPostGeowidget = ({ onPointSelected, selectedPoint: externalSelectedPoint }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedPoint, setSelectedPoint] = useState(externalSelectedPoint || null);
   const containerRef = useRef(null);
-  const widgetRef = useRef(null);
   
   // Update internal state when external prop changes
   useEffect(() => {
@@ -45,109 +54,108 @@ const InPostGeowidget = ({ onPointSelected, selectedPoint: externalSelectedPoint
     }
   }, [externalSelectedPoint]);
   
-  // Load InPost Geowidget script
+  // Load CSS only once when component mounts
   useEffect(() => {
-    // Add script only if it doesn't exist
-    if (!document.getElementById('inpost-geowidget-script')) {
-      const script = document.createElement('script');
-      script.id = 'inpost-geowidget-script';
-      script.src = 'https://geowidget.inpost.pl/inpost-geowidget.js';
-      script.async = true;
-      document.body.appendChild(script);
-      
-      // Add CSS
-      const link = document.createElement('link');
-      link.rel = 'stylesheet';
-      link.href = 'https://geowidget.inpost.pl/inpost-geowidget.css';
-      document.head.appendChild(link);
-    }
+    const loadCSS = () => {
+      if (!document.querySelector(`link[href="${GEOWIDGET_CONFIG.CSS_URL}"]`)) {
+        const link = document.createElement('link');
+        link.rel = 'stylesheet';
+        link.href = GEOWIDGET_CONFIG.CSS_URL;
+        document.head.appendChild(link);
+      }
+    };
+    
+    loadCSS();
   }, []);
+  
+  // Handle point selection
+  const handlePointSelected = useCallback((event) => {
+    const point = event.detail;
+    
+    // Format the point data for easier use in the order system
+    // Handle case where address might be an object with line1, line2 properties
+    const addressString = typeof point.address === 'object' 
+      ? `${point.address.line1 || ''} ${point.address.line2 || ''}`.trim()
+      : (point.address || '');
+    
+    const formattedPoint = {
+      name: point.name || '',
+      address: addressString,
+      point_id: point.name || '', // In InPost, name is typically the point_id
+      city: point.city || '',
+      province: point.province || '',
+      post_code: point.post_code || '',
+      location: {
+        latitude: point.location?.latitude || point.latitude || 0,
+        longitude: point.location?.longitude || point.longitude || 0
+      },
+      // Add any additional fields you need for your order system
+      selected_at: new Date().toISOString(),
+      // Extract the number from the name (typically the format is "ABC01N")
+      number: point.name || ''
+    };
+    
+    // Store the formatted point data
+    setSelectedPoint(formattedPoint);
+    
+    // Pass the formatted data to the parent component if callback exists
+    if (onPointSelected) {
+      onPointSelected(formattedPoint);
+    }
+    
+    // Close the modal
+    setIsModalOpen(false);
+  }, [onPointSelected]);
   
   // Initialize widget when modal opens
   useEffect(() => {
-    if (!isModalOpen || !containerRef.current) return;
+    if (!isModalOpen) return;
     
-    // Function to handle point selection
-    window.handleGeowidgetPointSelected = (point) => {
-      if (!point) return;
+    let cleanup = () => {};
+    
+    const initializeWidget = () => {
+      if (!containerRef.current) return;
       
-      // Format address
-      const addressString = typeof point.address === 'object' 
-        ? `${point.address.line1 || ''} ${point.address.line2 || ''}`.trim()
-        : (point.address || '');
+      containerRef.current.innerHTML = '';
       
-      // Create formatted point data
-      const formattedPoint = {
-        name: point.name || '',
-        address: addressString,
-        point_id: point.name || '',
-        city: point.city || '',
-        post_code: point.post_code || '',
-        selected_at: new Date().toISOString()
+      // Create widget element
+      const widget = document.createElement('inpost-geowidget');
+      
+      // Set widget attributes
+      widget.setAttribute('id', 'geowidget');
+      widget.setAttribute('token', process.env.REACT_APP_INPOST_GEO_TOKEN);
+      widget.setAttribute('language', GEOWIDGET_CONFIG.LANGUAGE);
+      widget.setAttribute('country', GEOWIDGET_CONFIG.COUNTRY);
+      widget.setAttribute('config', GEOWIDGET_CONFIG.CONFIG);
+      widget.setAttribute('onpoint', GEOWIDGET_CONFIG.EVENT_NAME);
+      
+      // Add widget to container
+      containerRef.current.appendChild(widget);
+      
+      // Add event listeners
+      document.addEventListener(GEOWIDGET_CONFIG.EVENT_NAME, handlePointSelected);
+      
+      // Define cleanup function
+      cleanup = () => {
+        document.removeEventListener(GEOWIDGET_CONFIG.EVENT_NAME, handlePointSelected);
       };
-      
-      // Update state
-      setSelectedPoint(formattedPoint);
-      
-      // Call callback
-      if (onPointSelected && typeof onPointSelected === 'function') {
-        onPointSelected(formattedPoint);
-      }
-      
-      // Close modal
-      setIsModalOpen(false);
     };
     
-    // Clear container
-    containerRef.current.innerHTML = '';
+    // Load script if needed
+    const existingScript = document.querySelector(`script[src="${GEOWIDGET_CONFIG.JS_URL}"]`);
     
-    // Wait for script to load
-    const initWidget = () => {
-      if (!window.easyPack) {
-        setTimeout(initWidget, 100);
-        return;
-      }
-      
-      // Initialize widget
-      window.easyPack.init({
-        defaultLocale: 'pl',
-        mapType: 'osm',
-        searchType: 'osm',
-        points: {
-          types: ['parcel_locker']
-        },
-        map: {
-          initialTypes: ['parcel_locker']
-        }
-      });
-      
-      // Create map instance
-      widgetRef.current = window.easyPack.mapWidget('easypack-map', (point) => {
-        window.handleGeowidgetPointSelected(point);
-      });
-    };
+    if (!existingScript) {
+      const script = document.createElement('script');
+      script.src = GEOWIDGET_CONFIG.JS_URL;
+      script.defer = true;
+      script.onload = initializeWidget;
+      document.body.appendChild(script);
+    } else {
+      initializeWidget();
+    }
     
-    // Create map container
-    const mapDiv = document.createElement('div');
-    mapDiv.id = 'easypack-map';
-    mapDiv.style.width = '100%';
-    mapDiv.style.height = '500px';
-    containerRef.current.appendChild(mapDiv);
-    
-    // Initialize widget
-    initWidget();
-    
-    // Cleanup
-    return () => {
-      if (widgetRef.current) {
-        try {
-          widgetRef.current = null;
-        } catch (e) {
-          console.error('Error cleaning up widget:', e);
-        }
-      }
-    };
-  }, [isModalOpen, onPointSelected]);
+    return cleanup;
+  }, [isModalOpen, handlePointSelected]);
   
   return (
     <div>

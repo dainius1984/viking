@@ -130,13 +130,6 @@ const PaymentButton = ({
         </div>
       )}
       
-      {/* Debug info - remove in production */}
-      {process.env.NODE_ENV !== 'production' && (
-        <div className="mb-2 p-2 bg-blue-50 text-xs border border-blue-200 rounded-md">
-          Current shipping method: {formData.shipping || 'DPD (default)'}
-        </div>
-      )}
-      
       <button
         type="button"
         onClick={handlePayment}
