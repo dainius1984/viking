@@ -234,13 +234,6 @@ const OrderSummary = ({
 
       {/* Always render the InPost Paczkomat widget if either Paczkomat option is selected */}
       {renderInPostPaczkomatSection()}
-      
-      {/* Debug indicator in development */}
-      {process.env.NODE_ENV !== 'production' && (
-        <div className="mt-2 text-xs text-gray-500">
-          Wybrana opcja dostawy: {shipping}
-        </div>
-      )}
     </div>
   );
 
