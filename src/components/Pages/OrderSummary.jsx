@@ -315,10 +315,10 @@ const OrderSummary = ({
                 <p className="font-medium">Wybrany paczkomat:</p>
               </div>
               <div className="ml-7">
-                <p className="font-bold">{selectedPaczkomat.name}</p>
-                <p>{selectedPaczkomat.address}</p>
+                <p className="font-bold">{selectedPaczkomat.name || ''}</p>
+                <p>{typeof selectedPaczkomat.address === 'string' ? selectedPaczkomat.address : ''}</p>
                 {selectedPaczkomat.post_code && (
-                  <p>{selectedPaczkomat.post_code} {selectedPaczkomat.city}</p>
+                  <p>{selectedPaczkomat.post_code || ''} {selectedPaczkomat.city || ''}</p>
                 )}
               </div>
             </div>
@@ -343,7 +343,7 @@ const OrderSummary = ({
           <div className="text-sm">
             <p className="font-medium">Paczkomat:</p>
             <p className="font-bold">{selectedPaczkomat.name || ''}</p>
-            <p className="text-xs">{selectedPaczkomat.address || ''}</p>
+            <p className="text-xs">{typeof selectedPaczkomat.address === 'string' ? selectedPaczkomat.address : ''}</p>
             {selectedPaczkomat.post_code && (
               <p className="text-xs">{selectedPaczkomat.post_code || ''} {selectedPaczkomat.city || ''}</p>
             )}

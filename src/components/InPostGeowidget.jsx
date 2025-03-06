@@ -63,11 +63,17 @@ const InPostGeowidget = ({ onPointSelected }) => {
   // Handle point selection
   const handlePointSelected = useCallback((event) => {
     const point = event.detail;
+    console.log('Raw point data from InPost:', point);
     
     // Format the point data for easier use in the order system
+    // Handle case where address might be an object with line1, line2 properties
+    const addressString = typeof point.address === 'object' 
+      ? `${point.address.line1 || ''} ${point.address.line2 || ''}`.trim()
+      : (point.address || '');
+    
     const formattedPoint = {
       name: point.name || '',
-      address: point.address || '',
+      address: addressString,
       point_id: point.name || '', // In InPost, name is typically the point_id
       city: point.city || '',
       province: point.province || '',
@@ -201,10 +207,10 @@ const InPostGeowidget = ({ onPointSelected }) => {
       {selectedPoint && (
         <div className="mt-2 text-sm text-gray-600 border p-3 rounded-md bg-gray-50">
           <p className="font-medium text-base">Wybrany paczkomat:</p>
-          <p className="text-lg font-bold text-green-700">{selectedPoint.name}</p>
-          <p>{selectedPoint.address}</p>
+          <p className="text-lg font-bold text-green-700">{selectedPoint.name || ''}</p>
+          <p>{typeof selectedPoint.address === 'string' ? selectedPoint.address : ''}</p>
           {selectedPoint.post_code && (
-            <p>{selectedPoint.post_code} {selectedPoint.city}</p>
+            <p>{selectedPoint.post_code || ''} {selectedPoint.city || ''}</p>
           )}
           <p className="mt-2 text-xs text-gray-500">Wybrano: {new Date(selectedPoint.selected_at).toLocaleString()}</p>
         </div>
