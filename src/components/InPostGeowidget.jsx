@@ -39,13 +39,14 @@ const GEOWIDGET_CONFIG = {
   LANGUAGE: 'pl',
   COUNTRY: 'PL',
   CONFIG: 'parcelCollect',
-  EVENT_NAME: 'inpost-geowidget-selected'
+  EVENT_NAME: 'onpointselect'
 };
 
 const InPostGeowidget = ({ onPointSelected, selectedPoint: externalSelectedPoint }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedPoint, setSelectedPoint] = useState(externalSelectedPoint || null);
   const containerRef = useRef(null);
+  const callbackRef = useRef(null);
   
   // Update internal state when external prop changes
   useEffect(() => {
@@ -69,8 +70,13 @@ const InPostGeowidget = ({ onPointSelected, selectedPoint: externalSelectedPoint
   }, []);
   
   // Handle point selection
-  const handlePointSelected = useCallback((event) => {
-    const point = event.detail;
+  const handlePointSelected = useCallback((point) => {
+    console.log('Point selected event received:', point);
+    
+    if (!point) {
+      console.error('No point data received');
+      return;
+    }
     
     // Format the point data for easier use in the order system
     // Handle case where address might be an object with line1, line2 properties
@@ -95,11 +101,14 @@ const InPostGeowidget = ({ onPointSelected, selectedPoint: externalSelectedPoint
       number: point.name || ''
     };
     
+    console.log('Formatted point data:', formattedPoint);
+    
     // Store the formatted point data
     setSelectedPoint(formattedPoint);
     
     // Pass the formatted data to the parent component if callback exists
     if (onPointSelected) {
+      console.log('Calling onPointSelected callback with formatted point data');
       onPointSelected(formattedPoint);
     }
     
@@ -107,15 +116,40 @@ const InPostGeowidget = ({ onPointSelected, selectedPoint: externalSelectedPoint
     setIsModalOpen(false);
   }, [onPointSelected]);
   
+  // Store the callback in a ref so it can be accessed by the global function
+  useEffect(() => {
+    callbackRef.current = handlePointSelected;
+  }, [handlePointSelected]);
+  
+  // Set up global callback function for the widget
+  useEffect(() => {
+    // Create a global callback function that the widget can call
+    window.handleInPostPointSelected = (point) => {
+      console.log('Global callback called with point:', point);
+      if (callbackRef.current) {
+        callbackRef.current(point);
+      }
+    };
+    
+    return () => {
+      // Clean up global callback when component unmounts
+      delete window.handleInPostPointSelected;
+    };
+  }, []);
+  
   // Initialize widget when modal opens
   useEffect(() => {
-    if (!isModalOpen) return;
+    if (!isModalOpen) {
+      console.log('Modal closed, cleaning up');
+      return;
+    }
     
-    let cleanup = () => {};
+    console.log('Modal opened, initializing widget');
     
     const initializeWidget = () => {
       if (!containerRef.current) return;
       
+      console.log('Initializing widget in container');
       containerRef.current.innerHTML = '';
       
       // Create widget element
@@ -127,41 +161,43 @@ const InPostGeowidget = ({ onPointSelected, selectedPoint: externalSelectedPoint
       widget.setAttribute('language', GEOWIDGET_CONFIG.LANGUAGE);
       widget.setAttribute('country', GEOWIDGET_CONFIG.COUNTRY);
       widget.setAttribute('config', GEOWIDGET_CONFIG.CONFIG);
-      widget.setAttribute('onpoint', GEOWIDGET_CONFIG.EVENT_NAME);
+      widget.setAttribute('onpoint', 'handleInPostPointSelected'); // Use the global function name
+      
+      console.log('Widget attributes set, onpoint callback: handleInPostPointSelected');
       
       // Add widget to container
       containerRef.current.appendChild(widget);
       
-      // Add event listeners
-      document.addEventListener(GEOWIDGET_CONFIG.EVENT_NAME, handlePointSelected);
-      
-      // Define cleanup function
-      cleanup = () => {
-        document.removeEventListener(GEOWIDGET_CONFIG.EVENT_NAME, handlePointSelected);
-      };
+      console.log('Widget added to container');
     };
     
     // Load script if needed
     const existingScript = document.querySelector(`script[src="${GEOWIDGET_CONFIG.JS_URL}"]`);
     
     if (!existingScript) {
+      console.log('Loading InPost Geowidget script');
       const script = document.createElement('script');
       script.src = GEOWIDGET_CONFIG.JS_URL;
       script.defer = true;
-      script.onload = initializeWidget;
+      script.onload = () => {
+        console.log('InPost Geowidget script loaded');
+        initializeWidget();
+      };
       document.body.appendChild(script);
     } else {
+      console.log('InPost Geowidget script already loaded');
       initializeWidget();
     }
-    
-    return cleanup;
-  }, [isModalOpen, handlePointSelected]);
+  }, [isModalOpen]);
   
   return (
     <div>
       <button
         type="button"
-        onClick={() => setIsModalOpen(true)}
+        onClick={() => {
+          console.log('Opening InPost Geowidget modal');
+          setIsModalOpen(true);
+        }}
         className="w-full py-2 px-4 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 flex items-center justify-center"
       >
         {selectedPoint ? (
@@ -177,7 +213,13 @@ const InPostGeowidget = ({ onPointSelected, selectedPoint: externalSelectedPoint
         )}
       </button>
 
-      <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
+      <Modal 
+        isOpen={isModalOpen} 
+        onClose={() => {
+          console.log('Closing InPost Geowidget modal');
+          setIsModalOpen(false);
+        }}
+      >
         <div className="h-[600px] w-full">
           <h2 className="text-lg font-medium mb-4">Wybierz paczkomat</h2>
           <div 

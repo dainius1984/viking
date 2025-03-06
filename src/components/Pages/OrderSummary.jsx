@@ -51,7 +51,7 @@ const OrderSummary = ({
 
   // Handle Paczkomat selection
   const handlePaczkomatSelected = (point) => {
-    console.log('Selected Paczkomat:', point);
+    console.log('OrderSummary - handlePaczkomatSelected called with point:', point);
     
     // Ensure point is an object before proceeding
     if (!point || typeof point !== 'object') {
@@ -69,8 +69,11 @@ const OrderSummary = ({
       selected_at: point.selected_at || new Date().toISOString()
     };
     
+    console.log('OrderSummary - Sanitized point data:', sanitizedPoint);
+    
     // Update state with the selected paczkomat
     setSelectedPaczkomat(sanitizedPoint);
+    console.log('OrderSummary - Updated selectedPaczkomat state');
     
     // Update formData with selected Paczkomat details
     if (formData) {
@@ -80,13 +83,17 @@ const OrderSummary = ({
       // Also store just the ID for backward compatibility
       formData.paczkomatId = sanitizedPoint.point_id;
       
+      console.log('OrderSummary - Updated formData with paczkomat details');
+      
       // Automatically select the InPost Paczkomat shipping option if not already selected
       if (!shipping.includes('PACZKOMATY')) {
+        console.log('OrderSummary - Setting shipping to Paczkomat option');
         setShipping(isFreeShipping ? 'INPOST_PACZKOMATY_DARMOWA_WYSYLKA' : 'INPOST_PACZKOMATY');
       }
       
       // Also update the formData shipping field to match
       formData.shipping = shipping;
+      console.log('OrderSummary - Updated formData.shipping to:', shipping);
     }
   };
 
