@@ -22,6 +22,17 @@ const OrderConfirmation = () => {
       const storedOrder = sessionStorage.getItem('lastOrder');
       if (storedOrder && !hasCleared) {
         const parsedOrder = JSON.parse(storedOrder);
+        
+        // Check if there's paczkomat data in localStorage
+        if (parsedOrder.hasPaczkomatData) {
+          const paczkomatData = localStorage.getItem(`paczkomat_data_${parsedOrder.orderNumber}`);
+          if (paczkomatData) {
+            // Add paczkomat data to the order data
+            parsedOrder.paczkomat = JSON.parse(paczkomatData);
+            console.log('Retrieved paczkomat data from localStorage:', parsedOrder.paczkomat);
+          }
+        }
+        
         setOrderData(parsedOrder);
         
         // Clear the cart only once
@@ -117,6 +128,25 @@ const OrderConfirmation = () => {
                   </p>
                 </div>
               </div>
+              
+              {/* Display paczkomat data if available */}
+              {orderData.paczkomat && (
+                <div className="mb-4 p-3 bg-gray-50 rounded-md">
+                  <h2 className="font-semibold text-gray-700">Wybrany paczkomat:</h2>
+                  <div className="mt-2">
+                    <div className="flex items-center">
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-green-600 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                      </svg>
+                      <p className="font-bold">{orderData.paczkomat.name}</p>
+                    </div>
+                    <p className="ml-7 text-gray-600">{orderData.paczkomat.address}</p>
+                    {orderData.paczkomat.post_code && (
+                      <p className="ml-7 text-gray-600">{orderData.paczkomat.post_code} {orderData.paczkomat.city}</p>
+                    )}
+                  </div>
+                </div>
+              )}
               
               <div className="mb-4">
                 <h2 className="font-semibold text-gray-700">Status płatności:</h2>

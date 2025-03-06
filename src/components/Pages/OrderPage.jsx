@@ -112,8 +112,18 @@ const OrderPage = () => {
       selected_at: formData.paczkomat.selected_at || ''
     } : null;
     
+    // Store paczkomat data in localStorage for later use
+    if (paczkomatData) {
+      localStorage.setItem(`paczkomat_data_${orderNumber}`, JSON.stringify(paczkomatData));
+    }
+    
     // Format items as a string
     const formattedItems = formatOrderItems(state.cart);
+    
+    // Create a simplified shipping value without paczkomat details
+    const simplifiedShipping = formData.shipping.includes('PACZKOMATY') 
+      ? 'INPOST_PACZKOMATY' 
+      : formData.shipping;
     
     return {
       orderNumber,
@@ -126,12 +136,12 @@ const OrderPage = () => {
       createdAt: new Date().toISOString(),
       lastUpdateTime: new Date().toISOString(),
       items: formattedItems,
-      shipping: formData.shipping,
+      shipping: simplifiedShipping, // Use simplified shipping value
       payuOrderId: null,
       paymentStatus: 'PENDING',
-      // Ensure paczkomat data is properly formatted
-      paczkomat: paczkomatData,
-      paczkomatId: formData.paczkomatId || '',
+      // Store a flag indicating if paczkomat data exists
+      hasPaczkomatData: !!paczkomatData,
+      // Include basic customer data
       ...formData
     };
   };
@@ -141,6 +151,11 @@ const OrderPage = () => {
     const isFreeShipping = isEligibleForFreeShipping(subtotal);
     const shippingCost = isFreeShipping ? 0 : getShippingCost(subtotal, formData.shipping);
     const finalTotal = total + shippingCost;
+
+    // Create a simplified shipping value without paczkomat details
+    const simplifiedShipping = formData.shipping.includes('PACZKOMATY') 
+      ? 'INPOST_PACZKOMATY' 
+      : formData.shipping;
 
     return {
       orderData: {
@@ -152,13 +167,14 @@ const OrderPage = () => {
         })),
         total: finalTotal.toString(),
         subtotal: subtotal.toString(),
-        shipping: formData.shipping,
+        shipping: simplifiedShipping, // Use simplified shipping value
         shippingCost: shippingCost.toString(),
         discountApplied: state.isDiscountApplied,
         discountAmount: discountAmount.toString(),
         items: state.cart.map(item => 
           `${item.name} (${item.quantity}x po ${item.price})`
         ).join('\n')
+        // Removed paczkomat data from payment request
       },
       customerData: {
         Imie: formData.firstName?.trim(),
