@@ -17,10 +17,7 @@ import {
   DISCOUNT_CONFIG,
   getShippingCost,
   isEligibleForFreeShipping,
-  SHIPPING_OPTIONS,
-  formatPrice,
   formatDate,
-  cleanPhoneNumber
 } from './OrderUtils';
 import { initiatePayment } from './PaymentService';
 
