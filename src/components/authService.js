@@ -37,10 +37,12 @@ export const checkAppwriteSession = async () => {
  */
 export const loginUser = async (email, password) => {
   try {
-    // Check if we're in the payment flow - if so, create a persistent session
-    // otherwise, create a session-only cookie that will be destroyed when browser is closed
+    // Check if we're in the payment flow
     const inPaymentFlow = localStorage.getItem(PAYMENT_FLOW_KEY) === 'true';
-    const sessionOnly = !inPaymentFlow;
+    
+    // Always use sessionOnly=true to ensure logout on browser close
+    // This is the key setting that ensures users are logged out when closing the browser
+    const sessionOnly = true;
     
     console.log('Creating session with sessionOnly:', sessionOnly, 'inPaymentFlow:', inPaymentFlow);
     const session = await account.createEmailPasswordSession(email, password, sessionOnly);
@@ -49,11 +51,12 @@ export const loginUser = async (email, password) => {
       throw new Error('Failed to create Appwrite session');
     }
 
-    // If session creation successful, get user details
+    // Get user details after successful login
     const user = await account.get();
 
     return { success: true, session, user };
   } catch (error) {
+    console.error('Login error:', error);
     return { 
       success: false, 
       error: error.message,

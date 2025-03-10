@@ -77,11 +77,11 @@ const OrderConfirmation = () => {
     if (orderData?.orderNumber && !initialDelayComplete) {
       console.log('Starting initial delay before first status check...');
       
-      // Wait 3 seconds before first status check to allow webhook to process
+      // Wait 10 seconds before first status check to allow webhook to process
       const delayTimer = setTimeout(() => {
         console.log('Initial delay complete, ready to start polling');
         setInitialDelayComplete(true);
-      }, 3000); // 3 second delay
+      }, 10000); // 10 second delay
       
       return () => clearTimeout(delayTimer);
     }
@@ -97,14 +97,14 @@ const OrderConfirmation = () => {
       // Initial fetch
       fetchOrderStatus(orderData.orderNumber);
       
-      // Set up polling every 5 seconds
+      // Set up polling every 10 seconds
       intervalId = setInterval(async () => {
         const shouldStopPolling = await fetchOrderStatus(orderData.orderNumber);
         if (shouldStopPolling) {
           console.log('Stopping status polling - final status received');
           clearInterval(intervalId);
         }
-      }, 5000); // Check every 5 seconds
+      }, 10000); // Check every 10 seconds
     }
     
     // Clean up interval on unmount
