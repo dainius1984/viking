@@ -66,28 +66,34 @@ const PaymentButton = ({
       // Ensure cart items are properly formatted as an array
       const cartItems = Array.isArray(orderData.items) 
         ? orderData.items 
-        : orderData.cart || []; // Fallback to orderData.cart if items doesn't exist
+        : Array.isArray(orderData.cart) 
+          ? orderData.cart 
+          : [];
 
-      // Format cart items for Appwrite
+      // Format cart items for Appwrite in the exact required format
       const formattedItems = cartItems.map(item => ({
-        id: item.id || item.name.toLowerCase().replace(/[^a-z0-9]/g, ''),
+        id: item.id?.toLowerCase() || item.name?.toLowerCase().replace(/[^a-z0-9]/g, ''),
         n: item.name,
-        p: Number(item.price),
+        p: parseInt(Number(item.price)),
         q: parseInt(item.quantity) || 1,
-        image: item.image || `/img/products/${item.id || item.name.toLowerCase().replace(/[^a-z0-9]/g, '')}.png`
+        image: item.image || `/img/products/${item.id?.toLowerCase() || item.name?.toLowerCase().replace(/[^a-z0-9]/g, '')}.png`
       }));
+
+      console.log('Formatted items for Appwrite:', formattedItems);
 
       const paymentData = {
         orderData: {
           orderNumber: orderData.orderNumber,
           total: Number(orderData.total).toFixed(2),
+          // Send both formats - one for PayU and one for Appwrite
           cart: cartItems.map(item => ({
             name: item.name,
             quantity: parseInt(item.quantity) || 1,
             price: Number(item.price).toFixed(2)
           })),
-          // Add formatted items for Appwrite
-          items: formattedItems,
+          // Add formatted items specifically for Appwrite
+          appwriteItems: JSON.stringify(formattedItems), // Stringify the formatted items
+          items: formattedItems, // Also send as regular array
           shipping: shippingMethod,
           notes: formData.notes || '',
           userId: user?.$id,
@@ -109,6 +115,13 @@ const PaymentButton = ({
         isAuthenticated: !!user,
         userId: user?.$id || null
       };
+
+      // Add debug logging
+      console.log('Cart items being sent:', {
+        original: cartItems,
+        formatted: formattedItems,
+        stringified: JSON.stringify(formattedItems)
+      });
 
       // Mark that we're entering payment flow before initiating payment
       if (user) {
