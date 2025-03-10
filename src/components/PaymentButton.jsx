@@ -32,9 +32,21 @@ const PaymentButton = ({
       { key: 'city', label: 'Miasto' }
     ];
 
-    return requiredFields
+    const missingFields = requiredFields
       .filter(field => !formData[field.key]?.trim())
       .map(field => field.label);
+
+    // Add shipping method validation
+    if (!formData.shipping) {
+      missingFields.push('Sposób dostawy');
+    }
+
+    // Add specific validation for Paczkomat if that shipping method is selected
+    if (formData.shipping?.includes('PACZKOMATY') && !formData.paczkomat) {
+      missingFields.push('Paczkomat (proszę wybrać paczkomat)');
+    }
+
+    return missingFields;
   };
 
   const handlePayment = async () => {
@@ -158,10 +170,17 @@ const PaymentButton = ({
         </div>
       )}
       
+      {!formData.shipping && (
+        <div className="mb-4 p-3 bg-yellow-50 border border-yellow-200 text-yellow-700 text-sm rounded-md">
+          Proszę wybrać sposób dostawy przed kontynuowaniem
+        </div>
+      )}
+      
       <button
         type="button"
         onClick={handlePayment}
-        disabled={loading || externalLoading || isDisabled}
+        disabled={loading || externalLoading || isDisabled || !formData.shipping || 
+          (formData.shipping?.includes('PACZKOMATY') && !formData.paczkomat)}
         className="w-full py-3 px-4 bg-green-800 text-white rounded-lg font-medium
           hover:bg-green-900 transition-all duration-200
           disabled:bg-gray-400 disabled:cursor-not-allowed
@@ -188,6 +207,10 @@ const PaymentButton = ({
             </svg>
             Przetwarzanie...
           </span>
+        ) : !formData.shipping ? (
+          'Wybierz sposób dostawy'
+        ) : formData.shipping?.includes('PACZKOMATY') && !formData.paczkomat ? (
+          'Wybierz paczkomat'
         ) : (
           'Kupuję i płacę'
         )}
