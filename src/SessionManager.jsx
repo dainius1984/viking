@@ -9,53 +9,64 @@ const SessionManager = () => {
   const { user, logout } = useAuth();
 
   useEffect(() => {
-    if (!user) return; // Only apply to logged-in users
+    if (!user) return;
 
     let inactivityTimer;
     
-    // Function to handle user activity
+    const isInPaymentProcess = () => {
+      // Check multiple indicators of payment process
+      return (
+        isInPaymentFlow() || 
+        sessionStorage.getItem('inPaymentFlow') === 'true' ||
+        sessionStorage.getItem('lastOrder') !== null ||
+        window.location.pathname.includes('order-confirmation')
+      );
+    };
+    
     const resetInactivityTimer = () => {
-      // Check both the payment flow state and sessionStorage
-      if (isInPaymentFlow() || sessionStorage.getItem('inPaymentFlow') === 'true') { 
+      if (isInPaymentProcess()) { 
         console.log('User is in payment flow, skipping inactivity timer');
         return;
       }
 
       clearTimeout(inactivityTimer);
       inactivityTimer = setTimeout(() => {
-        // Double-check payment flow state before logout
-        if (!isInPaymentFlow() && sessionStorage.getItem('inPaymentFlow') !== 'true') {
+        if (!isInPaymentProcess()) {
           console.log('User inactive for too long, logging out...');
           logout();
         }
       }, INACTIVITY_TIMEOUT);
     };
 
-    // Function to handle tab close
     const handleTabClose = (event) => {
-      // Skip logout if user is in payment flow
-      if (user && !isInPaymentFlow() && sessionStorage.getItem('inPaymentFlow') !== 'true') {
+      if (user && !isInPaymentProcess()) {
         console.log('Tab closing, attempting logout');
         logout();
       }
     };
 
-    // Set up tab close event
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'hidden' && !isInPaymentProcess()) {
+        console.log('Tab hidden, checking payment status');
+        // Optional: Add additional checks here
+      }
+    };
+
+    // Set up event listeners
     window.addEventListener('beforeunload', handleTabClose);
+    document.addEventListener('visibilitychange', handleVisibilityChange);
     
-    // Set up user activity tracking events
     const activityEvents = ['mousedown', 'keypress', 'scroll', 'touchstart'];
     activityEvents.forEach(event => {
       document.addEventListener(event, resetInactivityTimer);
     });
     
-    // Initialize the inactivity timer
     resetInactivityTimer();
 
-    // Clean up all event listeners on unmount
     return () => {
       clearTimeout(inactivityTimer);
       window.removeEventListener('beforeunload', handleTabClose);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
       activityEvents.forEach(event => {
         document.removeEventListener(event, resetInactivityTimer);
       });
