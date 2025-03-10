@@ -25,6 +25,20 @@ export const createOrder = async (orderData) => {
             formattedItems: items
         });
 
+        // Ensure discount applied is properly handled as a boolean
+        const isDiscountApplied = 
+            orderData.discountApplied === true || 
+            orderData.orderData?.discountApplied === true ||
+            parseFloat(orderData.orderData?.discountAmount || 0) > 0 ||
+            parseFloat(orderData.discountAmount || 0) > 0;
+
+        console.log('Discount info:', {
+            discountApplied: isDiscountApplied,
+            discountAmount: orderData.orderData?.discountAmount || orderData.discountAmount || '0',
+            fromOrderData: orderData.orderData?.discountApplied,
+            fromTopLevel: orderData.discountApplied
+        });
+
         const documentData = {
             userId: orderData.userId,
             orderNumber: orderData.orderNumber,
@@ -37,8 +51,8 @@ export const createOrder = async (orderData) => {
             phone: orderData.customerData?.Telefon || '',
             shipping: orderData.orderData.shipping || 'DPD',
             shippingCost: orderData.orderData.shippingCost?.toString() || '0',
-            discountApplied: !!orderData.orderData.discountApplied,
-            discountAmount: orderData.orderData.discountAmount?.toString() || '0',
+            discountApplied: isDiscountApplied, // Use the properly determined boolean value
+            discountAmount: (orderData.orderData?.discountAmount || orderData.discountAmount || '0').toString(),
             subtotal: orderData.orderData.subtotal?.toString() || '0',
             payuOrderId: orderData.orderData.payuOrderId || '',
             createdAt: orderData.orderData.createdAt || new Date().toISOString(),

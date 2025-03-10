@@ -64,7 +64,6 @@ const PaymentButton = ({
       const shippingMethod = formData.shipping || 'DPD';
       
       // Get cart items from orderData
-      // The issue is here - we need to access the cart data correctly
       console.log('OrderData received:', orderData);
       
       // Try to get cart items from different possible locations
@@ -111,14 +110,16 @@ const PaymentButton = ({
         orderData: {
           orderNumber: orderData.orderNumber,
           total: orderData.total,
-          // Important: Send the cart items properly
           cart: cartItems,
           shipping: shippingMethod,
           notes: formData.notes || '',
           userId: user?.$id,
           isAuthenticated: !!user,
           paymentStatus: 'PENDING',
-          createdAt: new Date().toISOString()
+          createdAt: new Date().toISOString(),
+          discountApplied: orderData.discountApplied === true || orderData.discount > 0,
+          discountAmount: orderData.discount || '0',
+          subtotal: orderData.subtotal || orderData.total
         },
         customerData: {
           Imie: formData.firstName?.trim(),
@@ -132,7 +133,9 @@ const PaymentButton = ({
           Uwagi: formData.notes?.trim() || ''
         },
         isAuthenticated: !!user,
-        userId: user?.$id || null
+        userId: user?.$id || null,
+        discountApplied: orderData.discountApplied === true || orderData.discount > 0,
+        discountAmount: orderData.discount || '0'
       };
 
       // Add debug logging

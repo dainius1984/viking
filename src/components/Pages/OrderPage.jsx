@@ -139,7 +139,10 @@ const OrderPage = () => {
       shippingDetails: {
         method: formData.shipping,
         cost: shippingCost.toString()
-      }
+      },
+      discountApplied: state.isDiscountApplied,
+      discountAmount: discountAmount.toString(),
+      discountPercentage: DISCOUNT_CONFIG.percentage
     };
   };
 

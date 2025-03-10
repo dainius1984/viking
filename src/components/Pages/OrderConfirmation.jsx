@@ -191,7 +191,7 @@ const OrderConfirmation = () => {
             
             <div className="text-sm text-gray-500 text-center">
               <p>Masz pytania dotyczące zamówienia?</p>
-              <p>Skontaktuj się z nami: <a href="mailto:contact@example.com" className="text-green-600 hover:underline">contact@example.com</a></p>
+              <p>Skontaktuj się z nami: <a href="mailto:sklep@familybalance.pl" className="text-green-600 hover:underline">sklep@familybalance.pl</a></p>
             </div>
           </div>
         </div>
