@@ -7,6 +7,7 @@ import TopNavBar from '../Headers/TopNavBar';
 import Header from '../Headers/Header';
 import Footer from '../Footer/Footer';
 import { useAuth } from '../AuthContext'; // Add this import
+import { databases } from '../appwrite'; // Import databases from appwrite.js
 
 const OrderConfirmation = () => {
   const { clearCart } = useCart(); // Remove unused state and dispatch
@@ -14,6 +15,106 @@ const OrderConfirmation = () => {
   const [orderData, setOrderData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [hasCleared, setHasCleared] = useState(false);
+  const [paymentStatus, setPaymentStatus] = useState('Oczekująca');
+  const [statusLoading, setStatusLoading] = useState(false);
+  const [initialDelayComplete, setInitialDelayComplete] = useState(false);
+
+  // Function to fetch the current order status from Appwrite
+  const fetchOrderStatus = async (orderNumber) => {
+    if (!orderNumber) return;
+    
+    setStatusLoading(true);
+    try {
+      console.log('Fetching status for order:', orderNumber);
+      
+      // Query Appwrite for the order with this orderNumber
+      const response = await databases.listDocuments(
+        '67545c1800028e002c86', // Database ID
+        '67545c2c001276c2c261', // Collection ID
+        [
+          // Query to find the order by orderNumber
+          databases.equal('orderNumber', orderNumber)
+        ]
+      );
+
+      if (response.documents && response.documents.length > 0) {
+        const order = response.documents[0];
+        console.log('Found order in Appwrite:', order);
+        
+        // Map the status to a user-friendly display
+        const statusMap = {
+          'PENDING': 'Oczekująca',
+          'PAID': 'Opłacone',
+          'CANCELLED': 'Anulowane',
+          'REJECTED': 'Odrzucone'
+        };
+        
+        // Set the payment status based on the order status
+        const newStatus = statusMap[order.status] || order.status || 'Oczekująca';
+        setPaymentStatus(newStatus);
+        
+        console.log('Updated payment status to:', newStatus);
+        
+        // If payment is complete, we can stop polling
+        if (newStatus === 'Opłacone' || newStatus === 'Anulowane' || newStatus === 'Odrzucone') {
+          console.log('Payment status finalized, stopping polling');
+          return true; // Signal to stop polling
+        }
+      } else {
+        console.log('Order not found in Appwrite, keeping default status');
+      }
+      return false; // Continue polling
+    } catch (error) {
+      console.error('Error fetching order status:', error);
+      return false; // Continue polling despite error
+    } finally {
+      setStatusLoading(false);
+    }
+  };
+
+  // Add initial delay before first status check
+  useEffect(() => {
+    if (orderData?.orderNumber && !initialDelayComplete) {
+      console.log('Starting initial delay before first status check...');
+      
+      // Wait 3 seconds before first status check to allow webhook to process
+      const delayTimer = setTimeout(() => {
+        console.log('Initial delay complete, ready to start polling');
+        setInitialDelayComplete(true);
+      }, 3000); // 3 second delay
+      
+      return () => clearTimeout(delayTimer);
+    }
+  }, [orderData, initialDelayComplete]);
+
+  // Set up a polling mechanism to check for status updates after initial delay
+  useEffect(() => {
+    let intervalId;
+    
+    if (orderData?.orderNumber && initialDelayComplete) {
+      console.log('Initial delay complete, starting status polling');
+      
+      // Initial fetch
+      fetchOrderStatus(orderData.orderNumber);
+      
+      // Set up polling every 5 seconds
+      intervalId = setInterval(async () => {
+        const shouldStopPolling = await fetchOrderStatus(orderData.orderNumber);
+        if (shouldStopPolling) {
+          console.log('Stopping status polling - final status received');
+          clearInterval(intervalId);
+        }
+      }, 5000); // Check every 5 seconds
+    }
+    
+    // Clean up interval on unmount
+    return () => {
+      if (intervalId) {
+        console.log('Cleaning up status polling interval');
+        clearInterval(intervalId);
+      }
+    };
+  }, [orderData?.orderNumber, initialDelayComplete]);
 
   useEffect(() => {
     try {
@@ -51,6 +152,49 @@ const OrderConfirmation = () => {
       setLoading(false);
     }
   }, [clearCart, hasCleared]);
+
+  // Render the payment status with appropriate colors
+  const renderPaymentStatus = () => {
+    let statusColor = 'bg-yellow-500';
+    let statusText = paymentStatus;
+    
+    if (!initialDelayComplete) {
+      return (
+        <div className="flex items-center mt-1">
+          <span className="inline-block w-3 h-3 bg-blue-500 rounded-full mr-2 animate-pulse"></span>
+          <span className="text-gray-600">Przetwarzanie płatności...</span>
+        </div>
+      );
+    }
+    
+    if (statusLoading) {
+      return (
+        <div className="flex items-center mt-1">
+          <span className="inline-block w-3 h-3 bg-blue-500 rounded-full mr-2 animate-pulse"></span>
+          <span className="text-gray-600">Sprawdzanie statusu...</span>
+        </div>
+      );
+    }
+    
+    switch (paymentStatus) {
+      case 'Opłacone':
+        statusColor = 'bg-green-500';
+        break;
+      case 'Anulowane':
+      case 'Odrzucone':
+        statusColor = 'bg-red-500';
+        break;
+      default:
+        statusColor = 'bg-yellow-500';
+    }
+    
+    return (
+      <div className="flex items-center mt-1">
+        <span className={`inline-block w-3 h-3 ${statusColor} rounded-full mr-2`}></span>
+        <span className="text-gray-600">{statusText}</span>
+      </div>
+    );
+  };
 
   if (loading) {
     return (
@@ -155,12 +299,13 @@ const OrderConfirmation = () => {
               
               <div className="mb-4">
                 <h2 className="font-semibold text-gray-700">Status płatności:</h2>
-                <div className="flex items-center mt-1">
-                  <span className="inline-block w-3 h-3 bg-yellow-500 rounded-full mr-2"></span>
-                  <span className="text-gray-600">Oczekująca</span>
-                </div>
+                {renderPaymentStatus()}
                 <p className="text-sm text-gray-500 mt-1">
-                  Po potwierdzeniu płatności, wyślemy Ci e-mail z potwierdzeniem.
+                  {paymentStatus === 'Opłacone' 
+                    ? 'Dziękujemy! Twoja płatność została zrealizowana.' 
+                    : paymentStatus === 'Anulowane' || paymentStatus === 'Odrzucone'
+                      ? 'Płatność nie została zrealizowana. Prosimy spróbować ponownie lub skontaktować się z nami.'
+                      : 'Po potwierdzeniu płatności, wyślemy Ci e-mail z potwierdzeniem.'}
                 </p>
               </div>
             </div>
