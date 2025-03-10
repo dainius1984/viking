@@ -54,16 +54,19 @@ const PaymentButton = ({
       
       console.log('Selected shipping method for payment:', shippingMethod);
 
-      // Mark that we're entering payment flow - this will preserve session across redirects
+      // Mark that we're entering payment flow
       if (user) {
         setPaymentFlowState(true);
       }
 
+      // Remove paczkomat details from payment data
       const paymentData = {
         orderData: {
-          ...orderData,
-          notes: formData.notes,
-          shipping: shippingMethod // Ensure shipping is passed correctly
+          orderNumber: orderData.orderNumber,
+          total: orderData.total,
+          cart: orderData.items,
+          shipping: shippingMethod, // Just send the shipping method
+          notes: formData.notes || ''
         },
         customerData: {
           Imie: formData.firstName?.trim(),
@@ -73,17 +76,14 @@ const PaymentButton = ({
           Ulica: formData.street?.trim(),
           'Kod pocztowy': formData.postal?.trim(),
           Miasto: formData.city?.trim(),
-          Firma: formData.company?.trim() || '', 
+          Firma: formData.company?.trim() || '',
           Uwagi: formData.notes?.trim() || ''
         },
         isAuthenticated: !!user,
-        userId: user?.$id || null
+        userId: user?.id || null
       };
       
-      console.log('Full payment data:', {
-        ...paymentData,
-        shipping: paymentData.orderData.shipping // Log explicitly for confirmation
-      });
+      console.log('Payment request data:', paymentData);
       
       const paymentResponse = await initiatePayment(paymentData);
       
