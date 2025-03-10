@@ -40,6 +40,7 @@ const RegisterForm = ({ register }) => {
     e.preventDefault();
     e.stopPropagation();
 
+    // Clear any existing notification
     setNotification({ type: '', message: '' });
 
     const emailError = validateEmail(formData.email);
@@ -67,10 +68,16 @@ const RegisterForm = ({ register }) => {
       );
       
       if (result.success) {
+        // Show success notification
         setNotification({
           type: 'success',
           message: 'Konto zostało utworzone pomyślnie! Witamy w naszym sklepie. Zaraz zostaniesz przekierowany.'
         });
+        
+        // Add a small delay before redirect happens (handled by AuthContext)
+        setTimeout(() => {
+          // The redirect is handled by the AuthContext
+        }, 1500);
       } else {
         let errorMessage = 'Wystąpił błąd podczas rejestracji. Spróbuj ponownie.';
         
@@ -84,6 +91,7 @@ const RegisterForm = ({ register }) => {
           errorMessage = 'Podane imię jest nieprawidłowe.';
         }
 
+        // Show error notification
         setNotification({
           type: 'error',
           message: errorMessage
@@ -91,6 +99,7 @@ const RegisterForm = ({ register }) => {
       }
     } catch (error) {
       console.error('Registration error:', error);
+      // Show error notification
       setNotification({
         type: 'error',
         message: 'Wystąpił problem z połączeniem. Sprawdź internet i spróbuj ponownie.'
@@ -101,16 +110,21 @@ const RegisterForm = ({ register }) => {
   };
 
   return (
-    <div className="bg-white p-4 sm:p-6 md:p-8 rounded-lg shadow-sm max-w-xl mx-auto w-full">
+    <div className="bg-white p-4 sm:p-6 md:p-8 rounded-lg shadow-sm max-w-xl mx-auto w-full relative">
       <h2 className="text-xl sm:text-2xl text-green-800 mb-4 sm:mb-6 text-center font-semibold">
         Zarejestruj się
       </h2>
       
-      <EnhancedAlert 
-        type={notification.type} 
-        message={notification.message}
-        onDismiss={() => setNotification({ type: '', message: '' })}
-      />
+      {/* Make sure the alert is visible */}
+      {notification.message && (
+        <div className="mb-4">
+          <EnhancedAlert 
+            type={notification.type} 
+            message={notification.message}
+            onDismiss={() => setNotification({ type: '', message: '' })}
+          />
+        </div>
+      )}
 
       <form className="flex flex-col gap-4 sm:gap-5" onSubmit={handleSubmit}>
         <div className="flex flex-col gap-1 sm:gap-2">

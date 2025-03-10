@@ -87,13 +87,22 @@ const PaymentButton = ({
       console.log('Cart items found:', cartItems);
 
       // Format items in the exact structure needed
-      const formattedItems = cartItems.map(item => ({
-        id: item.id?.toLowerCase() || item.name?.toLowerCase().replace(/[^a-z0-9]/g, ''),
-        n: item.name,
-        p: parseInt(Number(item.price)),
-        q: parseInt(item.quantity) || 1,
-        image: item.image || `/img/products/${item.id?.toLowerCase() || item.name?.toLowerCase().replace(/[^a-z0-9]/g, '')}.png`
-      }));
+      const formattedItems = cartItems.map(item => {
+        // Ensure id and name are strings before calling toLowerCase()
+        const itemName = typeof item.name === 'string' ? item.name : String(item.name || '');
+        const itemId = typeof item.id === 'string' ? item.id : '';
+        
+        // Create a safe ID from either the existing ID or the name
+        const safeId = itemId.toLowerCase() || itemName.toLowerCase().replace(/[^a-z0-9]/g, '');
+        
+        return {
+          id: safeId,
+          n: itemName,
+          p: parseInt(Number(item.price)) || 0,
+          q: parseInt(item.quantity) || 1,
+          image: item.image || `/img/products/${safeId}.png`
+        };
+      });
 
       console.log('Formatted items:', formattedItems);
 

@@ -57,6 +57,10 @@ const LoginForm = ({ login }) => {
           type: 'success',
           message: 'Logowanie zakończone sukcesem! Zaraz zostaniesz przekierowany do swojego konta.'
         });
+        
+        setTimeout(() => {
+          // The redirect is handled by the AuthContext
+        }, 1500);
       } else {
         let errorMessage = 'Nieprawidłowe dane logowania. Sprawdź email i hasło.';
         
@@ -85,16 +89,20 @@ const LoginForm = ({ login }) => {
   };
 
   return (
-    <div className="bg-white p-4 sm:p-6 md:p-8 rounded-lg shadow-sm max-w-xl mx-auto w-full">
+    <div className="bg-white p-4 sm:p-6 md:p-8 rounded-lg shadow-sm max-w-xl mx-auto w-full relative">
       <h2 className="text-xl sm:text-2xl text-green-800 mb-4 sm:mb-6 text-center font-semibold">
         Zaloguj się
       </h2>
       
-      <EnhancedAlert 
-        type={notification.type} 
-        message={notification.message}
-        onDismiss={() => setNotification({ type: '', message: '' })}
-      />
+      {notification.message && (
+        <div className="mb-4">
+          <EnhancedAlert 
+            type={notification.type} 
+            message={notification.message}
+            onDismiss={() => setNotification({ type: '', message: '' })}
+          />
+        </div>
+      )}
 
       <form className="flex flex-col gap-4 sm:gap-5" onSubmit={handleSubmit}>
         <div className="flex flex-col gap-1 sm:gap-2">
