@@ -15,16 +15,16 @@ const SessionManager = () => {
     
     // Function to handle user activity
     const resetInactivityTimer = () => {
-      // Skip setting timer if user is in payment flow
-      if (isInPaymentFlow()) { 
+      // Check both the payment flow state and sessionStorage
+      if (isInPaymentFlow() || sessionStorage.getItem('inPaymentFlow') === 'true') { 
         console.log('User is in payment flow, skipping inactivity timer');
         return;
       }
 
       clearTimeout(inactivityTimer);
       inactivityTimer = setTimeout(() => {
-        // Double-check that we're not in payment flow before logging out
-        if (!isInPaymentFlow()) {
+        // Double-check payment flow state before logout
+        if (!isInPaymentFlow() && sessionStorage.getItem('inPaymentFlow') !== 'true') {
           console.log('User inactive for too long, logging out...');
           logout();
         }
@@ -33,8 +33,8 @@ const SessionManager = () => {
 
     // Function to handle tab close
     const handleTabClose = (event) => {
-      // Skip logout if user is in payment flow or during payment processing
-      if (user && !isInPaymentFlow() && !sessionStorage.getItem('processingPayment')) {
+      // Skip logout if user is in payment flow
+      if (user && !isInPaymentFlow() && sessionStorage.getItem('inPaymentFlow') !== 'true') {
         console.log('Tab closing, attempting logout');
         logout();
       }

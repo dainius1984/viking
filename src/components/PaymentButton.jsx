@@ -56,7 +56,15 @@ const PaymentButton = ({
         ? orderData.items 
         : orderData.cart || []; // Fallback to orderData.cart if items doesn't exist
 
-      // Clean up the payment data structure
+      // Format cart items for Appwrite
+      const formattedItems = cartItems.map(item => ({
+        id: item.id || item.name.toLowerCase().replace(/[^a-z0-9]/g, ''),
+        n: item.name,
+        p: Number(item.price),
+        q: parseInt(item.quantity) || 1,
+        image: item.image || `/img/products/${item.id || item.name.toLowerCase().replace(/[^a-z0-9]/g, '')}.png`
+      }));
+
       const paymentData = {
         orderData: {
           orderNumber: orderData.orderNumber,
@@ -66,6 +74,8 @@ const PaymentButton = ({
             quantity: parseInt(item.quantity) || 1,
             price: Number(item.price).toFixed(2)
           })),
+          // Add formatted items for Appwrite
+          items: formattedItems,
           shipping: shippingMethod,
           notes: formData.notes || '',
           userId: user?.$id,
@@ -88,18 +98,27 @@ const PaymentButton = ({
         userId: user?.$id || null
       };
 
+      // Mark that we're entering payment flow before initiating payment
+      if (user) {
+        setPaymentFlowState(true);
+        // Also set a flag in sessionStorage
+        sessionStorage.setItem('inPaymentFlow', 'true');
+      }
+
       console.log('Payment request data:', paymentData);
       
       const paymentResponse = await initiatePayment(paymentData);
       
       if (paymentResponse.redirectUrl) {
-        // Store order reference in session storage
+        // Store order reference and payment flow state in session storage
         sessionStorage.setItem('lastOrder', JSON.stringify({
           orderNumber: paymentResponse.orderNumber || orderData.orderNumber,
           payuOrderId: paymentResponse.orderId,
           date: new Date().toISOString(),
           status: 'PENDING',
-          shipping: shippingMethod // Store shipping method in session storage for reference
+          shipping: shippingMethod,
+          isAuthenticated: !!user,
+          userId: user?.$id || null
         }));
 
         // Also add better error logging
@@ -107,7 +126,8 @@ const PaymentButton = ({
           orderNumber: paymentResponse.orderNumber || orderData.orderNumber,
           payuOrderId: paymentResponse.orderId,
           redirectUrl: !!paymentResponse.redirectUrl,
-          shipping: shippingMethod
+          shipping: shippingMethod,
+          isAuthenticated: !!user
         });
         
         // Redirect to payment gateway
@@ -121,7 +141,10 @@ const PaymentButton = ({
       setError(error.message || 'Wystąpił błąd podczas inicjowania płatności. Spróbuj ponownie.');
       
       // If there's an error, remove the payment flow state
-      setPaymentFlowState(false);
+      if (user) {
+        setPaymentFlowState(false);
+        sessionStorage.removeItem('inPaymentFlow');
+      }
     } finally {
       setLoading(false);
     }
