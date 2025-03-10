@@ -7,7 +7,7 @@ import TopNavBar from '../Headers/TopNavBar';
 import Header from '../Headers/Header';
 import Footer from '../Footer/Footer';
 import { useAuth } from '../AuthContext'; // Add this import
-import { databases } from '../appwrite'; // Import only databases from appwrite.js
+import { databases, Query } from '../appwrite'; // Import databases and Query from appwrite.js
 
 const OrderConfirmation = () => {
   const { clearCart } = useCart(); // Remove unused state and dispatch
@@ -22,22 +22,27 @@ const OrderConfirmation = () => {
   // Function to fetch the current order status from Appwrite
   const fetchOrderStatus = async (orderNumber) => {
     if (!orderNumber) return;
-    
+
     setStatusLoading(true);
     try {
       console.log('Fetching status for order:', orderNumber);
-      
-      // Use the getDocument method if you know the document ID
-      // If orderNumber is the document ID:
-      try {
-        const order = await databases.getDocument(
-          '67545c1800028e002c86', // Database ID
-          '67545c2c001276c2c261', // Collection ID
-          orderNumber // Assuming orderNumber is the document ID
-        );
-        
+
+      // Query the collection to find a document where orderNumber matches
+      const response = await databases.listDocuments(
+        '67545c1800028e002c86', // Database ID
+        '67545c2c001276c2c261', // Collection ID
+        [
+          Query.equal('orderNumber', orderNumber) // Filter by the orderNumber attribute
+        ]
+      );
+
+      console.log('Response from Appwrite:', response);
+
+      // Check if any documents were found
+      if (response.documents.length > 0) {
+        const order = response.documents[0]; // Take the first matching document
         console.log('Found order in Appwrite:', order);
-        
+
         // Map the status to a user-friendly display
         const statusMap = {
           'PENDING': 'Oczekująca',
@@ -45,38 +50,22 @@ const OrderConfirmation = () => {
           'CANCELLED': 'Anulowane',
           'REJECTED': 'Odrzucone'
         };
-        
+
         // Set the payment status based on the order status
         const newStatus = statusMap[order.status] || order.status || 'Oczekująca';
         setPaymentStatus(newStatus);
-        
+
         console.log('Updated payment status to:', newStatus);
-        
-        // If payment is complete, we can stop polling
+
+        // If payment is complete, stop polling
         if (newStatus === 'Opłacone' || newStatus === 'Anulowane' || newStatus === 'Odrzucone') {
           console.log('Payment status finalized, stopping polling');
           return true; // Signal to stop polling
         }
-      } catch (docError) {
-        // If getting by ID fails, try listing documents with a filter
-        console.log('Could not find document by ID, trying to list documents with filter');
-        
-        // Alternative approach: If orderNumber is a field in the document, not the ID
-        // We need to use a different approach to query
-        // This requires a server function or API endpoint that can handle this query
-        // For now, we'll implement a simple fallback
-        
-        console.log('Order not found in Appwrite, keeping default status');
-        
-        // For guest users, we might need to check an external API
-        // This is where you would implement the check to your Google Sheets API
-        if (!user) {
-          console.log('Guest user detected, would check external API here');
-          // Implement your Google Sheets check here
-          // For now, we'll just keep the default status
-        }
+      } else {
+        console.log('No documents found with orderNumber:', orderNumber);
       }
-      
+
       return false; // Continue polling
     } catch (error) {
       console.error('Error fetching order status:', error);
