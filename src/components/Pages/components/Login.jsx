@@ -53,8 +53,8 @@ const LoginForm = ({ login }) => {
     setLoginLoading(true);
     
     try {
-      // Attempt to login
-      const result = await login(formData.email, formData.password, false); // Pass false to prevent auto-redirect
+      // Attempt to login - IMPORTANT: We're preventing the default navigation
+      const result = await login(formData.email, formData.password, false);
       
       if (result.success) {
         // Show success notification
@@ -79,10 +79,14 @@ const LoginForm = ({ login }) => {
           errorMessage = 'Nieprawidłowe hasło. Spróbuj ponownie.';
         }
 
+        // Set the error notification
         setNotification({
           type: 'error',
           message: errorMessage
         });
+        
+        // Log the error for debugging
+        console.log('Login error:', result.error);
       }
     } catch (error) {
       console.error('Login error:', error);
@@ -101,11 +105,16 @@ const LoginForm = ({ login }) => {
         Zaloguj się
       </h2>
       
-      <EnhancedAlert 
-        type={notification.type} 
-        message={notification.message}
-        onDismiss={() => setNotification({ type: '', message: '' })}
-      />
+      {/* Make sure the alert is visible */}
+      {notification.message && (
+        <div className="mb-4">
+          <EnhancedAlert 
+            type={notification.type} 
+            message={notification.message}
+            onDismiss={() => setNotification({ type: '', message: '' })}
+          />
+        </div>
+      )}
 
       <form className="flex flex-col gap-4 sm:gap-5 mt-4" onSubmit={handleSubmit}>
         <div className="flex flex-col gap-1 sm:gap-2">

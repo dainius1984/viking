@@ -15,15 +15,13 @@ const EnhancedAlert = ({ type, message, duration = 5000, onDismiss }) => {
   if (!message) return null;
 
   return (
-    <div className="fixed top-0 left-0 right-0 flex items-start justify-center p-4 z-[9999]">
+    <div className="relative w-full">
       <div 
         className={`
-          pointer-events-auto
-          w-96 max-w-[calc(100vw-2rem)]
-          mt-4
+          w-full
           transform transition-all duration-300 ease-out
           translate-y-0 opacity-100
-          rounded-lg shadow-lg
+          rounded-lg shadow-sm
           ${type === 'success' ? 'bg-green-50 border border-green-200' : 'bg-red-50 border border-red-200'}
         `}
       >
