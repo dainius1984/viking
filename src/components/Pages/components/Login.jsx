@@ -32,8 +32,10 @@ const LoginForm = ({ login }) => {
     e.preventDefault();
     e.stopPropagation();
 
+    // Clear any existing notifications
     setNotification({ type: '', message: '' });
 
+    // Validate form fields
     const emailError = validateEmail(formData.email);
     const passwordError = validatePassword(formData.password);
 
@@ -45,23 +47,28 @@ const LoginForm = ({ login }) => {
       }
     }));
 
+    // If there are validation errors, don't proceed
     if (emailError || passwordError) return;
 
     setLoginLoading(true);
     
     try {
-      const result = await login(formData.email, formData.password);
+      // Attempt to login
+      const result = await login(formData.email, formData.password, false); // Pass false to prevent auto-redirect
       
       if (result.success) {
+        // Show success notification
         setNotification({
           type: 'success',
           message: 'Logowanie zakończone sukcesem! Zaraz zostaniesz przekierowany do swojego konta.'
         });
         
+        // Delay redirect to allow notification to be seen
         setTimeout(() => {
-          // The redirect is handled by the AuthContext
+          window.location.href = '/account';
         }, 1500);
       } else {
+        // Handle different error cases
         let errorMessage = 'Nieprawidłowe dane logowania. Sprawdź email i hasło.';
         
         if (result.error?.toLowerCase().includes('invalid credentials')) {
@@ -94,17 +101,13 @@ const LoginForm = ({ login }) => {
         Zaloguj się
       </h2>
       
-      {notification.message && (
-        <div className="mb-4">
-          <EnhancedAlert 
-            type={notification.type} 
-            message={notification.message}
-            onDismiss={() => setNotification({ type: '', message: '' })}
-          />
-        </div>
-      )}
+      <EnhancedAlert 
+        type={notification.type} 
+        message={notification.message}
+        onDismiss={() => setNotification({ type: '', message: '' })}
+      />
 
-      <form className="flex flex-col gap-4 sm:gap-5" onSubmit={handleSubmit}>
+      <form className="flex flex-col gap-4 sm:gap-5 mt-4" onSubmit={handleSubmit}>
         <div className="flex flex-col gap-1 sm:gap-2">
           <label className="text-sm sm:text-base text-gray-700 font-medium">
             Email

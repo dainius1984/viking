@@ -15,7 +15,7 @@ const EnhancedAlert = ({ type, message, duration = 5000, onDismiss }) => {
   if (!message) return null;
 
   return (
-    <div className="fixed inset-0 pointer-events-none flex items-start justify-center p-4 z-[9999]">
+    <div className="fixed top-0 left-0 right-0 flex items-start justify-center p-4 z-[9999]">
       <div 
         className={`
           pointer-events-auto

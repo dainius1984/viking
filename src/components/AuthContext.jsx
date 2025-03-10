@@ -59,19 +59,30 @@ export const AuthProvider = ({ children }) => {
    * 
    * @param {string} email - User's email
    * @param {string} password - User's password
+   * @param {boolean} autoRedirect - Whether to redirect after login
    * @returns {Promise<Object>} Login result object
    */
-  const login = async (email, password) => {
+  const login = async (email, password, autoRedirect = true) => {
     setLoading(true);
     try {
       const result = await loginUser(email, password);
-      if (result.success && result.user) {
+      
+      if (result.success) {
         setUser(result.user);
-        return { success: true };
+        
+        // Only redirect if autoRedirect is true
+        if (autoRedirect) {
+          navigate('/account');
+        }
       }
+      
       return result;
     } catch (error) {
-      return { success: false, error: error.message };
+      console.error('Login error in context:', error);
+      return { 
+        success: false, 
+        error: error.message 
+      };
     } finally {
       setLoading(false);
     }
