@@ -49,23 +49,24 @@ const PaymentButton = ({
 
       setLoading(true);
 
-      // Get shipping method - make sure it's defined and not empty
       const shippingMethod = formData.shipping || 'DPD';
       
-      console.log('Selected shipping method for payment:', shippingMethod);
+      // Ensure cart items are properly formatted as an array
+      const cartItems = Array.isArray(orderData.items) 
+        ? orderData.items 
+        : orderData.cart || []; // Fallback to orderData.cart if items doesn't exist
 
-      // Mark that we're entering payment flow
-      if (user) {
-        setPaymentFlowState(true);
-      }
-
-      // Remove paczkomat details from payment data
+      // Clean up the payment data structure
       const paymentData = {
         orderData: {
           orderNumber: orderData.orderNumber,
-          total: orderData.total,
-          cart: orderData.items,
-          shipping: shippingMethod, // Just send the shipping method
+          total: Number(orderData.total).toFixed(2), // Format to 2 decimal places
+          cart: cartItems.map(item => ({
+            name: item.name,
+            quantity: parseInt(item.quantity) || 1,
+            price: Number(item.price).toFixed(2)
+          })),
+          shipping: shippingMethod,
           notes: formData.notes || ''
         },
         customerData: {
@@ -82,7 +83,7 @@ const PaymentButton = ({
         isAuthenticated: !!user,
         userId: user?.id || null
       };
-      
+
       console.log('Payment request data:', paymentData);
       
       const paymentResponse = await initiatePayment(paymentData);
