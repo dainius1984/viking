@@ -70,7 +70,7 @@ const PaymentButton = ({
           ? orderData.cart 
           : [];
 
-      // Format cart items for Appwrite in the exact required format
+      // Format items in the exact structure needed
       const formattedItems = cartItems.map(item => ({
         id: item.id?.toLowerCase() || item.name?.toLowerCase().replace(/[^a-z0-9]/g, ''),
         n: item.name,
@@ -79,27 +79,16 @@ const PaymentButton = ({
         image: item.image || `/img/products/${item.id?.toLowerCase() || item.name?.toLowerCase().replace(/[^a-z0-9]/g, '')}.png`
       }));
 
-      console.log('Formatted items for Appwrite:', formattedItems);
-
       const paymentData = {
-        orderData: {
-          orderNumber: orderData.orderNumber,
-          total: Number(orderData.total).toFixed(2),
-          // Send both formats - one for PayU and one for Appwrite
-          cart: cartItems.map(item => ({
-            name: item.name,
-            quantity: parseInt(item.quantity) || 1,
-            price: Number(item.price).toFixed(2)
-          })),
-          // Add formatted items specifically for Appwrite
-          appwriteItems: JSON.stringify(formattedItems), // Stringify the formatted items
-          items: formattedItems, // Also send as regular array
-          shipping: shippingMethod,
-          notes: formData.notes || '',
-          userId: user?.$id,
-          isAuthenticated: !!user,
-          paymentStatus: 'PENDING',
-          createdAt: new Date().toISOString()
+        orderNumber: orderData.orderNumber,
+        total: Number(orderData.total).toFixed(2),
+        subtotal: orderData.subtotal,
+        items: formattedItems, // Send items directly, not nested
+        discountAmount: orderData.discountAmount,
+        discountApplied: orderData.discountApplied,
+        shippingDetails: {
+          method: shippingMethod,
+          cost: getShippingCost(orderData.subtotal, shippingMethod).toString()
         },
         customerData: {
           Imie: formData.firstName?.trim(),
@@ -112,15 +101,15 @@ const PaymentButton = ({
           Firma: formData.company?.trim() || '',
           Uwagi: formData.notes?.trim() || ''
         },
+        userId: user?.$id || null,
         isAuthenticated: !!user,
-        userId: user?.$id || null
+        status: 'PENDING',
+        createdAt: new Date().toISOString()
       };
 
-      // Add debug logging
-      console.log('Cart items being sent:', {
-        original: cartItems,
-        formatted: formattedItems,
-        stringified: JSON.stringify(formattedItems)
+      console.log('Payment request data:', {
+        ...paymentData,
+        items: formattedItems // Log items explicitly
       });
 
       // Mark that we're entering payment flow before initiating payment
@@ -130,8 +119,6 @@ const PaymentButton = ({
         sessionStorage.setItem('inPaymentFlow', 'true');
       }
 
-      console.log('Payment request data:', paymentData);
-      
       const paymentResponse = await initiatePayment(paymentData);
       
       if (paymentResponse.redirectUrl) {
