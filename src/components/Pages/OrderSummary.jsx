@@ -101,6 +101,9 @@ const OrderSummary = ({
     const shippingCost = getShippingCost(subtotal, shipping);
     const finalTotal = total + shippingCost;
     
+    // Store cart items in window for emergency access
+    window._cartState = { cart };
+    
     // Get paczkomat details if using InPost Paczkomat
     const isPaczkomatShipping = shipping.includes('PACZKOMATY');
     const paczkomatDetails = isPaczkomatShipping && selectedPaczkomat 
@@ -141,6 +144,7 @@ const OrderSummary = ({
       discount: discountApplied ? discountAmount.toString() : '0',
       total: finalTotal.toString(),
       items: formattedItems,
+      cart: cart,
       paymentStatus: 'PENDING',
       lastUpdateTime: new Date().toISOString(),
       shippingCost: shippingCost.toString()

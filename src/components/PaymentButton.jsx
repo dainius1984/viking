@@ -63,12 +63,28 @@ const PaymentButton = ({
 
       const shippingMethod = formData.shipping || 'DPD';
       
-      // Ensure cart items are properly formatted as an array
-      const cartItems = Array.isArray(orderData.items) 
-        ? orderData.items 
-        : Array.isArray(orderData.cart) 
-          ? orderData.cart 
-          : [];
+      // Get cart items from orderData
+      // The issue is here - we need to access the cart data correctly
+      console.log('OrderData received:', orderData);
+      
+      // Try to get cart items from different possible locations
+      let cartItems = [];
+      if (Array.isArray(orderData.cart) && orderData.cart.length > 0) {
+        cartItems = orderData.cart;
+      } else if (Array.isArray(orderData.items) && orderData.items.length > 0) {
+        cartItems = orderData.items;
+      } else {
+        // Fallback to window.cartItems if it exists (from global state)
+        const globalCart = window._cartState?.cart;
+        if (Array.isArray(globalCart) && globalCart.length > 0) {
+          cartItems = globalCart;
+          console.log('Using global cart state:', globalCart);
+        } else {
+          console.error('No cart items found in any source!');
+        }
+      }
+      
+      console.log('Cart items found:', cartItems);
 
       // Format items in the exact structure needed
       const formattedItems = cartItems.map(item => ({
@@ -79,16 +95,21 @@ const PaymentButton = ({
         image: item.image || `/img/products/${item.id?.toLowerCase() || item.name?.toLowerCase().replace(/[^a-z0-9]/g, '')}.png`
       }));
 
+      console.log('Formatted items:', formattedItems);
+
+      // Create a properly structured payment data object
       const paymentData = {
-        orderNumber: orderData.orderNumber,
-        total: Number(orderData.total).toFixed(2),
-        subtotal: orderData.subtotal,
-        items: formattedItems, // Send items directly, not nested
-        discountAmount: orderData.discountAmount,
-        discountApplied: orderData.discountApplied,
-        shippingDetails: {
-          method: shippingMethod,
-          cost: getShippingCost(orderData.subtotal, shippingMethod).toString()
+        orderData: {
+          orderNumber: orderData.orderNumber,
+          total: orderData.total,
+          // Important: Send the cart items properly
+          cart: cartItems,
+          shipping: shippingMethod,
+          notes: formData.notes || '',
+          userId: user?.$id,
+          isAuthenticated: !!user,
+          paymentStatus: 'PENDING',
+          createdAt: new Date().toISOString()
         },
         customerData: {
           Imie: formData.firstName?.trim(),
@@ -101,24 +122,23 @@ const PaymentButton = ({
           Firma: formData.company?.trim() || '',
           Uwagi: formData.notes?.trim() || ''
         },
-        userId: user?.$id || null,
         isAuthenticated: !!user,
-        status: 'PENDING',
-        createdAt: new Date().toISOString()
+        userId: user?.$id || null
       };
 
+      // Add debug logging
       console.log('Payment request data:', {
-        ...paymentData,
-        items: formattedItems // Log items explicitly
+        orderNumber: paymentData.orderData.orderNumber,
+        cartItems: paymentData.orderData.cart.length,
+        formattedItems: formattedItems
       });
 
       // Mark that we're entering payment flow before initiating payment
       if (user) {
         setPaymentFlowState(true);
-        // Also set a flag in sessionStorage
         sessionStorage.setItem('inPaymentFlow', 'true');
       }
-
+      
       const paymentResponse = await initiatePayment(paymentData);
       
       if (paymentResponse.redirectUrl) {

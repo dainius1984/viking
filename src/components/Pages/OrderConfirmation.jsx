@@ -6,9 +6,11 @@ import { setPaymentFlowState } from '../authService'; // Import the function
 import TopNavBar from '../Headers/TopNavBar';
 import Header from '../Headers/Header';
 import Footer from '../Footer/Footer';
+import { useAuth } from '../AuthContext'; // Add this import
 
 const OrderConfirmation = () => {
   const { clearCart } = useCart(); // Remove unused state and dispatch
+  const { user } = useAuth(); // Add this line to get user state
   const [orderData, setOrderData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [hasCleared, setHasCleared] = useState(false);
@@ -169,12 +171,22 @@ const OrderConfirmation = () => {
                 wraz ze szczegółami dotyczącymi płatności i dostawy.
               </p>
               
-              <Link 
-                to="/" 
-                className="inline-block bg-green-700 text-white px-6 py-3 rounded-md hover:bg-green-800 transition-colors"
-              >
-                Kontynuuj zakupy
-              </Link>
+              <div className="space-y-3">
+                {user && (
+                  <Link 
+                    to="/account" 
+                    className="inline-block bg-blue-600 text-white px-6 py-3 rounded-md hover:bg-blue-700 transition-colors mr-4"
+                  >
+                    Moje Zakupy
+                  </Link>
+                )}
+                <Link 
+                  to="/" 
+                  className="inline-block bg-green-700 text-white px-6 py-3 rounded-md hover:bg-green-800 transition-colors"
+                >
+                  Kontynuuj zakupy
+                </Link>
+              </div>
             </div>
             
             <div className="text-sm text-gray-500 text-center">
