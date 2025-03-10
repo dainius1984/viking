@@ -1,4 +1,4 @@
-import { Client, Databases, Account, ID } from 'appwrite';
+import { Client, Databases, Account, ID, Query } from 'appwrite';
 
 const client = new Client()
     .setEndpoint('https://cloud.appwrite.io/v1')
@@ -80,4 +80,4 @@ export const createOrder = async (orderData) => {
     }
 };
 
-export { client, account, ID, databases };
+export { client, account, ID, databases, Query };
