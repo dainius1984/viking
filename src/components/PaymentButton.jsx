@@ -60,14 +60,18 @@ const PaymentButton = ({
       const paymentData = {
         orderData: {
           orderNumber: orderData.orderNumber,
-          total: Number(orderData.total).toFixed(2), // Format to 2 decimal places
+          total: Number(orderData.total).toFixed(2),
           cart: cartItems.map(item => ({
             name: item.name,
             quantity: parseInt(item.quantity) || 1,
             price: Number(item.price).toFixed(2)
           })),
           shipping: shippingMethod,
-          notes: formData.notes || ''
+          notes: formData.notes || '',
+          userId: user?.$id,
+          isAuthenticated: !!user,
+          paymentStatus: 'PENDING',
+          createdAt: new Date().toISOString()
         },
         customerData: {
           Imie: formData.firstName?.trim(),
@@ -81,7 +85,7 @@ const PaymentButton = ({
           Uwagi: formData.notes?.trim() || ''
         },
         isAuthenticated: !!user,
-        userId: user?.id || null
+        userId: user?.$id || null
       };
 
       console.log('Payment request data:', paymentData);

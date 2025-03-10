@@ -33,9 +33,8 @@ const SessionManager = () => {
 
     // Function to handle tab close
     const handleTabClose = (event) => {
-      // Skip logout if user is in payment flow
-      if (user && !isInPaymentFlow()) {
-        // Note: This is best-effort and may not complete before tab closes
+      // Skip logout if user is in payment flow or during payment processing
+      if (user && !isInPaymentFlow() && !sessionStorage.getItem('processingPayment')) {
         console.log('Tab closing, attempting logout');
         logout();
       }

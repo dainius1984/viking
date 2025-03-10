@@ -104,8 +104,7 @@ const OrderPage = () => {
     const shippingCost = isFreeShipping ? 0 : getShippingCost(subtotal, formData.shipping);
     const finalTotal = total + shippingCost;
 
-    // Remove paczkomat details from payment data, only send shipping method
-    const paymentData = {
+    return {
       orderData: {
         orderNumber,
         total: finalTotal.toString(),
@@ -115,11 +114,14 @@ const OrderPage = () => {
           price: item.price.toString(),
           unitPrice: item.price.toString()
         })),
-        shipping: formData.shipping, // This will just be the shipping method (e.g., 'INPOST_PACZKOMATY')
+        shipping: formData.shipping,
         shippingCost: shippingCost.toString(),
         discountApplied: state.isDiscountApplied,
         discountAmount: discountAmount.toString(),
-        subtotal: subtotal.toString()
+        subtotal: subtotal.toString(),
+        userId: user?.$id,
+        createdAt: new Date().toISOString(),
+        paymentStatus: 'PENDING'
       },
       customerData: {
         Imie: formData.firstName?.trim(),
@@ -133,10 +135,12 @@ const OrderPage = () => {
         Uwagi: formData.notes?.trim() || ''
       },
       isAuthenticated: !!user,
-      userId: user?.id
+      userId: user?.$id || null,
+      shippingDetails: {
+        method: formData.shipping,
+        cost: shippingCost.toString()
+      }
     };
-
-    return paymentData;
   };
 
   // Handle order submission
