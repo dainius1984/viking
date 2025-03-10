@@ -1,9 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import EnhancedAlert from './Alert';
+import { useNavigate } from 'react-router-dom';
 
 const LoginForm = ({ login }) => {
+  const navigate = useNavigate();
   const [loginLoading, setLoginLoading] = useState(false);
   const [notification, setNotification] = useState({ type: '', message: '' });
+  const [showError, setShowError] = useState(false);
   
   const [formData, setFormData] = useState({
     email: '',
@@ -14,6 +17,18 @@ const LoginForm = ({ login }) => {
       password: ''
     }
   });
+
+  // This effect ensures the error message stays visible
+  useEffect(() => {
+    if (showError) {
+      // Force the component to stay mounted for a moment
+      const timer = setTimeout(() => {
+        setShowError(false);
+      }, 5000);
+      
+      return () => clearTimeout(timer);
+    }
+  }, [showError]);
 
   const validateEmail = (email) => {
     const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -34,6 +49,7 @@ const LoginForm = ({ login }) => {
 
     // Clear any existing notifications
     setNotification({ type: '', message: '' });
+    setShowError(false);
 
     // Validate form fields
     const emailError = validateEmail(formData.email);
@@ -65,7 +81,7 @@ const LoginForm = ({ login }) => {
         
         // Delay redirect to allow notification to be seen
         setTimeout(() => {
-          window.location.href = '/account';
+          navigate('/account');
         }, 1500);
       } else {
         // Handle different error cases
@@ -79,11 +95,12 @@ const LoginForm = ({ login }) => {
           errorMessage = 'Nieprawidłowe hasło. Spróbuj ponownie.';
         }
 
-        // Set the error notification
+        // Set the error notification and make sure it stays visible
         setNotification({
           type: 'error',
           message: errorMessage
         });
+        setShowError(true);
         
         // Log the error for debugging
         console.log('Login error:', result.error);
@@ -94,6 +111,7 @@ const LoginForm = ({ login }) => {
         type: 'error',
         message: 'Wystąpił błąd podczas logowania. Sprawdź połączenie internetowe i spróbuj ponownie.'
       });
+      setShowError(true);
     } finally {
       setLoginLoading(false);
     }
@@ -105,18 +123,22 @@ const LoginForm = ({ login }) => {
         Zaloguj się
       </h2>
       
-      {/* Make sure the alert is visible */}
-      {notification.message && (
-        <div className="mb-4">
-          <EnhancedAlert 
-            type={notification.type} 
-            message={notification.message}
-            onDismiss={() => setNotification({ type: '', message: '' })}
-          />
-        </div>
-      )}
+      {/* Make the alert more prominent and ensure it's visible */}
+      <div className="mb-6 min-h-[60px]">
+        {(notification.message || showError) && (
+          <div className="border rounded-md p-4 mb-4 text-center" 
+               style={{ 
+                 backgroundColor: notification.type === 'success' ? '#f0fdf4' : '#fef2f2',
+                 borderColor: notification.type === 'success' ? '#86efac' : '#fecaca' 
+               }}>
+            <p className={notification.type === 'success' ? 'text-green-800' : 'text-red-800'}>
+              {notification.message}
+            </p>
+          </div>
+        )}
+      </div>
 
-      <form className="flex flex-col gap-4 sm:gap-5 mt-4" onSubmit={handleSubmit}>
+      <form className="flex flex-col gap-4 sm:gap-5" onSubmit={handleSubmit}>
         <div className="flex flex-col gap-1 sm:gap-2">
           <label className="text-sm sm:text-base text-gray-700 font-medium">
             Email
