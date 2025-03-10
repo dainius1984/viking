@@ -7,7 +7,7 @@ import TopNavBar from '../Headers/TopNavBar';
 import Header from '../Headers/Header';
 import Footer from '../Footer/Footer';
 import { useAuth } from '../AuthContext'; // Add this import
-import { databases } from '../appwrite'; // Import databases from appwrite.js
+import { databases, Query } from '../appwrite'; // Import databases and Query from appwrite.js
 
 const OrderConfirmation = () => {
   const { clearCart } = useCart(); // Remove unused state and dispatch
@@ -32,8 +32,7 @@ const OrderConfirmation = () => {
         '67545c1800028e002c86', // Database ID
         '67545c2c001276c2c261', // Collection ID
         [
-          // Query to find the order by orderNumber
-          databases.equal('orderNumber', orderNumber)
+          Query.equal('orderNumber', orderNumber)
         ]
       );
 
