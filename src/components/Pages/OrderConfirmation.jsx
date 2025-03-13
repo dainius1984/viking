@@ -91,6 +91,27 @@ const OrderConfirmation = () => {
         console.log('No order data found in localStorage, trying sessionStorage...');
         storedOrder = sessionStorage.getItem('lastOrder');
         console.log('Raw data from sessionStorage:', storedOrder);
+        
+        // If found in sessionStorage, copy it to localStorage for future use
+        if (storedOrder) {
+          console.log('Found order data in sessionStorage, copying to localStorage');
+          localStorage.setItem('lastOrder', storedOrder);
+          
+          // Also parse it to check if it's a paczkomat order
+          try {
+            const sessionOrder = JSON.parse(storedOrder);
+            if (sessionOrder.shipping && sessionOrder.shipping.includes('PACZKOMATY') && !sessionOrder.hasPaczkomatData) {
+              console.log('Order is using paczkomat shipping but missing hasPaczkomatData flag, adding it');
+              sessionOrder.hasPaczkomatData = true;
+              
+              // Update the localStorage with the fixed data
+              localStorage.setItem('lastOrder', JSON.stringify(sessionOrder));
+              storedOrder = JSON.stringify(sessionOrder);
+            }
+          } catch (error) {
+            console.error('Error parsing sessionStorage order data:', error);
+          }
+        }
       }
       
       // If still not found, try to find order backup in localStorage

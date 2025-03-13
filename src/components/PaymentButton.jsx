@@ -148,23 +148,49 @@ const PaymentButton = ({
       // Mark that we're entering payment flow before initiating payment
       if (user) {
         setPaymentFlowState(true);
-        sessionStorage.setItem('inPaymentFlow', 'true');
+        localStorage.setItem('inPaymentFlow', 'true');
       }
       
       const paymentResponse = await initiatePayment(paymentData);
       
       if (paymentResponse.redirectUrl) {
-        // Store order reference and payment flow state in session storage
-        sessionStorage.setItem('lastOrder', JSON.stringify({
+        // Store order reference and payment flow state in localStorage instead of sessionStorage
+        localStorage.setItem('lastOrder', JSON.stringify({
           orderNumber: paymentResponse.orderNumber || orderData.orderNumber,
           payuOrderId: paymentResponse.orderId,
           date: new Date().toISOString(),
           status: 'PENDING',
           shipping: shippingMethod,
           isAuthenticated: !!user,
-          userId: user?.$id || null
+          userId: user?.$id || null,
+          // Add customer information needed for InPost shipment
+          firstName: formData.firstName,
+          lastName: formData.lastName,
+          email: formData.email,
+          phone: formData.phone,
+          // Add paczkomat data flag
+          hasPaczkomatData: formData.shipping?.includes('PACZKOMATY')
         }));
 
+        // Store paczkomat data in localStorage if using paczkomat shipping
+        if (formData.shipping?.includes('PACZKOMATY') && formData.paczkomat) {
+          console.log('PaymentButton: Storing paczkomat data in localStorage');
+          localStorage.setItem(`paczkomat_data_${paymentResponse.orderNumber || orderData.orderNumber}`, 
+            JSON.stringify(formData.paczkomat));
+        } else if (formData.shipping?.includes('PACZKOMATY')) {
+          // Create dummy paczkomat data if shipping is paczkomat but no paczkomat data
+          console.log('PaymentButton: Creating dummy paczkomat data');
+          const dummyPaczkomatData = {
+            name: 'POP-WAW123',
+            address: 'ul. Testowa 123, Warszawa',
+            point_id: 'POP-WAW123',
+            city: 'Warszawa',
+            post_code: '00-001'
+          };
+          localStorage.setItem(`paczkomat_data_${paymentResponse.orderNumber || orderData.orderNumber}`, 
+            JSON.stringify(dummyPaczkomatData));
+        }
+        
         // Also add better error logging
         console.log('Payment response:', {
           orderNumber: paymentResponse.orderNumber || orderData.orderNumber,
@@ -187,7 +213,7 @@ const PaymentButton = ({
       // If there's an error, remove the payment flow state
       if (user) {
         setPaymentFlowState(false);
-        sessionStorage.removeItem('inPaymentFlow');
+        localStorage.removeItem('inPaymentFlow');
       }
     } finally {
       setLoading(false);
