@@ -304,4 +304,25 @@ const OrderPage = () => {
 
   // Notification component
   const NotificationComponent = () => notification && (
-    <div className={`
+    <div className="fixed top-4 right-4 z-50 p-4 rounded shadow-lg bg-red-100 text-red-800 border border-red-300">
+      {notification}
+    </div>
+  );
+
+  return (
+    <>
+      <TopNavBar />
+      <Header />
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-800 mx-auto"></div>
+          <p className="mt-4 text-gray-600">Ładowanie...</p>
+        </div>
+      </div>
+      <Footer />
+      <NotificationComponent />
+    </>
+  );
+};
+
+export default OrderPage;

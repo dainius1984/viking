@@ -2,44 +2,33 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useCart } from '../../context/CartContext';
-import { setPaymentFlowState } from '../authService'; // Import the function
+import { setPaymentFlowState } from '../authService';
 import TopNavBar from '../Headers/TopNavBar';
 import Header from '../Headers/Header';
 import Footer from '../Footer/Footer';
-import { useAuth } from '../AuthContext'; // Add this import
-import { databases, Query } from '../appwrite'; // Import databases and Query from appwrite.js
+import { useAuth } from '../AuthContext';
 
 // Function to create InPost shipments
 const createInPostShipment = async (orderData) => {
   try {
-    // Log the full order data received by the function
-    console.log('createInPostShipment received orderData:', JSON.stringify(orderData, null, 2));
-    
-    // Check if we have paczkomat data
     if (!orderData.paczkomat) {
-      console.error('No paczkomat data available for shipment creation');
       return { success: false, error: 'Missing paczkomat data' };
     }
 
-    // Prepare the payload for the API
     const payload = {
       orderNumber: orderData.orderNumber,
       recipient: {
         name: `${orderData.firstName} ${orderData.lastName}`,
         email: orderData.email,
         phone: orderData.phone,
-        paczkomatId: orderData.paczkomat.name // This should be the paczkomat ID
+        paczkomatId: orderData.paczkomat.name
       },
       packageDetails: {
-        size: 'A', // Default size, adjust based on your needs
-        weight: 1.0 // Default weight in kg, adjust based on your needs
+        size: 'A',
+        weight: 1.0
       }
     };
 
-    // Log the prepared payload
-    console.log('Sending payload to InPost API:', JSON.stringify(payload, null, 2));
-
-    // Call the backend API
     const response = await fetch('/api/shipping/create', {
       method: 'POST',
       headers: {
@@ -48,28 +37,20 @@ const createInPostShipment = async (orderData) => {
       body: JSON.stringify(payload)
     });
 
-    // Log the raw response
-    console.log('Raw response from InPost API:', response);
-
     const data = await response.json();
-    
-    // Log the parsed response data
-    console.log('Parsed response data from InPost API:', JSON.stringify(data, null, 2));
 
     if (!response.ok) {
       throw new Error(data.details || 'Failed to create shipment');
     }
 
-    console.log('Shipment created successfully:', data);
     return { success: true, data };
   } catch (error) {
-    console.error('Error creating InPost shipment:', error);
     return { success: false, error: error.message };
   }
 };
 
 const OrderConfirmation = () => {
-  const { clearCart } = useCart(); // Remove unused state and dispatch
+  const { clearCart } = useCart();
   const { user } = useAuth(); // Add this line to get user state
   const [orderData, setOrderData] = useState(null);
   const [loading, setLoading] = useState(true);
