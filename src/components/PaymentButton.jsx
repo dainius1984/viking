@@ -164,10 +164,10 @@ const PaymentButton = ({
           isAuthenticated: !!user,
           userId: user?.$id || null,
           // Add customer information needed for InPost shipment
-          firstName: formData.firstName,
-          lastName: formData.lastName,
-          email: formData.email,
-          phone: formData.phone,
+          firstName: formData.firstName || '',
+          lastName: formData.lastName || '',
+          email: formData.email || '',
+          phone: formData.phone || '',
           // Add paczkomat data flag
           hasPaczkomatData: formData.shipping?.includes('PACZKOMATY')
         }));
