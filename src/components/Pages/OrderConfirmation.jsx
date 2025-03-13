@@ -82,13 +82,36 @@ const OrderConfirmation = () => {
       // End the payment flow - return to normal session behavior
       setPaymentFlowState(false);
       
-      // Get order data from session storage
-      const storedOrder = sessionStorage.getItem('lastOrder');
-      console.log('Raw data from sessionStorage:', storedOrder);
+      // Get order data from localStorage instead of sessionStorage
+      let storedOrder = localStorage.getItem('lastOrder');
+      console.log('Raw data from localStorage:', storedOrder);
+      
+      // If not found in localStorage, try sessionStorage as fallback
+      if (!storedOrder) {
+        console.log('No order data found in localStorage, trying sessionStorage...');
+        storedOrder = sessionStorage.getItem('lastOrder');
+        console.log('Raw data from sessionStorage:', storedOrder);
+      }
+      
+      // If still not found, try to find order backup in localStorage
+      if (!storedOrder) {
+        console.log('No order data found in sessionStorage either, looking for backup in localStorage...');
+        // Look for order backup keys
+        const backupKeys = Object.keys(localStorage).filter(key => key.includes('order_backup_'));
+        console.log('Found these order backup keys:', backupKeys);
+        
+        if (backupKeys.length > 0) {
+          // Use the most recent backup
+          const mostRecentKey = backupKeys[backupKeys.length - 1];
+          console.log('Using order data from backup key:', mostRecentKey);
+          storedOrder = localStorage.getItem(mostRecentKey);
+          console.log('Raw data from backup:', storedOrder);
+        }
+      }
       
       if (storedOrder && !hasCleared) {
         const parsedOrder = JSON.parse(storedOrder);
-        console.log('Parsed order data from sessionStorage:', parsedOrder);
+        console.log('Parsed order data:', parsedOrder);
         
         // Check if there's paczkomat data in localStorage
         if (parsedOrder.hasPaczkomatData) {
@@ -379,6 +402,51 @@ const OrderConfirmation = () => {
   }
 
   if (!orderData) {
+    // Debug information
+    const debugInfo = {
+      localStorage: Object.keys(localStorage).filter(key => 
+        key.includes('lastOrder') || key.includes('order_backup_') || key.includes('paczkomat_data_')
+      ),
+      sessionStorage: Object.keys(sessionStorage).filter(key => 
+        key.includes('lastOrder') || key.includes('order')
+      )
+    };
+    
+    console.log('Debug info - No order data found:', debugInfo);
+    
+    // Function to attempt recovery of order data
+    const attemptRecovery = () => {
+      console.log('Attempting to recover order data...');
+      
+      // Look for order backup keys
+      const backupKeys = Object.keys(localStorage).filter(key => key.includes('order_backup_'));
+      console.log('Found these order backup keys for recovery:', backupKeys);
+      
+      if (backupKeys.length > 0) {
+        // Use the most recent backup
+        const mostRecentKey = backupKeys[backupKeys.length - 1];
+        console.log('Recovering order data from backup key:', mostRecentKey);
+        
+        try {
+          const backupData = localStorage.getItem(mostRecentKey);
+          if (backupData) {
+            const parsedBackup = JSON.parse(backupData);
+            console.log('Recovered order data:', parsedBackup);
+            
+            // Store it as the current order
+            localStorage.setItem('lastOrder', backupData);
+            
+            // Reload the page to use the recovered data
+            window.location.reload();
+          }
+        } catch (error) {
+          console.error('Error recovering order data:', error);
+        }
+      } else {
+        alert('Nie znaleziono danych zamówienia do odzyskania.');
+      }
+    };
+    
     return (
       <>
         <TopNavBar />
@@ -390,9 +458,29 @@ const OrderConfirmation = () => {
               Nie mogliśmy znaleźć informacji o Twoim zamówieniu. Jeśli właśnie dokonałeś zakupu,
               sprawdź swoją skrzynkę e-mail w celu potwierdzenia lub skontaktuj się z nami.
             </p>
+            
+            {/* Add recovery button if we have backup data */}
+            {debugInfo.localStorage.some(key => key.includes('order_backup_')) && (
+              <button
+                onClick={attemptRecovery}
+                className="inline-block bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 transition-colors mb-4"
+              >
+                Odzyskaj dane zamówienia
+              </button>
+            )}
+            
+            {/* Add debug information for development */}
+            {process.env.NODE_ENV !== 'production' && (
+              <div className="mt-4 p-4 bg-gray-100 rounded text-left text-xs overflow-auto max-h-40">
+                <h3 className="font-bold mb-2">Debug Info:</h3>
+                <p>localStorage keys: {debugInfo.localStorage.join(', ') || 'none'}</p>
+                <p>sessionStorage keys: {debugInfo.sessionStorage.join(', ') || 'none'}</p>
+              </div>
+            )}
+            
             <Link 
               to="/" 
-              className="inline-block bg-green-700 text-white px-6 py-2 rounded-md hover:bg-green-800 transition-colors"
+              className="inline-block bg-green-700 text-white px-6 py-2 rounded-md hover:bg-green-800 transition-colors mt-4"
             >
               Wróć do strony głównej
             </Link>

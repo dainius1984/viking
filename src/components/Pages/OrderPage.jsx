@@ -209,8 +209,8 @@ const OrderPage = () => {
 
       const paymentData = createPaymentData(orderNumber);
       
-      // Store basic order data for confirmation page
-      sessionStorage.setItem('lastOrder', JSON.stringify({
+      // Store basic order data for confirmation page in localStorage instead of sessionStorage
+      localStorage.setItem('lastOrder', JSON.stringify({
         ...orderData,
         date: formatDate(new Date()),
         firstName: formData.firstName,
@@ -230,7 +230,8 @@ const OrderPage = () => {
       });
 
       if (response.redirectUrl) {
-        sessionStorage.setItem('lastOrder', JSON.stringify({
+        // Update the order data in localStorage before redirect
+        localStorage.setItem('lastOrder', JSON.stringify({
           orderNumber,
           payuOrderId: response.orderId,
           date: new Date().toISOString(),
