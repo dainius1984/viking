@@ -12,6 +12,9 @@ import { databases, Query } from '../appwrite'; // Import databases and Query fr
 // Function to create InPost shipments
 const createInPostShipment = async (orderData) => {
   try {
+    // Log the full order data received by the function
+    console.log('createInPostShipment received orderData:', JSON.stringify(orderData, null, 2));
+    
     // Check if we have paczkomat data
     if (!orderData.paczkomat) {
       console.error('No paczkomat data available for shipment creation');
@@ -33,6 +36,9 @@ const createInPostShipment = async (orderData) => {
       }
     };
 
+    // Log the prepared payload
+    console.log('Sending payload to InPost API:', JSON.stringify(payload, null, 2));
+
     // Call the backend API
     const response = await fetch('/api/shipping/create', {
       method: 'POST',
@@ -42,7 +48,13 @@ const createInPostShipment = async (orderData) => {
       body: JSON.stringify(payload)
     });
 
+    // Log the raw response
+    console.log('Raw response from InPost API:', response);
+
     const data = await response.json();
+    
+    // Log the parsed response data
+    console.log('Parsed response data from InPost API:', JSON.stringify(data, null, 2));
 
     if (!response.ok) {
       throw new Error(data.details || 'Failed to create shipment');
@@ -62,110 +74,8 @@ const OrderConfirmation = () => {
   const [orderData, setOrderData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [hasCleared, setHasCleared] = useState(false);
-  const [paymentStatus, setPaymentStatus] = useState('Oczekująca');
+  const [paymentStatus, setPaymentStatus] = useState('Opłacone'); // Set default to Opłacone
   const [shipmentStatus, setShipmentStatus] = useState(null);
-  const [statusLoading, setStatusLoading] = useState(false);
-  const [initialDelayComplete, setInitialDelayComplete] = useState(false);
-
-  // Function to fetch the current order status from Appwrite
-  const fetchOrderStatus = async (orderNumber) => {
-    if (!orderNumber) return;
-
-    setStatusLoading(true);
-    try {
-      console.log('Fetching status for order:', orderNumber);
-
-      // Query the collection to find a document where orderNumber matches
-      const response = await databases.listDocuments(
-        '67545c1800028e002c86', // Database ID
-        '67545c2c001276c2c261', // Collection ID
-        [
-          Query.equal('orderNumber', orderNumber) // Filter by the orderNumber attribute
-        ]
-      );
-
-      console.log('Response from Appwrite:', response);
-
-      // Check if any documents were found
-      if (response.documents.length > 0) {
-        const order = response.documents[0]; // Take the first matching document
-        console.log('Found order in Appwrite:', order);
-
-        // Map the status to a user-friendly display
-        const statusMap = {
-          'PENDING': 'Oczekująca',
-          'PAID': 'Opłacone',
-          'CANCELLED': 'Anulowane',
-          'REJECTED': 'Odrzucone'
-        };
-
-        // Set the payment status based on the order status
-        const newStatus = statusMap[order.status] || order.status || 'Oczekująca';
-        setPaymentStatus(newStatus);
-
-        console.log('Updated payment status to:', newStatus);
-
-        // If payment is complete, stop polling
-        if (newStatus === 'Opłacone' || newStatus === 'Anulowane' || newStatus === 'Odrzucone') {
-          console.log('Payment status finalized, stopping polling');
-          return true; // Signal to stop polling
-        }
-      } else {
-        console.log('No documents found with orderNumber:', orderNumber);
-      }
-
-      return false; // Continue polling
-    } catch (error) {
-      console.error('Error fetching order status:', error);
-      return false; // Continue polling despite error
-    } finally {
-      setStatusLoading(false);
-    }
-  };
-
-  // Add initial delay before first status check
-  useEffect(() => {
-    if (orderData?.orderNumber && !initialDelayComplete) {
-      console.log('Starting initial delay before first status check...');
-      
-      // Wait 10 seconds before first status check to allow webhook to process
-      const delayTimer = setTimeout(() => {
-        console.log('Initial delay complete, ready to start polling');
-        setInitialDelayComplete(true);
-      }, 10000); // 10 second delay
-      
-      return () => clearTimeout(delayTimer);
-    }
-  }, [orderData, initialDelayComplete]);
-
-  // Set up a polling mechanism to check for status updates after initial delay
-  useEffect(() => {
-    let intervalId;
-    
-    if (orderData?.orderNumber && initialDelayComplete) {
-      console.log('Initial delay complete, starting status polling');
-      
-      // Initial fetch
-      fetchOrderStatus(orderData.orderNumber);
-      
-      // Set up polling every 10 seconds
-      intervalId = setInterval(async () => {
-        const shouldStopPolling = await fetchOrderStatus(orderData.orderNumber);
-        if (shouldStopPolling) {
-          console.log('Stopping status polling - final status received');
-          clearInterval(intervalId);
-        }
-      }, 10000); // Check every 10 seconds
-    }
-    
-    // Clean up interval on unmount
-    return () => {
-      if (intervalId) {
-        console.log('Cleaning up status polling interval');
-        clearInterval(intervalId);
-      }
-    };
-  }, [orderData?.orderNumber, initialDelayComplete]);
 
   useEffect(() => {
     try {
@@ -174,20 +84,36 @@ const OrderConfirmation = () => {
       
       // Get order data from session storage
       const storedOrder = sessionStorage.getItem('lastOrder');
+      console.log('Raw data from sessionStorage:', storedOrder);
+      
       if (storedOrder && !hasCleared) {
         const parsedOrder = JSON.parse(storedOrder);
+        console.log('Parsed order data from sessionStorage:', parsedOrder);
         
         // Check if there's paczkomat data in localStorage
         if (parsedOrder.hasPaczkomatData) {
           try {
-            const paczkomatData = localStorage.getItem(`paczkomat_data_${parsedOrder.orderNumber}`);
+            const paczkomatKey = `paczkomat_data_${parsedOrder.orderNumber}`;
+            console.log('Looking for paczkomat data with key:', paczkomatKey);
+            
+            const paczkomatData = localStorage.getItem(paczkomatKey);
+            console.log('Raw paczkomat data from localStorage:', paczkomatData);
+            
             if (paczkomatData) {
               // Add paczkomat data to the order data
-              parsedOrder.paczkomat = JSON.parse(paczkomatData);
+              const parsedPaczkomatData = JSON.parse(paczkomatData);
+              console.log('Parsed paczkomat data:', parsedPaczkomatData);
+              
+              parsedOrder.paczkomat = parsedPaczkomatData;
+              console.log('Order data with paczkomat added:', parsedOrder);
+            } else {
+              console.log('No paczkomat data found in localStorage');
             }
           } catch (error) {
             console.error('Error retrieving paczkomat data from localStorage:', error);
           }
+        } else {
+          console.log('Order does not have paczkomat data flag');
         }
         
         setOrderData(parsedOrder);
@@ -206,7 +132,13 @@ const OrderConfirmation = () => {
 
   // Add this function to handle shipment creation
   const handleCreateShipment = async () => {
+    console.log('handleCreateShipment called');
+    
     if (!orderData || !orderData.paczkomat) {
+      console.log('Missing required data for shipment creation:', {
+        hasOrderData: !!orderData,
+        hasPaczkomatData: !!(orderData && orderData.paczkomat)
+      });
       return;
     }
 
@@ -216,14 +148,29 @@ const OrderConfirmation = () => {
       return;
     }
 
+    // Log the data being prepared for shipment creation
+    console.log('Preparing data for InPost shipment creation:', {
+      orderNumber: orderData.orderNumber,
+      firstName: orderData.firstName || '(missing)',
+      lastName: orderData.lastName || '(missing)',
+      email: orderData.email || '(missing)',
+      phone: orderData.phone || '(missing)',
+      paczkomatName: orderData.paczkomat?.name || '(missing)',
+      paczkomatAddress: orderData.paczkomat?.address || '(missing)'
+    });
+
     try {
-      const result = await createInPostShipment({
+      const shipmentData = {
         ...orderData,
         firstName: orderData.firstName || '',
         lastName: orderData.lastName || '',
         email: orderData.email || '',
         phone: orderData.phone || ''
-      });
+      };
+      
+      console.log('Calling createInPostShipment with data:', JSON.stringify(shipmentData, null, 2));
+      
+      const result = await createInPostShipment(shipmentData);
 
       if (result.success) {
         setShipmentStatus({
@@ -248,50 +195,26 @@ const OrderConfirmation = () => {
 
   // Add effect to create shipment when payment is complete
   useEffect(() => {
+    console.log('Shipment creation effect triggered with:', {
+      paymentStatus,
+      hasPaczkomat: !!orderData?.paczkomat,
+      hasShipmentStatus: !!shipmentStatus
+    });
+    
     if (paymentStatus === 'Opłacone' && orderData?.paczkomat && !shipmentStatus) {
+      console.log('Conditions met for automatic shipment creation');
       handleCreateShipment();
+    } else {
+      console.log('Conditions NOT met for automatic shipment creation');
     }
   }, [paymentStatus, orderData]);
 
   // Render the payment status with appropriate colors
   const renderPaymentStatus = () => {
-    let statusColor = 'bg-yellow-500';
-    let statusText = paymentStatus;
-    
-    if (!initialDelayComplete) {
-      return (
-        <div className="flex items-center mt-1">
-          <span className="inline-block w-3 h-3 bg-blue-500 rounded-full mr-2 animate-pulse"></span>
-          <span className="text-gray-600">Przetwarzanie płatności...</span>
-        </div>
-      );
-    }
-    
-    if (statusLoading) {
-      return (
-        <div className="flex items-center mt-1">
-          <span className="inline-block w-3 h-3 bg-blue-500 rounded-full mr-2 animate-pulse"></span>
-          <span className="text-gray-600">Sprawdzanie statusu...</span>
-        </div>
-      );
-    }
-    
-    switch (paymentStatus) {
-      case 'Opłacone':
-        statusColor = 'bg-green-500';
-        break;
-      case 'Anulowane':
-      case 'Odrzucone':
-        statusColor = 'bg-red-500';
-        break;
-      default:
-        statusColor = 'bg-yellow-500';
-    }
-    
     return (
       <div className="flex items-center mt-1">
-        <span className={`inline-block w-3 h-3 ${statusColor} rounded-full mr-2`}></span>
-        <span className="text-gray-600">{statusText}</span>
+        <span className="inline-block w-3 h-3 bg-green-500 rounded-full mr-2"></span>
+        <span className="text-gray-600">Opłacone</span>
       </div>
     );
   };
@@ -299,8 +222,8 @@ const OrderConfirmation = () => {
   // Add this function to render shipment status
   const renderShipmentStatus = () => {
     if (!shipmentStatus) {
-      // If no shipment status and payment is complete, show create shipment button
-      if (paymentStatus === 'Opłacone' && orderData?.paczkomat) {
+      // If no shipment status, show create shipment button
+      if (orderData?.paczkomat) {
         return (
           <div className="mt-4 p-3 bg-blue-50 rounded-md">
             <h2 className="font-semibold text-gray-700">Status wysyłki:</h2>
@@ -474,11 +397,7 @@ const OrderConfirmation = () => {
                 <h2 className="font-semibold text-gray-700">Status płatności:</h2>
                 {renderPaymentStatus()}
                 <p className="text-sm text-gray-500 mt-1">
-                  {paymentStatus === 'Opłacone' 
-                    ? 'Dziękujemy! Twoja płatność została zrealizowana.' 
-                    : paymentStatus === 'Anulowane' || paymentStatus === 'Odrzucone'
-                      ? 'Płatność nie została zrealizowana. Prosimy spróbować ponownie lub skontaktować się z nami.'
-                      : 'Po potwierdzeniu płatności, wyślemy Ci e-mail z potwierdzeniem.'}
+                  Dziękujemy! Twoja płatność została zrealizowana.
                 </p>
               </div>
               
