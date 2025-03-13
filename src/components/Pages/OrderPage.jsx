@@ -164,7 +164,13 @@ const OrderPage = () => {
       
       // Store paczkomat data in localStorage if it exists
       if (formData.paczkomat) {
+        console.log('Storing paczkomat data in localStorage with key:', `paczkomat_data_${orderNumber}`);
+        console.log('Paczkomat data being stored:', formData.paczkomat);
         localStorage.setItem(`paczkomat_data_${orderNumber}`, JSON.stringify(formData.paczkomat));
+      } else {
+        console.log('No paczkomat data in formData to store in localStorage');
+        console.log('formData shipping method:', formData.shipping);
+        console.log('formData contents:', formData);
       }
       
       // Create basic order data

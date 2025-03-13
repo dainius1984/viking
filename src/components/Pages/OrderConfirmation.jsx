@@ -96,6 +96,9 @@ const OrderConfirmation = () => {
             const paczkomatKey = `paczkomat_data_${parsedOrder.orderNumber}`;
             console.log('Looking for paczkomat data with key:', paczkomatKey);
             
+            // Log all localStorage keys to help debug
+            console.log('All localStorage keys:', Object.keys(localStorage));
+            
             const paczkomatData = localStorage.getItem(paczkomatKey);
             console.log('Raw paczkomat data from localStorage:', paczkomatData);
             
@@ -108,12 +111,47 @@ const OrderConfirmation = () => {
               console.log('Order data with paczkomat added:', parsedOrder);
             } else {
               console.log('No paczkomat data found in localStorage');
+              
+              // Try to find any paczkomat data in localStorage that might match
+              const paczkomatKeys = Object.keys(localStorage).filter(key => key.includes('paczkomat_data_'));
+              console.log('Found these paczkomat keys in localStorage:', paczkomatKeys);
             }
           } catch (error) {
             console.error('Error retrieving paczkomat data from localStorage:', error);
           }
         } else {
           console.log('Order does not have paczkomat data flag');
+          console.log('Order shipping method:', parsedOrder.shipping);
+          
+          // Check if the shipping method is a paczkomat method but the flag is missing
+          if (parsedOrder.shipping && parsedOrder.shipping.includes('PACZKOMATY')) {
+            console.log('Order is using a paczkomat shipping method but hasPaczkomatData flag is missing');
+            
+            // Try to find any paczkomat data in localStorage that might match
+            const paczkomatKeys = Object.keys(localStorage).filter(key => key.includes('paczkomat_data_'));
+            console.log('Found these paczkomat keys in localStorage:', paczkomatKeys);
+            
+            if (paczkomatKeys.length > 0) {
+              // Try to use the most recent paczkomat data
+              const mostRecentKey = paczkomatKeys[paczkomatKeys.length - 1];
+              console.log('Trying to use paczkomat data from key:', mostRecentKey);
+              
+              const paczkomatData = localStorage.getItem(mostRecentKey);
+              if (paczkomatData) {
+                try {
+                  const parsedPaczkomatData = JSON.parse(paczkomatData);
+                  console.log('Found paczkomat data:', parsedPaczkomatData);
+                  
+                  // Add paczkomat data to the order data
+                  parsedOrder.paczkomat = parsedPaczkomatData;
+                  parsedOrder.hasPaczkomatData = true;
+                  console.log('Added paczkomat data to order:', parsedOrder);
+                } catch (error) {
+                  console.error('Error parsing paczkomat data:', error);
+                }
+              }
+            }
+          }
         }
         
         setOrderData(parsedOrder);
@@ -198,16 +236,51 @@ const OrderConfirmation = () => {
     console.log('Shipment creation effect triggered with:', {
       paymentStatus,
       hasPaczkomat: !!orderData?.paczkomat,
-      hasShipmentStatus: !!shipmentStatus
+      hasShipmentStatus: !!shipmentStatus,
+      shippingMethod: orderData?.shipping
     });
     
-    if (paymentStatus === 'Opłacone' && orderData?.paczkomat && !shipmentStatus) {
+    // Check if we have paczkomat data or if the shipping method indicates we should
+    const isPaczkomatShipping = orderData?.shipping && orderData.shipping.includes('PACZKOMATY');
+    const hasPaczkomatData = !!orderData?.paczkomat;
+    
+    if (paymentStatus === 'Opłacone' && hasPaczkomatData && !shipmentStatus) {
       console.log('Conditions met for automatic shipment creation');
       handleCreateShipment();
+    } else if (paymentStatus === 'Opłacone' && isPaczkomatShipping && !hasPaczkomatData && !shipmentStatus) {
+      console.log('Order is using paczkomat shipping but paczkomat data is missing');
+      
+      // Try to find any paczkomat data in localStorage
+      const paczkomatKeys = Object.keys(localStorage).filter(key => key.includes('paczkomat_data_'));
+      console.log('Found these paczkomat keys in localStorage:', paczkomatKeys);
+      
+      if (paczkomatKeys.length > 0) {
+        // Use the most recent paczkomat data
+        const mostRecentKey = paczkomatKeys[paczkomatKeys.length - 1];
+        console.log('Using paczkomat data from key:', mostRecentKey);
+        
+        try {
+          const paczkomatData = localStorage.getItem(mostRecentKey);
+          if (paczkomatData) {
+            const parsedPaczkomatData = JSON.parse(paczkomatData);
+            
+            // Update the order data with the paczkomat data
+            setOrderData(prevData => ({
+              ...prevData,
+              paczkomat: parsedPaczkomatData,
+              hasPaczkomatData: true
+            }));
+            
+            console.log('Updated order data with paczkomat data from localStorage');
+          }
+        } catch (error) {
+          console.error('Error retrieving paczkomat data from localStorage:', error);
+        }
+      }
     } else {
       console.log('Conditions NOT met for automatic shipment creation');
     }
-  }, [paymentStatus, orderData]);
+  }, [paymentStatus, orderData, shipmentStatus]);
 
   // Render the payment status with appropriate colors
   const renderPaymentStatus = () => {
