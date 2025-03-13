@@ -285,7 +285,14 @@ const OrderPage = () => {
     }
   };
 
-  // Loading state
+  // Notification component
+  const NotificationComponent = () => notification && (
+    <div className="fixed top-4 right-4 z-50 p-4 rounded shadow-lg bg-red-100 text-red-800 border border-red-300">
+      {notification}
+    </div>
+  );
+
+  // Loading state or empty cart
   if (!state.cart?.length) {
     return (
       <>
@@ -302,21 +309,73 @@ const OrderPage = () => {
     );
   }
 
-  // Notification component
-  const NotificationComponent = () => notification && (
-    <div className="fixed top-4 right-4 z-50 p-4 rounded shadow-lg bg-red-100 text-red-800 border border-red-300">
-      {notification}
-    </div>
-  );
+  // Show loading spinner when loading
+  if (loading) {
+    return (
+      <>
+        <TopNavBar />
+        <Header />
+        <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-800 mx-auto"></div>
+            <p className="mt-4 text-gray-600">Przetwarzanie zamówienia...</p>
+          </div>
+        </div>
+        <Footer />
+      </>
+    );
+  }
 
+  // Main order form render
   return (
     <>
       <TopNavBar />
       <Header />
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-800 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Ładowanie...</p>
+      <div className="min-h-screen bg-gray-50 py-8 md:py-12">
+        <div className="container mx-auto px-4">
+          <h1 className="text-2xl md:text-3xl font-bold text-center mb-8">Finalizacja zamówienia</h1>
+          
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div className="lg:col-span-2">
+              <form onSubmit={handleSubmitOrder} className="bg-white rounded-lg shadow-sm p-6">
+                <h2 className="text-xl font-semibold mb-6">Dane do zamówienia</h2>
+                
+                <BillingForm 
+                  formData={formData}
+                  handleInputChange={handleInputChange}
+                />
+                
+                <div className="mt-8">
+                  <button
+                    type="submit"
+                    disabled={loading}
+                    className="w-full py-3 px-4 bg-green-800 text-white rounded-lg font-medium
+                      hover:bg-green-900 transition-all duration-200
+                      disabled:bg-gray-400 disabled:cursor-not-allowed
+                      active:transform active:scale-[0.99]"
+                  >
+                    {loading ? 'Przetwarzanie...' : 'Przejdź do płatności'}
+                  </button>
+                </div>
+              </form>
+            </div>
+            
+            <div className="lg:col-span-1">
+              <OrderSummary
+                cart={state.cart}
+                subtotal={subtotal}
+                discountApplied={state.isDiscountApplied}
+                discountAmount={discountAmount}
+                discountPercentage={DISCOUNT_CONFIG.percentage}
+                total={total}
+                shipping={formData.shipping}
+                setShipping={handleShippingChange}
+                loading={loading}
+                onApplyDiscount={handleApplyDiscount}
+                formData={formData}
+              />
+            </div>
+          </div>
         </div>
       </div>
       <Footer />
