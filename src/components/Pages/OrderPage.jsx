@@ -206,7 +206,11 @@ const OrderPage = () => {
       // Store basic order data for confirmation page
       sessionStorage.setItem('lastOrder', JSON.stringify({
         ...orderData,
-        date: formatDate(new Date())
+        date: formatDate(new Date()),
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        email: formData.email,
+        phone: formData.phone
       }));
       
       const response = await initiatePayment(paymentData);
@@ -225,7 +229,12 @@ const OrderPage = () => {
           payuOrderId: response.orderId,
           date: new Date().toISOString(),
           status: 'PENDING',
-          shipping: formData.shipping
+          shipping: formData.shipping,
+          firstName: formData.firstName,
+          lastName: formData.lastName,
+          email: formData.email,
+          phone: formData.phone,
+          hasPaczkomatData: !!formData.paczkomat
         }));
 
         window.location.href = response.redirectUrl;

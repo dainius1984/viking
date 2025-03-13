@@ -9,6 +9,53 @@ import Footer from '../Footer/Footer';
 import { useAuth } from '../AuthContext'; // Add this import
 import { databases, Query } from '../appwrite'; // Import databases and Query from appwrite.js
 
+// Function to create InPost shipments
+const createInPostShipment = async (orderData) => {
+  try {
+    // Check if we have paczkomat data
+    if (!orderData.paczkomat) {
+      console.error('No paczkomat data available for shipment creation');
+      return { success: false, error: 'Missing paczkomat data' };
+    }
+
+    // Prepare the payload for the API
+    const payload = {
+      orderNumber: orderData.orderNumber,
+      recipient: {
+        name: `${orderData.firstName} ${orderData.lastName}`,
+        email: orderData.email,
+        phone: orderData.phone,
+        paczkomatId: orderData.paczkomat.name // This should be the paczkomat ID
+      },
+      packageDetails: {
+        size: 'A', // Default size, adjust based on your needs
+        weight: 1.0 // Default weight in kg, adjust based on your needs
+      }
+    };
+
+    // Call the backend API
+    const response = await fetch('/api/shipping/create', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(payload)
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.details || 'Failed to create shipment');
+    }
+
+    console.log('Shipment created successfully:', data);
+    return { success: true, data };
+  } catch (error) {
+    console.error('Error creating InPost shipment:', error);
+    return { success: false, error: error.message };
+  }
+};
+
 const OrderConfirmation = () => {
   const { clearCart } = useCart(); // Remove unused state and dispatch
   const { user } = useAuth(); // Add this line to get user state
@@ -16,6 +63,7 @@ const OrderConfirmation = () => {
   const [loading, setLoading] = useState(true);
   const [hasCleared, setHasCleared] = useState(false);
   const [paymentStatus, setPaymentStatus] = useState('Oczekująca');
+  const [shipmentStatus, setShipmentStatus] = useState(null);
   const [statusLoading, setStatusLoading] = useState(false);
   const [initialDelayComplete, setInitialDelayComplete] = useState(false);
 
@@ -156,6 +204,55 @@ const OrderConfirmation = () => {
     }
   }, [clearCart, hasCleared]);
 
+  // Add this function to handle shipment creation
+  const handleCreateShipment = async () => {
+    if (!orderData || !orderData.paczkomat) {
+      return;
+    }
+
+    // Only create shipment if payment is complete
+    if (paymentStatus !== 'Opłacone') {
+      console.log('Payment not completed yet, skipping shipment creation');
+      return;
+    }
+
+    try {
+      const result = await createInPostShipment({
+        ...orderData,
+        firstName: orderData.firstName || '',
+        lastName: orderData.lastName || '',
+        email: orderData.email || '',
+        phone: orderData.phone || ''
+      });
+
+      if (result.success) {
+        setShipmentStatus({
+          status: 'success',
+          trackingNumber: result.data.trackingNumber,
+          labelUrl: result.data.labelUrl
+        });
+      } else {
+        setShipmentStatus({
+          status: 'error',
+          message: result.error
+        });
+      }
+    } catch (error) {
+      console.error('Error in shipment creation:', error);
+      setShipmentStatus({
+        status: 'error',
+        message: error.message
+      });
+    }
+  };
+
+  // Add effect to create shipment when payment is complete
+  useEffect(() => {
+    if (paymentStatus === 'Opłacone' && orderData?.paczkomat && !shipmentStatus) {
+      handleCreateShipment();
+    }
+  }, [paymentStatus, orderData]);
+
   // Render the payment status with appropriate colors
   const renderPaymentStatus = () => {
     let statusColor = 'bg-yellow-500';
@@ -197,6 +294,79 @@ const OrderConfirmation = () => {
         <span className="text-gray-600">{statusText}</span>
       </div>
     );
+  };
+
+  // Add this function to render shipment status
+  const renderShipmentStatus = () => {
+    if (!shipmentStatus) {
+      // If no shipment status and payment is complete, show create shipment button
+      if (paymentStatus === 'Opłacone' && orderData?.paczkomat) {
+        return (
+          <div className="mt-4 p-3 bg-blue-50 rounded-md">
+            <h2 className="font-semibold text-gray-700">Status wysyłki:</h2>
+            <div className="flex items-center mt-1">
+              <span className="inline-block w-3 h-3 bg-blue-500 rounded-full mr-2"></span>
+              <span className="text-gray-600">Oczekuje na utworzenie</span>
+            </div>
+            <button
+              onClick={handleCreateShipment}
+              className="mt-2 bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors text-sm"
+            >
+              Utwórz przesyłkę InPost
+            </button>
+          </div>
+        );
+      }
+      return null;
+    }
+
+    if (shipmentStatus.status === 'success') {
+      return (
+        <div className="mt-4 p-3 bg-green-50 rounded-md">
+          <h2 className="font-semibold text-gray-700">Status wysyłki:</h2>
+          <div className="flex items-center mt-1">
+            <span className="inline-block w-3 h-3 bg-green-500 rounded-full mr-2"></span>
+            <span className="text-gray-600">Przesyłka utworzona</span>
+          </div>
+          <p className="text-sm text-gray-600 mt-1">
+            Numer śledzenia: {shipmentStatus.trackingNumber}
+          </p>
+          {shipmentStatus.labelUrl && (
+            <a 
+              href={shipmentStatus.labelUrl} 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="text-sm text-blue-600 hover:underline mt-1 inline-block"
+            >
+              Pobierz etykietę
+            </a>
+          )}
+        </div>
+      );
+    }
+
+    if (shipmentStatus.status === 'error') {
+      return (
+        <div className="mt-4 p-3 bg-red-50 rounded-md">
+          <h2 className="font-semibold text-gray-700">Status wysyłki:</h2>
+          <div className="flex items-center mt-1">
+            <span className="inline-block w-3 h-3 bg-red-500 rounded-full mr-2"></span>
+            <span className="text-gray-600">Błąd tworzenia przesyłki</span>
+          </div>
+          <p className="text-sm text-gray-600 mt-1">
+            {shipmentStatus.message || 'Wystąpił błąd podczas tworzenia przesyłki.'}
+          </p>
+          <button
+            onClick={handleCreateShipment}
+            className="mt-2 bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors text-sm"
+          >
+            Spróbuj ponownie
+          </button>
+        </div>
+      );
+    }
+
+    return null;
   };
 
   if (loading) {
@@ -311,6 +481,9 @@ const OrderConfirmation = () => {
                       : 'Po potwierdzeniu płatności, wyślemy Ci e-mail z potwierdzeniem.'}
                 </p>
               </div>
+              
+              {/* Add shipment status section */}
+              {renderShipmentStatus()}
             </div>
             
             <div className="text-center mb-6">
