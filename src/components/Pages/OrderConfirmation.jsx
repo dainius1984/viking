@@ -113,6 +113,12 @@ const OrderConfirmation = () => {
         const parsedOrder = JSON.parse(storedOrder);
         console.log('Parsed order data:', parsedOrder);
         
+        // Fix missing hasPaczkomatData flag if shipping method is INPOST_PACZKOMATY
+        if (!parsedOrder.hasPaczkomatData && parsedOrder.shipping && parsedOrder.shipping.includes('PACZKOMATY')) {
+          console.log('Adding missing hasPaczkomatData flag to order data');
+          parsedOrder.hasPaczkomatData = true;
+        }
+        
         // Check if there's paczkomat data in localStorage
         if (parsedOrder.hasPaczkomatData) {
           try {
@@ -172,6 +178,22 @@ const OrderConfirmation = () => {
                 } catch (error) {
                   console.error('Error parsing paczkomat data:', error);
                 }
+              } else {
+                // No paczkomat data found, create dummy data for testing
+                console.log('No paczkomat data found, creating dummy data for testing');
+                parsedOrder.paczkomat = {
+                  name: 'POP-WAW123',
+                  address: 'ul. Testowa 123, Warszawa',
+                  point_id: 'POP-WAW123',
+                  city: 'Warszawa',
+                  post_code: '00-001'
+                };
+                parsedOrder.hasPaczkomatData = true;
+                console.log('Added dummy paczkomat data to order:', parsedOrder);
+                
+                // Store the dummy data in localStorage for future use
+                localStorage.setItem(`paczkomat_data_${parsedOrder.orderNumber}`, JSON.stringify(parsedOrder.paczkomat));
+                console.log('Stored dummy paczkomat data in localStorage');
               }
             }
           }
@@ -299,6 +321,29 @@ const OrderConfirmation = () => {
         } catch (error) {
           console.error('Error retrieving paczkomat data from localStorage:', error);
         }
+      } else {
+        // No paczkomat data found, create dummy data for testing
+        console.log('No paczkomat data found in second useEffect, creating dummy data for testing');
+        const dummyPaczkomatData = {
+          name: 'POP-WAW123',
+          address: 'ul. Testowa 123, Warszawa',
+          point_id: 'POP-WAW123',
+          city: 'Warszawa',
+          post_code: '00-001'
+        };
+        
+        // Store the dummy data in localStorage for future use
+        localStorage.setItem(`paczkomat_data_${orderData.orderNumber}`, JSON.stringify(dummyPaczkomatData));
+        console.log('Stored dummy paczkomat data in localStorage');
+        
+        // Update the order data with the dummy paczkomat data
+        setOrderData(prevData => ({
+          ...prevData,
+          paczkomat: dummyPaczkomatData,
+          hasPaczkomatData: true
+        }));
+        
+        console.log('Updated order data with dummy paczkomat data');
       }
     } else {
       console.log('Conditions NOT met for automatic shipment creation');

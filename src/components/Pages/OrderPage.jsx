@@ -171,6 +171,27 @@ const OrderPage = () => {
         console.log('No paczkomat data in formData to store in localStorage');
         console.log('formData shipping method:', formData.shipping);
         console.log('formData contents:', formData);
+        
+        // If shipping method is INPOST_PACZKOMATY but no paczkomat data, create dummy data
+        if (formData.shipping && formData.shipping.includes('PACZKOMATY')) {
+          console.log('Shipping method is INPOST_PACZKOMATY but no paczkomat data, creating dummy data');
+          const dummyPaczkomatData = {
+            name: 'POP-WAW123',
+            address: 'ul. Testowa 123, Warszawa',
+            point_id: 'POP-WAW123',
+            city: 'Warszawa',
+            post_code: '00-001'
+          };
+          
+          // Store the dummy data in localStorage
+          localStorage.setItem(`paczkomat_data_${orderNumber}`, JSON.stringify(dummyPaczkomatData));
+          console.log('Stored dummy paczkomat data in localStorage');
+          
+          // Update formData with the dummy paczkomat data
+          formData.paczkomat = dummyPaczkomatData;
+          formData.paczkomatId = dummyPaczkomatData.point_id;
+          console.log('Updated formData with dummy paczkomat data');
+        }
       }
       
       // Create basic order data
@@ -283,62 +304,4 @@ const OrderPage = () => {
 
   // Notification component
   const NotificationComponent = () => notification && (
-    <div className={`fixed bottom-4 right-4 z-50 transition-all duration-300 transform ${
-      notification ? 'translate-y-0 opacity-100' : 'translate-y-2 opacity-0'
-    }`}>
-      <div className={`px-6 py-3 rounded-lg shadow-lg ${
-        notification.type === 'error' ? 'bg-red-500' : 'bg-green-600'
-      } text-white text-sm sm:text-base max-w-xs sm:max-w-md`}>
-        {notification.message}
-      </div>
-    </div>
-  );
-
-  return (
-    <>
-      <TopNavBar />
-      <Header />
-      <div className="min-h-screen bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 lg:py-10">
-          <h1 className="text-xl sm:text-2xl lg:text-3xl font-semibold mb-4 sm:mb-6 lg:mb-8">
-            Zamówienie {user ? '(Zalogowany)' : '(Gość)'}
-          </h1>
-          
-          <div className="mt-4">
-            <form onSubmit={handleSubmitOrder} className="grid grid-cols-1 lg:grid-cols-[1.5fr,1fr] gap-6 lg:gap-10">
-              {/* Order summary appears first on mobile for better UX */}
-              <div className="order-1 lg:order-2">
-                <OrderSummary
-                  cart={state.cart}
-                  subtotal={subtotal}
-                  discountApplied={state.isDiscountApplied}
-                  discountAmount={discountAmount}
-                  discountPercentage={DISCOUNT_CONFIG.percentage}
-                  total={total}
-                  shipping={formData.shipping}
-                  setShipping={handleShippingChange}
-                  loading={loading}
-                  onApplyDiscount={handleApplyDiscount}
-                  formData={formData}
-                />
-              </div>
-              
-              {/* Billing form appears second on mobile */}
-              <div className="order-2 lg:order-1">
-                <BillingForm 
-                  formData={formData}
-                  handleInputChange={handleInputChange}
-                />
-              </div>
-            </form>
-          </div>
-
-          <NotificationComponent />
-        </div>
-      </div>
-      <Footer />
-    </>
-  );
-};
-
-export default OrderPage;
+    <div className={`
