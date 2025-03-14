@@ -30,8 +30,8 @@ const createInPostShipment = async (orderData) => {
     };
 
     // Use a relative URL path to avoid CORS issues
-    const apiUrl = '/api/shipping/create'; // Use relative URL
-    console.log(`Attempting to create shipment using relative API endpoint: ${apiUrl}`);
+    const apiUrl = `${window.location.origin}/api/shipping/create`; // Use absolute URL with current origin
+    console.log(`Attempting to create shipment using API endpoint: ${apiUrl}`);
 
     try {
       const response = await fetch(apiUrl, {
@@ -44,7 +44,7 @@ const createInPostShipment = async (orderData) => {
 
       // Handle 405 Method Not Allowed error specifically
       if (response.status === 405) {
-        console.error('API endpoint does not allow POST method. This likely means the endpoint is not properly configured on the server.');
+        console.error(`API endpoint ${apiUrl} does not allow POST method. This likely means the endpoint is not properly configured on the server.`);
         
         // For testing, return mock data instead of error
         console.log('Returning mock shipment data after 405 error');
@@ -57,16 +57,33 @@ const createInPostShipment = async (orderData) => {
           }
         };
       }
-
-      const data = await response.json();
-
+      
+      // Handle other error status codes
       if (!response.ok) {
-        throw new Error(data.details || 'Failed to create shipment');
+        let errorMessage = `API request failed with status ${response.status} (${response.statusText})`;
+        
+        try {
+          const errorData = await response.json();
+          console.error('Error response data:', errorData);
+          errorMessage = errorData.details || errorData.message || errorMessage;
+        } catch (e) {
+          console.error('Could not parse error response as JSON');
+        }
+        
+        throw new Error(errorMessage);
       }
+      
+      // Parse successful response
+      const data = await response.json();
 
       return { success: true, data };
     } catch (error) {
       console.error('Network error during shipment creation:', error);
+      
+      // Check if it's a network error (backend not available)
+      if (error.name === 'TypeError' && error.message.includes('Failed to fetch')) {
+        console.error('Backend server might not be available. Using mock data instead.');
+      }
       
       // For development/testing, return a mock success response
       console.log('Returning mock shipment data after network error');
