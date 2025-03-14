@@ -7,6 +7,7 @@ import TopNavBar from '../Headers/TopNavBar';
 import Header from '../Headers/Header';
 import Footer from '../Footer/Footer';
 import { useAuth } from '../AuthContext';
+import { API_URL } from './OrderUtils'; // Import API_URL from OrderUtils
 
 // Function to create InPost shipments
 const createInPostShipment = async (orderData) => {
@@ -29,8 +30,8 @@ const createInPostShipment = async (orderData) => {
       }
     };
 
-    // Use a relative URL path to avoid CORS issues
-    const apiUrl = `${window.location.origin}/api/shipping/create`; // Use absolute URL with current origin
+    // Use the API_URL from OrderUtils instead of window.location.origin
+    const apiUrl = `${API_URL}/api/shipping/inpost/create`;
     console.log(`Attempting to create shipment using API endpoint: ${apiUrl}`);
 
     try {
