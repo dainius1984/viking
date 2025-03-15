@@ -30,8 +30,8 @@ const createInPostShipment = async (orderData) => {
       }
     };
 
-    // Use the API_URL from OrderUtils instead of window.location.origin
-    const apiUrl = `${API_URL}/api/shipping/inpost/create`;
+    // Use a relative URL path to avoid CORS issues
+    const apiUrl = `/api/shipping/inpost/create`;
     console.log(`Attempting to create shipment using API endpoint: ${apiUrl}`);
 
     try {
@@ -61,17 +61,7 @@ const createInPostShipment = async (orderData) => {
       
       // Handle other error status codes
       if (!response.ok) {
-        let errorMessage = `API request failed with status ${response.status} (${response.statusText})`;
-        
-        try {
-          const errorData = await response.json();
-          console.error('Error response data:', errorData);
-          errorMessage = errorData.details || errorData.message || errorMessage;
-        } catch (e) {
-          console.error('Could not parse error response as JSON');
-        }
-        
-        throw new Error(errorMessage);
+        throw new Error(`API request failed with status ${response.status}`);
       }
       
       // Parse successful response
@@ -79,15 +69,10 @@ const createInPostShipment = async (orderData) => {
 
       return { success: true, data };
     } catch (error) {
-      console.error('Network error during shipment creation:', error);
-      
-      // Check if it's a network error (backend not available)
-      if (error.name === 'TypeError' && error.message.includes('Failed to fetch')) {
-        console.error('Backend server might not be available. Using mock data instead.');
-      }
+      console.error('Error during shipment creation:', error);
       
       // For development/testing, return a mock success response
-      console.log('Returning mock shipment data after network error');
+      console.log('Returning mock shipment data for development/testing');
       return {
         success: true,
         data: {
