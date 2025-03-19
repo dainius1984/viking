@@ -395,26 +395,46 @@ const OrderPage = () => {
             </div>
             
             <div className="lg:col-span-1">
-              <OrderSummary
-                cart={state.cart}
-                subtotal={subtotal}
-                discountApplied={state.isDiscountApplied}
-                discountAmount={discountAmount}
-                discountPercentage={DISCOUNT_CONFIG.percentage}
-                total={total}
-                shipping={formData.shipping}
-                setShipping={handleShippingChange}
-                loading={loading}
-                onApplyDiscount={handleApplyDiscount}
-                formData={formData}
-              >
-                <PaymentButton 
-                  orderData={orderData}
-                  formData={formData}
-                  loading={loading}
-                  isDisabled={state.cart.length === 0 || (formData.shipping && formData.shipping.includes('PACZKOMATY') && !formData.paczkomat)}
-                />
-              </OrderSummary>
+              {/* Create orderData object for PaymentButton */}
+              {(() => {
+                const isFreeShipping = isEligibleForFreeShipping(subtotal);
+                const shippingCost = isFreeShipping ? 0 : getShippingCost(subtotal, formData.shipping);
+                const finalTotal = total + shippingCost;
+                
+                const tempOrderData = {
+                  orderNumber: generateOrderNumber(),
+                  total: finalTotal.toString(),
+                  subtotal: subtotal.toString(),
+                  discountApplied: state.isDiscountApplied,
+                  discountAmount: discountAmount.toString(),
+                  items: formatOrderItems(state.cart),
+                  cart: state.cart,
+                  shipping: formData.shipping
+                };
+                
+                return (
+                  <OrderSummary
+                    cart={state.cart}
+                    subtotal={subtotal}
+                    discountApplied={state.isDiscountApplied}
+                    discountAmount={discountAmount}
+                    discountPercentage={DISCOUNT_CONFIG.percentage}
+                    total={total}
+                    shipping={formData.shipping}
+                    setShipping={handleShippingChange}
+                    loading={loading}
+                    onApplyDiscount={handleApplyDiscount}
+                    formData={formData}
+                  >
+                    <PaymentButton 
+                      orderData={tempOrderData}
+                      formData={formData}
+                      loading={loading}
+                      isDisabled={state.cart.length === 0 || (formData.shipping && formData.shipping.includes('PACZKOMATY') && !formData.paczkomat)}
+                    />
+                  </OrderSummary>
+                );
+              })()}
             </div>
           </div>
         </div>
