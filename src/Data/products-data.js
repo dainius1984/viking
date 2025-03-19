@@ -1,6 +1,6 @@
 import categories from './category-data';
 import './product-styles.css';
-import { balanceOilDescription } from './balanceoil-description';
+import { balanceOilDescription, protectDescription } from './balanceoil-description';
 
 const products = [
   {
@@ -186,7 +186,7 @@ const products = [
     price: '175.00',
     image: '/img/products/10.jpg',
     category: categories.find(category => category.slug === 'suplementy-na-odpornosc').slug,
-    description: 'Protect+ to w pełni naturalny suplement diety, który wspiera prawidłowe funkcjonowanie układu odpornościowego, co korzystnie wpływa na samopoczucie i chroni przed chorobami. Zawiera skuteczne wegańskie witaminy D3 i C, które przyczyniają się do prawidłowego funkcjonowania układu odpornościowego, a także silnie działające, potwierdzone klinicznie 1-3, 1-6 beta-glukany.Protect działa najlepiej, gdy jest przyjmowany codziennie, ponieważ kluczowe komórki odporności nieswoistej są odnawiane co 1–2 dni i potrzebują pobudzenia, aby mogły skutecznie funkcjonować'
+    description: protectDescription
   },
   {
     id: 11,
