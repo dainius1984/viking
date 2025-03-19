@@ -96,7 +96,7 @@ const AccountPage = () => {
         return () => clearTimeout(timer);
       } else {
         sessionStorage.removeItem('loginSuccess');
-        session.removeItem('loginTime');
+        sessionStorage.removeItem('loginTime');
       }
     }
   }, []);
