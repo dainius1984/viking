@@ -349,19 +349,29 @@ const OrderPage = () => {
           
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <div className="lg:col-span-2">
-              <form onSubmit={handleSubmitOrder} className="bg-white rounded-lg shadow-sm p-6">
-                <div className="flex justify-between items-center mb-6">
-                  <h2 className="text-xl font-semibold">Dane do zamówienia</h2>
-                  {user ? (
-                    <div className="text-sm bg-green-50 text-green-700 py-1 px-3 rounded-full border border-green-200">
-                      <span className="font-medium">{user.name || 'Zalogowany użytkownik'}</span>
-                    </div>
-                  ) : (
-                    <div className="text-sm bg-gray-50 text-gray-500 py-1 px-3 rounded-full border border-gray-200">
-                      Zamawiasz jako Gość
-                    </div>
-                  )}
+              {/* User status banner at the top */}
+              {user && (
+                <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-4 flex items-center">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-green-600 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                    <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
+                  </svg>
+                  <span className="text-green-800">
+                    Jesteś zalogowany jako <span className="font-semibold">{user.name || 'Użytkownik'}</span>
+                  </span>
                 </div>
+              )}
+              
+              <form onSubmit={handleSubmitOrder} className="bg-white rounded-lg shadow-sm p-6">
+                <h2 className="text-xl font-semibold border-b border-gray-200 pb-3 mb-6">Dane do rozliczenia</h2>
+                
+                {!user && (
+                  <div className="bg-gray-50 border border-gray-200 rounded-md p-3 mb-6 flex items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-500 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                      <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
+                    </svg>
+                    <span className="text-gray-600">Zamawiasz jako <span className="font-medium">Gość</span></span>
+                  </div>
+                )}
                 
                 <BillingForm 
                   formData={formData}
@@ -377,7 +387,7 @@ const OrderPage = () => {
                       disabled:bg-gray-400 disabled:cursor-not-allowed
                       active:transform active:scale-[0.99]"
                   >
-                    {loading ? 'Przetwarzanie...' : 'Przejdź do płatności'}
+                    {loading ? 'Przetwarzanie...' : 'Kupuję i płacę'}
                   </button>
                 </div>
               </form>
