@@ -20,6 +20,7 @@ import {
   formatDate,
 } from './OrderUtils';
 import { initiatePayment } from './PaymentService';
+import PaymentButton from './PaymentButton';
 
 const INITIAL_FORM_STATE = {
   firstName: '',
@@ -406,7 +407,14 @@ const OrderPage = () => {
                 loading={loading}
                 onApplyDiscount={handleApplyDiscount}
                 formData={formData}
-              />
+              >
+                <PaymentButton 
+                  orderData={orderData}
+                  formData={formData}
+                  loading={loading}
+                  isDisabled={state.cart.length === 0 || (formData.shipping && formData.shipping.includes('PACZKOMATY') && !formData.paczkomat)}
+                />
+              </OrderSummary>
             </div>
           </div>
         </div>
