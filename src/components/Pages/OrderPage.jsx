@@ -300,7 +300,7 @@ const OrderPage = () => {
   // Notification component
   const NotificationComponent = () => notification && (
     <div className="fixed top-4 right-4 z-50 p-4 rounded shadow-lg bg-red-100 text-red-800 border border-red-300">
-      {notification}
+      {notification.message}
     </div>
   );
 
@@ -349,11 +349,11 @@ const OrderPage = () => {
           
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <div className="lg:col-span-2">
-              {/* User status banner at the top - FIXED */}
+              {/* User status banner at the top */}
               {user && (
-                <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-4">
-                  <p className="text-green-800 flex items-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                <div className="mb-4 p-3 rounded-lg bg-gray-50 border border-gray-200">
+                  <p className="flex items-center text-gray-700">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2 text-gray-500" viewBox="0 0 20 20" fill="currentColor">
                       <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
                     </svg>
                     {user.name || 'Użytkownik'}
@@ -377,19 +377,6 @@ const OrderPage = () => {
                   formData={formData}
                   handleInputChange={handleInputChange}
                 />
-                
-                <div className="mt-8 block lg:hidden">
-                  <button
-                    type="submit"
-                    disabled={loading}
-                    className="w-full py-3 px-4 bg-green-800 text-white rounded-lg font-medium
-                      hover:bg-green-900 transition-all duration-200
-                      disabled:bg-gray-400 disabled:cursor-not-allowed
-                      active:transform active:scale-[0.99]"
-                  >
-                    {loading ? 'Przetwarzanie...' : 'Kupuję i płacę'}
-                  </button>
-                </div>
               </form>
             </div>
             
@@ -406,7 +393,7 @@ const OrderPage = () => {
                 loading={loading}
                 onApplyDiscount={handleApplyDiscount}
                 formData={formData}
-                showPaymentButton={true} // Pass a flag to show payment button only here
+                onPlaceOrder={handleSubmitOrder}
               />
             </div>
           </div>
