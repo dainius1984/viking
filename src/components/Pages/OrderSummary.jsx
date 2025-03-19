@@ -377,7 +377,9 @@ const OrderSummary = ({
             disabled={loading || (shipping.includes('PACZKOMATY') && !selectedPaczkomat)}
             onClick={(e) => {
               e.preventDefault();
-              if (onPlaceOrder) onPlaceOrder(e);
+              // Find and submit the checkout form
+              const checkoutForm = document.querySelector('form');
+              if (checkoutForm) checkoutForm.submit();
             }}
             className="w-full py-3 px-4 bg-green-800 text-white rounded-lg font-medium
               hover:bg-green-900 transition-all duration-200
