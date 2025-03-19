@@ -351,13 +351,13 @@ const OrderPage = () => {
             <div className="lg:col-span-2">
               {/* User status banner at the top */}
               {user && (
-                <div className="mb-4 p-3 rounded-lg bg-gray-50 border border-gray-200">
-                  <p className="flex items-center text-gray-700">
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2 text-gray-500" viewBox="0 0 20 20" fill="currentColor">
-                      <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
-                    </svg>
+                <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-4 flex items-center">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-green-600 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                    <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
+                  </svg>
+                  <span className="text-green-800">
                     {user.name || 'Użytkownik'}
-                  </p>
+                  </span>
                 </div>
               )}
               
