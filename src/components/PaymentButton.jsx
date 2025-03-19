@@ -55,8 +55,9 @@ const PaymentButton = ({
       const checkoutForm = document.querySelector('form');
       if (checkoutForm) {
         // If we found the checkout form, submit it directly
-        console.log('Submitting checkout form directly');
-        checkoutForm.dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }));
+        console.log('PaymentButton: Submitting checkout form directly');
+        // Use form.submit() instead of dispatching an event
+        checkoutForm.submit();
         return; // Exit early after submitting the form
       }
       

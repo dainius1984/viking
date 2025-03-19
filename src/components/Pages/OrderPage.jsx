@@ -395,46 +395,38 @@ const OrderPage = () => {
             </div>
             
             <div className="lg:col-span-1">
-              {/* Create orderData object for PaymentButton */}
-              {(() => {
-                const isFreeShipping = isEligibleForFreeShipping(subtotal);
-                const shippingCost = isFreeShipping ? 0 : getShippingCost(subtotal, formData.shipping);
-                const finalTotal = total + shippingCost;
-                
-                const tempOrderData = {
-                  orderNumber: generateOrderNumber(),
-                  total: finalTotal.toString(),
-                  subtotal: subtotal.toString(),
-                  discountApplied: state.isDiscountApplied,
-                  discountAmount: discountAmount.toString(),
-                  items: formatOrderItems(state.cart),
-                  cart: state.cart,
-                  shipping: formData.shipping
-                };
-                
-                return (
-                  <OrderSummary
-                    cart={state.cart}
-                    subtotal={subtotal}
-                    discountApplied={state.isDiscountApplied}
-                    discountAmount={discountAmount}
-                    discountPercentage={DISCOUNT_CONFIG.percentage}
-                    total={total}
-                    shipping={formData.shipping}
-                    setShipping={handleShippingChange}
-                    loading={loading}
-                    onApplyDiscount={handleApplyDiscount}
-                    formData={formData}
-                  >
-                    <PaymentButton 
-                      orderData={tempOrderData}
-                      formData={formData}
-                      loading={loading}
-                      isDisabled={state.cart.length === 0 || (formData.shipping && formData.shipping.includes('PACZKOMATY') && !formData.paczkomat)}
-                    />
-                  </OrderSummary>
-                );
-              })()}
+              <OrderSummary
+                cart={state.cart}
+                subtotal={subtotal}
+                discountApplied={state.isDiscountApplied}
+                discountAmount={discountAmount}
+                discountPercentage={DISCOUNT_CONFIG.percentage}
+                total={total}
+                shipping={formData.shipping}
+                setShipping={handleShippingChange}
+                loading={loading}
+                onApplyDiscount={handleApplyDiscount}
+                formData={formData}
+              />
+              
+              {/* Add a payment button directly to submit the form */}
+              <div className="mt-4 hidden lg:block">
+                <button
+                  type="button"
+                  onClick={() => {
+                    console.log('Direct form submit button clicked');
+                    const form = document.querySelector('form');
+                    if (form) form.submit();
+                  }}
+                  disabled={loading || (formData.shipping && formData.shipping.includes('PACZKOMATY') && !formData.paczkomat)}
+                  className="w-full py-3 px-4 bg-green-800 text-white rounded-lg font-medium
+                    hover:bg-green-900 transition-all duration-200
+                    disabled:bg-gray-400 disabled:cursor-not-allowed
+                    active:transform active:scale-[0.99]"
+                >
+                  {loading ? 'Przetwarzanie...' : 'Kupuję i płacę'}
+                </button>
+              </div>
             </div>
           </div>
         </div>
