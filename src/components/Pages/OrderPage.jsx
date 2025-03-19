@@ -240,34 +240,42 @@ const OrderPage = () => {
         phone: formData.phone
       }));
       
-      const response = await initiatePayment(paymentData);
-      
-      console.log('Payment initiated:', {
-        orderNumber,
-        payuOrderId: response.orderId,
-        hasRedirectUrl: !!response.redirectUrl,
-        shipping: formData.shipping,
-        time: new Date().toISOString()
-      });
-
-      if (response.redirectUrl) {
-        // Update the order data in localStorage before redirect
-        localStorage.setItem('lastOrder', JSON.stringify({
+      try {
+        const response = await initiatePayment(paymentData);
+        console.log('Payment initiated:', {
           orderNumber,
-          payuOrderId: response.orderId,
-          date: new Date().toISOString(),
-          status: 'PENDING',
+          payuOrderId: response?.orderId,
+          hasRedirectUrl: !!response?.redirectUrl,
           shipping: formData.shipping,
-          firstName: formData.firstName,
-          lastName: formData.lastName,
-          email: formData.email,
-          phone: formData.phone,
-          hasPaczkomatData: !!formData.paczkomat
-        }));
+          time: new Date().toISOString()
+        });
 
-        window.location.href = response.redirectUrl;
-      } else {
-        throw new Error('Nie otrzymano linku do płatności');
+        if (response && response.redirectUrl) {
+          // Update the order data in localStorage before redirect
+          localStorage.setItem('lastOrder', JSON.stringify({
+            orderNumber,
+            payuOrderId: response.orderId,
+            date: new Date().toISOString(),
+            status: 'PENDING',
+            shipping: formData.shipping,
+            firstName: formData.firstName,
+            lastName: formData.lastName,
+            email: formData.email,
+            phone: formData.phone,
+            hasPaczkomatData: !!formData.paczkomat
+          }));
+
+          window.location.href = response.redirectUrl;
+        } else {
+          throw new Error('Nie otrzymano linku do płatności');
+        }
+      } catch (paymentError) {
+        console.error('Payment initiation error:', {
+          message: paymentError.message,
+          stack: paymentError.stack,
+          time: new Date().toISOString()
+        });
+        throw new Error(`Problem z inicjacją płatności: ${paymentError.message}`);
       }
 
     } catch (error) {
@@ -280,7 +288,11 @@ const OrderPage = () => {
       showNotification(
         error.message || 'Wystąpił błąd podczas składania zamówienia. Prosimy spróbować później.'
       );
+      
+      // Ensure loading state is reset even if there's an error
+      setLoading(false);
     } finally {
+      // This might not execute if redirect happens, so we set loading false in catch block too
       setLoading(false);
     }
   };
