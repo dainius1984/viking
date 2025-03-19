@@ -393,7 +393,6 @@ const OrderPage = () => {
                 loading={loading}
                 onApplyDiscount={handleApplyDiscount}
                 formData={formData}
-                onPlaceOrder={handleSubmitOrder}
               />
             </div>
           </div>
