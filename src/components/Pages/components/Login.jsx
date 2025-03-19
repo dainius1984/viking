@@ -43,6 +43,12 @@ const LoginForm = ({ login }) => {
     return '';
   };
 
+  // Handle alert dismissal
+  const handleDismissAlert = () => {
+    setNotification({ type: '', message: '' });
+    setShowError(false);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     e.stopPropagation();
@@ -79,10 +85,12 @@ const LoginForm = ({ login }) => {
           message: 'Logowanie zakończone sukcesem! Zaraz zostaniesz przekierowany do swojego konta.'
         });
         
-        // Delay redirect to allow notification to be seen
-        setTimeout(() => {
-          navigate('/account');
-        }, 1500);
+        // Ensure UI updates before redirect
+        // This is critical to show the success message
+        await new Promise(resolve => setTimeout(resolve, 1500));
+        
+        // Navigate to account page
+        navigate('/account');
       } else {
         // Handle different error cases
         let errorMessage = 'Nieprawidłowe dane logowania. Sprawdź email i hasło.';
@@ -101,9 +109,6 @@ const LoginForm = ({ login }) => {
           message: errorMessage
         });
         setShowError(true);
-        
-        // Log the error for debugging
-        console.log('Login error:', result.error);
       }
     } catch (error) {
       console.error('Login error:', error);
@@ -123,18 +128,15 @@ const LoginForm = ({ login }) => {
         Zaloguj się
       </h2>
       
-      {/* Make the alert more prominent and ensure it's visible */}
+      {/* Properly use the EnhancedAlert component */}
       <div className="mb-6 min-h-[60px]">
-        {(notification.message || showError) && (
-          <div className="border rounded-md p-4 mb-4 text-center" 
-               style={{ 
-                 backgroundColor: notification.type === 'success' ? '#f0fdf4' : '#fef2f2',
-                 borderColor: notification.type === 'success' ? '#86efac' : '#fecaca' 
-               }}>
-            <p className={notification.type === 'success' ? 'text-green-800' : 'text-red-800'}>
-              {notification.message}
-            </p>
-          </div>
+        {notification.message && (
+          <EnhancedAlert
+            type={notification.type}
+            message={notification.message}
+            duration={5000}
+            onDismiss={handleDismissAlert}
+          />
         )}
       </div>
 
