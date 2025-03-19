@@ -368,9 +368,97 @@ const products = [
     id: 16,
     name: 'Zinoshine +',
     price: '75.00',
-    image: '/img/products/16.png',
+    image: '/img/products/16.png', 
     category: categories.find(category => category.slug === 'suplementy-na-odpornosc').slug,
-    description: 'To unikalny suplement diety z witaminą D3 i magnezem o szerokim spektrum działania. Opatentowana mieszanka została opracowana, aby wspierać układ odpornościowy, zmniejszać uczucie zmęczenia i znużenia oraz wspomagać mięśnie, kości i zęby.'
+    description: `<div class="product-description">
+      <div class="intro-section">
+        <h2>Opis</h2>
+        <p>ZinoShine+ to unikalny suplement diety z witaminą D3 i magnezem o szerokim spektrum działania. 
+        Opatentowana mieszanka została opracowana, aby wspierać układ odpornościowy, zmniejszać uczucie 
+        zmęczenia i znużenia oraz wspomagać mięśnie, kości i zęby.</p>
+        
+        <div class="product-info">
+          <p><strong>Zawartość:</strong> 23 gramów, 60 tabletek</p>
+        </div>
+      </div>
+
+      <div class="benefits-grid">
+        <div class="benefit-card">
+          <h3>WSPARCIE UKŁADU ODPORNOŚCIOWEGO</h3>
+          <p>ZinoShine+ wspiera układ odpornościowy, a jego składniki odgrywają ważną rolę w procesie podziału komórek.</p>
+        </div>
+
+        <div class="benefit-card">
+          <h3>MAGNEZ O SZEROKIM SPEKTRUM DZIAŁANIA</h3>
+          <p>Nasze podejście do magnezu o szerokim spektrum działania wspiera funkcje psychologiczne i przyczynia 
+          się do zmniejszenia zmęczenia i znużenia.</p>
+        </div>
+
+        <div class="benefit-card">
+          <h3>FUNKCJONOWANIE ORGANIZMU</h3>
+          <p>Witamina D i magnez wspomagają prawidłową funkcję mięśni, kości i zębów.</p>
+        </div>
+      </div>
+
+      <div class="features-section">
+        <div class="feature-item">
+          <h3>W PEŁNI NATURALNY</h3>
+          <p>Składniki ZinoShine+ są pozyskiwane z naturalnych źródeł. Są one prawdziwą siłą natury z mocą, która pozwala im 
+          świecić własnym światłem w naszej unikalnej, norweskiej, całkowicie naturalnej recepturze.</p>
+        </div>
+
+        <div class="feature-item">
+          <h3>WEGAŃSKI</h3>
+          <p>Synergiczna mieszanka naturalnych i czysto wegańskich składników.</p>
+        </div>
+      </div>
+
+      <div class="usage-section">
+        <h3>ZALECANA DZIENNA DAWKA:</h3>
+        <ul>
+          <li>Dzieci w wieku <11 lat: 1 tabletka dziennie</li>
+          <li>Młodzież w wieku 12–18 lat: 1–3 tabletki dziennie</li>
+          <li>Dorośli w wieku >18 lat: 1–4 tabletki dziennie</li>
+        </ul>
+        <p class="warning">Nie przekraczać zalecanej dawki dziennej. Suplement diety nie może zastąpić zrównoważonej i zbilansowanej diety.</p>
+      </div>
+
+      <div class="ingredients-section">
+        <h3>SKŁADNIKI:</h3>
+        <p>Mieszanka magnezu (wodorotlenek magnezu z wody morskiej, cytrynian magnezu, jabłczan magnezu, diglicynian magnezu), 
+        substancja wypełniająca (beta-cyklodekstryna z manioku), środek przeciwzbrylający (kwas stearynowy, olej MCT z kokosa), 
+        witamina D3 (cholekalcyferol).</p>
+      </div>
+
+      <div class="storage-section">
+        <h3>PRZECHOWYWANIE:</h3>
+        <p>W suchym miejscu w temperaturze pokojowej. Przechowywać w miejscu niedostępnym dla dzieci.</p>
+      </div>
+
+      <div class="detailed-info">
+        <h3>WITAMINA D</h3>
+        <p>Witamina D wspiera ważne funkcje w organizmie, pomagając regulować wchłanianie wapnia i fosforu, ale być może najważniejsze jest to, że wspomaga prawidłowe funkcjonowanie 
+        układu odpornościowego. Co więcej, przyjmowanie wystarczającej ilości witaminy D jest ważne dla prawidłowego wzrostu i rozwoju kości i zębów.</p>
+        
+        <p>Podobnie jak większość czynników żywieniowych i zdrowotnych, istnieją istotne indywidualne różnice, jeśli chodzi o zaspokajanie potrzeb związanych z witaminą D. Wiele czynników społecznych 
+        i behawioralnych wywiera wpływ na naszą zdolność do dostarczania wystarczającej ilości witaminy D poprzez samo światło słoneczne. Czynniki takie jak przebywanie w obszarze o wysokim 
+        zanieczyszczeniu, stosowanie kremów przeciwsłonecznych, czas spędzany w pomieszczeniach, mieszkanie i praca w dużych miastach, w których budynki blokują dostęp światła słonecznego 
+        odgrywają rolę w tym, jak nasz organizm reaguje na słońce i wytwarza tę niezbędną „słoneczną witaminę". Należy również uwzględnić masę ciała. Witamina D to witamina rozpuszczalna 
+        w tłuszczach, a zatem im większa masa ciała, tym więcej musimy produkować i spożywać, aby osiągnąć i utrzymać odpowiedni poziom tej witaminy we krwi.</p>
+
+        <p>Na całym świecie niedobór witaminy D występuje u około 1 miliarda osób. Dlatego ważne jest, aby monitorować poziom witaminy D i w razie potrzeby korzystać z dodatkowych źródeł 
+        witaminy D, innych niż światło słoneczne.</p>
+
+        <p>Źródłem witaminy D są porosty. Jest to mały, unikalny gatunek roślinny składający się z symbiotycznego związku glonów i grzybów. Można je znaleźć w dużych ilościach na górskich 
+        zboczach, skałach i drzewach, a to naturalne źródło witaminy D3 jest świadomym wyborem dla dobra naszego środowiska.</p>
+
+        <h3>MAGNEZ</h3>
+        <p>Istnieje wiele źródeł witamin i minerałów. Dążymy do znalezienia najlepszych i najbardziej wydajnych źródeł dostępnych na rynku.</p>
+        
+        <p>ZinoShine+ zawiera wodorotlenek magnezu z wody morskiej, cytrynian magnezu, jabłczan magnezu i diglicynian magnezu. 
+        Razem te cztery źródła zapewniają szerokie spektrum działania, zwiększające wchłanianie i wykorzystanie w organizmie.</p>
+      </div>
+    </div>`
   },
   {
     id: 17,
