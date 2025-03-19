@@ -30,8 +30,8 @@ const createInPostShipment = async (orderData) => {
       }
     };
 
-    // Use a relative URL path to avoid CORS issues
-    const apiUrl = `/api/shipping/inpost/create`;
+    // Use the API_URL from OrderUtils for the Render API
+    const apiUrl = `${API_URL}/api/shipping/inpost/create`;
     console.log(`Attempting to create shipment using API endpoint: ${apiUrl}`);
 
     try {
