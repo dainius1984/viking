@@ -20,7 +20,7 @@ import {
   formatDate,
 } from './OrderUtils';
 import { initiatePayment } from './PaymentService';
-import PaymentButton from './PaymentButton';
+import PaymentButton from '../PaymentButton';
 
 const INITIAL_FORM_STATE = {
   firstName: '',
