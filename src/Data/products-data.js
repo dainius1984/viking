@@ -65,7 +65,112 @@ const products = [
     price: '220.00',
     image: '/img/products/8.jpeg',
     category: categories.find(category => category.slug === 'suplementy-omega-3').slug,
-    description: 'Nowa generacja suplementów diety. Ten ultraczysty, testowany molekularnie suplement diety z polifenolami i kwasami Omega Balans bezpiecznie dostosowuje i utrzymuje balans Omega-6:3, jednocześnie chroniąc komórki przed utlenianiem1 i wspomagając prawidłowe funkcjonowanie mózgu, serca i układu odpornościowego. Essent to synergiczna mieszanka skoncentrowanego wysokiej klasy oleju rybnego o wysokiej zawartości tłuszczu w kwasów tłuszczowych Omega-3 EPA i DHA, z dodatkiem oliwy z oliwek z pierwszego tłoczenia, ekstraktu z owoców drzewa oliwnego oraz kakao — wszystkie te składniki dostarczają dużej ilości polifenoli.'
+    description: `<div class="product-description">
+      <h2 class="product-title">ESSENT+ PREMIUM</h2>
+      
+      <div class="intro-section">
+        <p>Nowa generacja suplementów diety. Ten ultraczysty, testowany molekularnie suplement diety z polifenolami i kwasami Omega Balans bezpiecznie dostosowuje i utrzymuje balans Omega-6:3, jednocześnie chroniąc komórki przed utlenianiem i wspomagając prawidłowe funkcjonowanie mózgu, serca i układu odpornościowego. Essent to synergiczna mieszanka skoncentrowanego wysokiej klasy oleju rybnego o wysokiej zawartości tłuszczu w kwasów tłuszczowych Omega-3 EPA i DHA, z dodatkiem oliwy z oliwek z pierwszego tłoczenia, ekstraktu z owoców drzewa oliwnego oraz kakao — wszystkie te składniki dostarczają dużej ilości polifenoli.</p>
+      </div>
+
+      <div class="main-features">
+        <h3>NAJWAŻNIEJSZE FUNKCJE</h3>
+        
+        <div class="feature-grid">
+          <div class="feature-item">
+            <h4>FUNKCJONOWANIE MÓZGU</h4>
+            <p>Dla EPA i DHA zatwierdzono oświadczenia, że utrzymują prawidłowe funkcjonowanie mózgu. W przypadku kobiet w ciąży i karmiących piersią, DHA wspomaga prawidłowy rozwój mózgu płodu oraz karmionych niemowląt. Długołańcuchowe kwasy tłuszczowe omega-3 są istotne dla zdrowia zarówno naszego, jak i kolejnego pokolenia.</p>
+          </div>
+
+          <div class="feature-item">
+            <h4>FUNKCJONOWANIE SERCA</h4>
+            <p>EPA i DHA mają potwierdzone działanie zdrowotne dla zachowania zdrowego serca. Przyczyniają się do prawidłowego funkcjonowania serca.</p>
+          </div>
+
+          <div class="feature-item">
+            <h4>UKŁAD ODPORNOŚCIOWY</h4>
+            <p>Essent zawiera witaminę D3, niezwykle istotną dla układu odpornościowego, gdyż wspomaga jego prawidłowe funkcjonowanie.</p>
+          </div>
+
+          <div class="feature-item">
+            <h4>OCHRONA PRZED OKSYDACJĄ</h4>
+            <p>Hydroksytyrozol z oliwek wspomaga ochronę lipidów krwi przed uszkodzeniami oksydacyjnymi, jeśli jego dzienna dawka wynosi 5 mg lub więcej. Lipidy to substancje przypominające tłuszcze znajdujące się we krwi i tkankach; zaliczają się do nich cholesterol i trójglicerydy, od których zależy zdrowie naszego serca.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="synergy-section">
+        <h3>SYNERGIA OLEJU Z RYB I OLIWY Z OLIWEK = WYNIKI</h3>
+        <p>Naukowcy opracowali suplement Essent jako mieszankę kilku wysokiej jakości kwasów tłuszczowych Omega-3 w skoncentrowanej postaci, ale pozostających naturalnymi trójglicerydami, z wyjątkowo wysoką zawartością (85%) kwasów EPA i DHA oraz kwasem tłuszczonym Omega-9 z oliwy z oliwek z pierwszego tłoczenia. Essent ma również bardzo wysoką zawartość polifenoli (23 mg) w postaci specjalnej mieszanki hydroksytyrozolu i flawanoli. Hydroksytyrozol pochodzi z oliwy z oliwek i ekstraktu z owoców drzewa oliwnego, natomiast flawanol zawarty jest w kakao.</p>
+      </div>
+
+      <div class="evidence-section">
+        <h3>DOWÓD NA OSIĄGNIĘCIE RÓWNOWAGI W 120 DNI</h3>
+        <p>Nasze certyfikowane laboratoria odpowiedzialne są za analizowanie testów suchej kropli krwi na zawartość jedenastu kwasów tłuszczowych, co czyni naszą bazę danych największą tego typu na świecie. Przeciętny stosunek kwasów Omega-6:3 u ludzi, którzy nie przyjmują żadnych suplementów diety zawierających kwasy Omega-3 wynosi 12:1 dla Europy Północnej, 15:1 dla Europy oraz 25:1 dla Stanów Zjednoczonych. Po przyjmowaniu produktów BalanceOil przez 120 dni średni stosunek dla większości ludzi wynosi mniej niż 3:1.</p>
+      </div>
+
+      <div class="benefits-section">
+        <h3>NAJWAŻNIEJSZE KORZYŚCI:</h3>
+        <ul class="benefits-list">
+          <li>Pomaga utrzymać polifenole w Twoim ciele na poziomie, który ochroni lipidy krwi przed stresem oksydacyjnym</li>
+          <li>Wspomaga prawidłowe funkcjonowanie serca</li>
+          <li>Przyczynia się do prawidłowego funkcjonowania mózgu</li>
+          <li>Wspomaga prawidłowe funkcjonowanie układu odpornościowego</li>
+          <li>Dba o zdrowie oczu i wspiera ich prawidłowe funkcjonowanie</li>
+          <li>Pomaga utrzymać poziom trójglycerydów i ciśnienia krwi w normalnych granicach</li>
+          <li>Pomaga utrzymać zdrowie kości, mięśni, zębów i komórek</li>
+          <li>Pomaga utrzymać optymalny poziom kwasów Omega-6:3 w organizmie</li>
+        </ul>
+      </div>
+
+      <div class="ingredients-section">
+        <h3>SKŁADNIKI:</h3>
+        <p>Oleje rybne, żelatyna rybna, środek utrzymujący wilgotność (glicerol), oliwa z oliwek z pierwszego tłoczenia na zimno, kakao w proszku, zagęszczacz (ditlenek krzemu), woda, ekstrakt z owoców drzewa oliwnego (Olea europaea), witamina D3 (cholekalcyferol).</p>
+        
+        <h4>GŁÓWNE SKŁADNIKI:</h4>
+        <div class="ingredients-grid">
+          <div class="ingredient-item">
+            <h5>OLIWA Z OLIWEK Z PIERWSZEGO TŁOCZENIA</h5>
+            <p>Hiszpańskie oliwki odmiany Picual wybierane są z uwagi na wysoką zawartość kwasów Omega-9 oraz antyoksydantów. Oliwki jeszcze niedojrzałe, a w procesie tym usuwa się pestki i jedynie owoce są tłoczone na zimno, produkując olej z pierwszego tłoczenia, bogaty w kwas Omega-9 (kwas oleinowy) o bardzo wysokiej zawartości przeciwutleniaczy zwanych polifenolami (powyżej 750 mg/kg).</p>
+          </div>
+
+          <div class="ingredient-item">
+            <h5>WITAMINA D3</h5>
+            <p>Essent zawiera naturalną witaminę D3 (cholekalcyferol) uzyskiwaną z lanoliny. 3 miękkie kapsułki softgel dostarczają 20 μg.</p>
+          </div>
+
+          <div class="ingredient-item">
+            <h5>KAKAO W PROSZKU</h5>
+            <p>Kakao w proszku z odtłuszczonych ziaren kakao ma wysoką zawartość polifenoli, a w szczególności ich podgrupy zwanej flawanolami. Dawka dobowa 3 miękkich kapsułek softgel dostarcza 17,9 mg polifenoli.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="dosage-section">
+        <h3>SUGEROWANE DAWKOWANIE:</h3>
+        <p>1 miękka kapsułka softgel na około 30 kilogramów masy ciała. Porcję należy dostosować w oparciu o masę ciała:</p>
+        <ul>
+          <li>Dorośli o masie ciała 50–60 kg: 2 miękkie kapsułki softgel dziennie</li>
+          <li>Dorośli o masie ciała 80–90 kg: 3 miękkie kapsułki softgel dziennie</li>
+          <li>Maksymalnie 5 miękkich kapsułek softgel dziennie</li>
+        </ul>
+        <p class="warning">Nie przekraczać zalecanej dawki dziennej. Suplement diety nie może zastąpić zrównoważonej i zbilansowanej diety.</p>
+      </div>
+
+      <div class="additional-info">
+        <h3>DODATKOWE INFORMACJE:</h3>
+        <ul class="info-list">
+          <li><strong>ZINZINO POLYPHENOL BLEND:</strong> Hydroksytyrozol, kakao i polifenole z oliwek</li>
+          <li><strong>ZINZINO BALANCE BLEND:</strong> Kwasy EPA, DHA i Omega-9</li>
+          <li><strong>NATURALNE:</strong> Essent produkowany jest wyłącznie ze składników naturalnego pochodzenia</li>
+          <li><strong>BEZ GMO:</strong> Produkt nie zawierają składników modyfikowanych genetycznie</li>
+        </ul>
+      </div>
+
+      <div class="storage-warning">
+        <h3>PRZECHOWYWANIE:</h3>
+        <p>Przechowywać w suchym i zacienionym miejscu o temperaturze pokojowej lub w lodówce. Należy trzymać w miejscu niedostępnym dla dzieci.</p>
+      </div>
+    </div>`
   },
   {
     id: 9,
