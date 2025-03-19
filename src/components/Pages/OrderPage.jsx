@@ -338,7 +338,18 @@ const OrderPage = () => {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <div className="lg:col-span-2">
               <form onSubmit={handleSubmitOrder} className="bg-white rounded-lg shadow-sm p-6">
-                <h2 className="text-xl font-semibold mb-6">Dane do zamówienia</h2>
+                <div className="flex justify-between items-center mb-6">
+                  <h2 className="text-xl font-semibold">Dane do zamówienia</h2>
+                  {user ? (
+                    <div className="text-sm bg-green-50 text-green-700 py-1 px-3 rounded-full border border-green-200">
+                      <span className="font-medium">{user.name || 'Zalogowany użytkownik'}</span>
+                    </div>
+                  ) : (
+                    <div className="text-sm bg-gray-50 text-gray-500 py-1 px-3 rounded-full border border-gray-200">
+                      Zamawiasz jako Gość
+                    </div>
+                  )}
+                </div>
                 
                 <BillingForm 
                   formData={formData}
