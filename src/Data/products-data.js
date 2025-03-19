@@ -200,9 +200,65 @@ const products = [
     id: 12,
     name: 'Xtend',
     price: '129.00',
-    image: '/img/products/12.jpg',
+    image: '/img/products/12.jpg', 
     category: categories.find(category => category.slug === 'suplementy-na-odpornosc').slug,
-    description: 'Xtend, nasz najbardziej zaawansowany suplement immunologiczny i odżywczy, jest wyjątkowym źródłem mikro- i fitoskładników, w tym 23 niezbędnych witamin i minerałów, a także oczyszczonych 1-3, 1-6 beta glukanów pochodzących z drożdży piekarskich, chroniących i odnawiających komórki oraz tkanki. Xtend to idealne uzupełnienie BalanceOil i ZinoBiotic w ramach Twojego protokołu zdrowotnego.\n\nZawartość: 60 tabletek, waga netto 45 g\n\n<h4 class="benefits-heading">NAJWAŻNIEJSZE KORZYŚCI:</h4>\n<ul class="benefits-list">\n  <li><span class="benefit-icon">⚡</span> <strong>Więcej energii</strong></li>\n  <li><span class="benefit-icon">🦴</span> <strong>Poprawa funkcjonowania kości i stawów</strong></li>\n  <li><span class="benefit-icon">🛡️</span> <strong>Wzmocnienie układu odpornościowego</strong></li>\n  <li><span class="benefit-icon">🔄</span> <strong>Zapewnia kompleksową dawkę składników odżywczych niezbędnych do wzrostu i naprawy tkanek</strong></li>\n</ul>'
+    description: `<div class="product-description">
+      <h2 class="product-title">XTEND</h2>
+      <h3 class="product-subtitle">SUPLEMENT DIETY WSPOMAGAJĄCY ODPORNOŚĆ</h3>
+
+      <div class="main-benefits">
+        <div class="benefit-section">
+          <h3>WIĘCEJ ENERGII</h3>
+          <p>Witaminy z grupy B (B1-B12), a także wiele minerałów zawartych w Xtend, takich jak miedź, magnez, jod i mangan mają właściwości zdrowotne i są ważne w procesie normalizacji metabolizmu energetycznego.</p>
+        </div>
+
+        <div class="benefit-section">
+          <h3>POPRAWA FUNKCJONOWANIA KOŚCI I STAWÓW</h3>
+          <p>Xtend zawiera witaminy i minerały o potwierdzonych właściwościach zdrowotnych dla kości i mięśni. Są to witaminy D, C, K, magnez, mangan i cynk.</p>
+        </div>
+
+        <div class="benefit-section">
+          <h3>WZMOCNIENIE UKŁADU ODPORNOŚCIOWEGO</h3>
+          <p>Xtend zawiera 1-3, 1-6 beta-glukany. Te składniki odżywcze, pozyskiwane ze ścian komórek dobrze oczyszczonego, opatentowanego szczepu drożdży piekarskich, posiadają potwierdzone właściwości zdrowotne, które wzmacniają układ odpornościowy. Niektóre związki zawarte w preparacie (np.folian, żelazo, witamina B6, miedź) również mają kluczowe właściwości zdrowotne.</p>
+        </div>
+      </div>
+
+      <div class="additional-info">
+        <p>Oprócz witamin i minerałów, preparat Xtend zawiera karotenoidy, ksantofile i grupy polifenoli pozyskiwane z owoców, przypraw i warzyw. Aby uzyskać taką samą ilość składników odżywczych z żywności, trzeba byłoby spożywać ponad 3000 kalorii najbardziej odżywczych produktów każdego dnia. Wszystkie składniki preparatu Xtend mają ponad sto właściwości zdrowotnych potwierdzonych przez Europejski Urząd Bezpieczeństwa Żywności (EFSA). Mają one wpływ na komórki, organy i tkanki w organizmie. Xtend to idealne uzupełnienie produktów BalanceOil i ZinoBiotic, które zapewnia kompletny i rozszerzony program wsparcia odżywania.</p>
+      </div>
+
+      <div class="ingredients-section">
+        <h3>SKŁADNIKI:</h3>
+        <p>Substancje wypełniające (celuloza mikrokrystaliczna, beta-cyklodekstryna, fosforan triwapniowy), wyciąg z liści drzewa oliwnego (Olea europaea)*, magnez (wodorotlenek magnezu)*, wyciąg z alg brunatnych (Ascophyllum nodosum)*, mieszanina 1-3, 1-6 betaglukanów z drożdży (Saccharomyces cerevisiae)*, wyciąg z kurkumy dlugiej (Curcuma longa)*, witamina C (kwas askorbinowy)*, substancje przeciwzbrylające (dwutlenek krzemu, fosforan triwapniowy, sole magnezowe kwasów tłuszczowych, poliwinylopirolidon), cynk (chelat bisglicynianu cynku), wyciąg z brokułów (Brassica oleracea), witamina E (mieszanina tokoferoli i tokotrienoli), wyciąg z liści zielonej herbaty (Camellia sinensis), wyciąg z pomidorów (Solanum lycopersicum), luteina i zeaksantyna z wyciągu z kwiatów aksamitki wzniesionej (Tagetes erecta), witamina K2 (menachinon jako MK-7), żelazo (chelat bisglicynianu żelaza), witamina B3 (niacynamid), selen (metionina selenu), koenzym Q10 (ubidekarenon), molibden (molibdenian sodu), mangan (chelat bisglicynianu manganu), wyciąg z mikroalg (Dunaliella salina), witamina D3 (cholekalcyferol), miedź (bisglicynian miedzi), witamina B5 (kwas pantotenowy), witamina B12 (cyjanokobalamina), chrom (chlorek chromu), witamina B6 (chlorowodorek pirydoksyny), witamina B1 (chlorowodorek tiaminy), witamina B2 (ryboflawina), witamina K1 (filochinon), folian ((6S)- 5-metylotetrahydrofoliowy jako Quatrefolic), biotyna. Pochodzenie: UE i spoza UE.</p>
+      </div>
+
+      <div class="dosage-section">
+        <h3>ZALECANA DZIENNA DAWKA:</h3>
+        <p>Dorośli i dzieci w wieku powyżej 12 lat: Spożywać z jedzeniem. 2–4 tabletki dziennie. Nie przekraczać zalecanej dawki dziennej. Suplement diety nie może zastąpić zrównoważonej i zróżnicowanej diety.</p>
+      </div>
+
+      <div class="warning-section">
+        <h3>UWAGA:</h3>
+        <p>W przypadku przyjmowania leków przeciwzakrzepowych i chęci przyjmowania suplementów zawierających witaminę K należy najpierw skonsultować się z lekarzem.</p>
+      </div>
+
+      <div class="storage-section">
+        <h3>PRZECHOWYWANIE:</h3>
+        <p>W suchym miejscu w temperaturze pokojowej. Należy trzymać w miejscu niedostępnym dla dzieci.</p>
+      </div>
+
+      <div class="blends-section">
+        <div class="blend">
+          <h3>ZINZINO IMMUNE BLEND:</h3>
+          <p>1-3, 1-6 beta glukany, wyciąg z brokułów, cynk, miedź, folian, selen, beta karoten, witamina B12, witamina B6, witamina C, witamina D3.</p>
+        </div>
+
+        <div class="blend">
+          <h3>ZINZINO DEFENCE BLEND:</h3>
+          <p>Likopen, luteina, zeaksantyna, polifenole z zielonej herbaty, polifenole z oliwek, wyciąg z brokułów, wyciąg z kurkuminy.</p>
+        </div>
+      </div>
+    </div>`
   },
   {
     id: 13,
