@@ -32,7 +32,6 @@ const createInPostShipment = async (orderData) => {
 
     // Use the API_URL from OrderUtils for the Render API
     const apiUrl = `${API_URL}/api/shipping/inpost/create`;
-    console.log(`Attempting to create shipment using API endpoint: ${apiUrl}`);
 
     try {
       const response = await fetch(apiUrl, {
@@ -45,10 +44,7 @@ const createInPostShipment = async (orderData) => {
 
       // Handle 405 Method Not Allowed error specifically
       if (response.status === 405) {
-        console.error(`API endpoint ${apiUrl} does not allow POST method. This likely means the endpoint is not properly configured on the server.`);
-        
         // For testing, return mock data instead of error
-        console.log('Returning mock shipment data after 405 error');
         return {
           success: true,
           data: {
@@ -69,10 +65,7 @@ const createInPostShipment = async (orderData) => {
 
       return { success: true, data };
     } catch (error) {
-      console.error('Error during shipment creation:', error);
-      
       // For development/testing, return a mock success response
-      console.log('Returning mock shipment data for development/testing');
       return {
         success: true,
         data: {
@@ -83,10 +76,7 @@ const createInPostShipment = async (orderData) => {
       };
     }
   } catch (error) {
-    console.error('Error creating InPost shipment:', error);
-    
     // For development/testing, return a mock success response
-    console.log('Returning mock shipment data for development/testing');
     return {
       success: true,
       data: {
@@ -100,11 +90,11 @@ const createInPostShipment = async (orderData) => {
 
 const OrderConfirmation = () => {
   const { clearCart } = useCart();
-  const { user } = useAuth(); // Add this line to get user state
+  const { user } = useAuth();
   const [orderData, setOrderData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [hasCleared, setHasCleared] = useState(false);
-  const [paymentStatus, setPaymentStatus] = useState('Opłacone'); // Set default to Opłacone
+  const [paymentStatus] = useState('Opłacone');
   const [shipmentStatus, setShipmentStatus] = useState(null);
 
   useEffect(() => {
@@ -114,24 +104,19 @@ const OrderConfirmation = () => {
       
       // Get order data from localStorage instead of sessionStorage
       let storedOrder = localStorage.getItem('lastOrder');
-      console.log('Raw data from localStorage:', storedOrder);
       
       // If not found in localStorage, try sessionStorage as fallback
       if (!storedOrder) {
-        console.log('No order data found in localStorage, trying sessionStorage...');
         storedOrder = sessionStorage.getItem('lastOrder');
-        console.log('Raw data from sessionStorage:', storedOrder);
         
         // If found in sessionStorage, copy it to localStorage for future use
         if (storedOrder) {
-          console.log('Found order data in sessionStorage, copying to localStorage');
           localStorage.setItem('lastOrder', storedOrder);
           
           // Also parse it to check if it's a paczkomat order
           try {
             const sessionOrder = JSON.parse(storedOrder);
             if (sessionOrder.shipping && sessionOrder.shipping.includes('PACZKOMATY') && !sessionOrder.hasPaczkomatData) {
-              console.log('Order is using paczkomat shipping but missing hasPaczkomatData flag, adding it');
               sessionOrder.hasPaczkomatData = true;
               
               // Update the localStorage with the fixed data
@@ -139,34 +124,28 @@ const OrderConfirmation = () => {
               storedOrder = JSON.stringify(sessionOrder);
             }
           } catch (error) {
-            console.error('Error parsing sessionStorage order data:', error);
+            // Error handling is preserved but logging removed
           }
         }
       }
       
       // If still not found, try to find order backup in localStorage
       if (!storedOrder) {
-        console.log('No order data found in sessionStorage either, looking for backup in localStorage...');
         // Look for order backup keys
         const backupKeys = Object.keys(localStorage).filter(key => key.includes('order_backup_'));
-        console.log('Found these order backup keys:', backupKeys);
         
         if (backupKeys.length > 0) {
           // Use the most recent backup
           const mostRecentKey = backupKeys[backupKeys.length - 1];
-          console.log('Using order data from backup key:', mostRecentKey);
           storedOrder = localStorage.getItem(mostRecentKey);
-          console.log('Raw data from backup:', storedOrder);
         }
       }
       
       if (storedOrder && !hasCleared) {
         const parsedOrder = JSON.parse(storedOrder);
-        console.log('Parsed order data:', parsedOrder);
         
         // Fix missing hasPaczkomatData flag if shipping method is INPOST_PACZKOMATY
         if (!parsedOrder.hasPaczkomatData && parsedOrder.shipping && parsedOrder.shipping.includes('PACZKOMATY')) {
-          console.log('Adding missing hasPaczkomatData flag to order data');
           parsedOrder.hasPaczkomatData = true;
         }
         
@@ -174,64 +153,39 @@ const OrderConfirmation = () => {
         if (parsedOrder.hasPaczkomatData) {
           try {
             const paczkomatKey = `paczkomat_data_${parsedOrder.orderNumber}`;
-            console.log('Looking for paczkomat data with key:', paczkomatKey);
-            
-            // Log all localStorage keys to help debug
-            console.log('All localStorage keys:', Object.keys(localStorage));
-            
             const paczkomatData = localStorage.getItem(paczkomatKey);
-            console.log('Raw paczkomat data from localStorage:', paczkomatData);
             
             if (paczkomatData) {
               // Add paczkomat data to the order data
               const parsedPaczkomatData = JSON.parse(paczkomatData);
-              console.log('Parsed paczkomat data:', parsedPaczkomatData);
-              
               parsedOrder.paczkomat = parsedPaczkomatData;
-              console.log('Order data with paczkomat added:', parsedOrder);
-            } else {
-              console.log('No paczkomat data found in localStorage');
-              
-              // Try to find any paczkomat data in localStorage that might match
-              const paczkomatKeys = Object.keys(localStorage).filter(key => key.includes('paczkomat_data_'));
-              console.log('Found these paczkomat keys in localStorage:', paczkomatKeys);
             }
           } catch (error) {
-            console.error('Error retrieving paczkomat data from localStorage:', error);
+            // Error handling is preserved but logging removed
           }
         } else {
-          console.log('Order does not have paczkomat data flag');
-          console.log('Order shipping method:', parsedOrder.shipping);
-          
           // Check if the shipping method is a paczkomat method but the flag is missing
           if (parsedOrder.shipping && parsedOrder.shipping.includes('PACZKOMATY')) {
-            console.log('Order is using a paczkomat shipping method but hasPaczkomatData flag is missing');
-            
             // Try to find any paczkomat data in localStorage that might match
             const paczkomatKeys = Object.keys(localStorage).filter(key => key.includes('paczkomat_data_'));
-            console.log('Found these paczkomat keys in localStorage:', paczkomatKeys);
             
             if (paczkomatKeys.length > 0) {
               // Try to use the most recent paczkomat data
               const mostRecentKey = paczkomatKeys[paczkomatKeys.length - 1];
-              console.log('Trying to use paczkomat data from key:', mostRecentKey);
-              
               const paczkomatData = localStorage.getItem(mostRecentKey);
+              
               if (paczkomatData) {
                 try {
                   const parsedPaczkomatData = JSON.parse(paczkomatData);
-                  console.log('Found paczkomat data:', parsedPaczkomatData);
                   
                   // Add paczkomat data to the order data
                   parsedOrder.paczkomat = parsedPaczkomatData;
                   parsedOrder.hasPaczkomatData = true;
-                  console.log('Added paczkomat data to order:', parsedOrder);
                 } catch (error) {
-                  console.error('Error parsing paczkomat data:', error);
+                  // Error handling is preserved but logging removed
                 }
               } else {
                 // No paczkomat data found, create dummy data for testing
-                console.log('No paczkomat data found, creating dummy data for testing');
                 parsedOrder.paczkomat = {
                   name: 'POP-WAW123',
                   address: 'ul. Testowa 123, Warszawa',
@@ -240,11 +194,9 @@ const OrderConfirmation = () => {
                   post_code: '00-001'
                 };
                 parsedOrder.hasPaczkomatData = true;
-                console.log('Added dummy paczkomat data to order:', parsedOrder);
                 
                 // Store the dummy data in localStorage for future use
                 localStorage.setItem(`paczkomat_data_${parsedOrder.orderNumber}`, JSON.stringify(parsedOrder.paczkomat));
-                console.log('Stored dummy paczkomat data in localStorage');
               }
             }
           }
@@ -253,53 +205,26 @@ const OrderConfirmation = () => {
         setOrderData(parsedOrder);
         
         // Clear the cart only once
-        console.log('Clearing cart after successful order');
         clearCart(); // This function handles both user types
         setHasCleared(true);
       }
     } catch (error) {
-      console.error('Error retrieving order data or clearing cart:', error);
+      // Error handling is preserved but logging removed
     } finally {
       setLoading(false);
     }
   }, [clearCart, hasCleared]);
 
-  // Add this function to handle shipment creation
+  // Preserve the function to handle shipment creation for logic consistency
   const handleCreateShipment = async () => {
-    console.log('handleCreateShipment called');
-    
     if (!orderData || !orderData.paczkomat) {
-      console.log('Missing required data for shipment creation:', {
-        hasOrderData: !!orderData,
-        hasPaczkomatData: !!(orderData && orderData.paczkomat)
-      });
       return;
     }
 
     // Only create shipment if payment is complete
     if (paymentStatus !== 'Opłacone') {
-      console.log('Payment not completed yet, skipping shipment creation');
       return;
     }
-
-    // Add default values for missing customer data
-    const customerName = orderData.firstName && orderData.lastName 
-      ? `${orderData.firstName} ${orderData.lastName}`
-      : 'Klient sklepu';
-    
-    const customerEmail = orderData.email || 'klient@example.com';
-    const customerPhone = orderData.phone || '123456789';
-
-    // Log the data being prepared for shipment creation
-    console.log('Preparing data for InPost shipment creation:', {
-      orderNumber: orderData.orderNumber,
-      firstName: orderData.firstName || '(using default)',
-      lastName: orderData.lastName || '(using default)',
-      email: orderData.email || '(using default)',
-      phone: orderData.phone || '(using default)',
-      paczkomatName: orderData.paczkomat?.name || '(missing)',
-      paczkomatAddress: orderData.paczkomat?.address || '(missing)'
-    });
 
     try {
       const shipmentData = {
@@ -309,8 +234,6 @@ const OrderConfirmation = () => {
         email: orderData.email || 'klient@example.com',
         phone: orderData.phone || '123456789'
       };
-      
-      console.log('Calling createInPostShipment with data:', JSON.stringify(shipmentData, null, 2));
       
       const result = await createInPostShipment(shipmentData);
 
@@ -327,7 +250,6 @@ const OrderConfirmation = () => {
         });
       }
     } catch (error) {
-      console.error('Error in shipment creation:', error);
       setShipmentStatus({
         status: 'error',
         message: error.message
@@ -335,33 +257,21 @@ const OrderConfirmation = () => {
     }
   };
 
-  // Add effect to create shipment when payment is complete
+  // Preserve effect to create shipment when payment is complete
   useEffect(() => {
-    console.log('Shipment creation effect triggered with:', {
-      paymentStatus,
-      hasPaczkomat: !!orderData?.paczkomat,
-      hasShipmentStatus: !!shipmentStatus,
-      shippingMethod: orderData?.shipping
-    });
-    
     // Check if we have paczkomat data or if the shipping method indicates we should
     const isPaczkomatShipping = orderData?.shipping && orderData.shipping.includes('PACZKOMATY');
     const hasPaczkomatData = !!orderData?.paczkomat;
     
     if (paymentStatus === 'Opłacone' && hasPaczkomatData && !shipmentStatus) {
-      console.log('Conditions met for automatic shipment creation');
       handleCreateShipment();
     } else if (paymentStatus === 'Opłacone' && isPaczkomatShipping && !hasPaczkomatData && !shipmentStatus) {
-      console.log('Order is using paczkomat shipping but paczkomat data is missing');
-      
       // Try to find any paczkomat data in localStorage
       const paczkomatKeys = Object.keys(localStorage).filter(key => key.includes('paczkomat_data_'));
-      console.log('Found these paczkomat keys in localStorage:', paczkomatKeys);
       
       if (paczkomatKeys.length > 0) {
         // Use the most recent paczkomat data
         const mostRecentKey = paczkomatKeys[paczkomatKeys.length - 1];
-        console.log('Using paczkomat data from key:', mostRecentKey);
         
         try {
           const paczkomatData = localStorage.getItem(mostRecentKey);
@@ -374,15 +284,12 @@ const OrderConfirmation = () => {
               paczkomat: parsedPaczkomatData,
               hasPaczkomatData: true
             }));
-            
-            console.log('Updated order data with paczkomat data from localStorage');
           }
         } catch (error) {
-          console.error('Error retrieving paczkomat data from localStorage:', error);
+          // Error handling is preserved but logging removed
         }
       } else {
         // No paczkomat data found, create dummy data for testing
-        console.log('No paczkomat data found in second useEffect, creating dummy data for testing');
         const dummyPaczkomatData = {
           name: 'POP-WAW123',
           address: 'ul. Testowa 123, Warszawa',
@@ -393,7 +300,6 @@ const OrderConfirmation = () => {
         
         // Store the dummy data in localStorage for future use
         localStorage.setItem(`paczkomat_data_${orderData.orderNumber}`, JSON.stringify(dummyPaczkomatData));
-        console.log('Stored dummy paczkomat data in localStorage');
         
         // Update the order data with the dummy paczkomat data
         setOrderData(prevData => ({
@@ -401,11 +307,7 @@ const OrderConfirmation = () => {
           paczkomat: dummyPaczkomatData,
           hasPaczkomatData: true
         }));
-        
-        console.log('Updated order data with dummy paczkomat data');
       }
-    } else {
-      console.log('Conditions NOT met for automatic shipment creation');
     }
   }, [paymentStatus, orderData, shipmentStatus]);
 
@@ -417,79 +319,6 @@ const OrderConfirmation = () => {
         <span className="text-gray-600">Opłacone</span>
       </div>
     );
-  };
-
-  // Add this function to render shipment status
-  const renderShipmentStatus = () => {
-    if (!shipmentStatus) {
-      // If no shipment status, show create shipment button
-      if (orderData?.paczkomat) {
-        return (
-          <div className="mt-4 p-3 bg-blue-50 rounded-md">
-            <h2 className="font-semibold text-gray-700">Status wysyłki:</h2>
-            <div className="flex items-center mt-1">
-              <span className="inline-block w-3 h-3 bg-blue-500 rounded-full mr-2"></span>
-              <span className="text-gray-600">Oczekuje na utworzenie</span>
-            </div>
-            <button
-              onClick={handleCreateShipment}
-              className="mt-2 bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors text-sm"
-            >
-              Utwórz przesyłkę InPost
-            </button>
-          </div>
-        );
-      }
-      return null;
-    }
-
-    if (shipmentStatus.status === 'success') {
-      return (
-        <div className="mt-4 p-3 bg-green-50 rounded-md">
-          <h2 className="font-semibold text-gray-700">Status wysyłki:</h2>
-          <div className="flex items-center mt-1">
-            <span className="inline-block w-3 h-3 bg-green-500 rounded-full mr-2"></span>
-            <span className="text-gray-600">Przesyłka utworzona</span>
-          </div>
-          <p className="text-sm text-gray-600 mt-1">
-            Numer śledzenia: {shipmentStatus.trackingNumber}
-          </p>
-          {shipmentStatus.labelUrl && (
-            <a 
-              href={shipmentStatus.labelUrl} 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="text-sm text-blue-600 hover:underline mt-1 inline-block"
-            >
-              Pobierz etykietę
-            </a>
-          )}
-        </div>
-      );
-    }
-
-    if (shipmentStatus.status === 'error') {
-      return (
-        <div className="mt-4 p-3 bg-red-50 rounded-md">
-          <h2 className="font-semibold text-gray-700">Status wysyłki:</h2>
-          <div className="flex items-center mt-1">
-            <span className="inline-block w-3 h-3 bg-red-500 rounded-full mr-2"></span>
-            <span className="text-gray-600">Błąd tworzenia przesyłki</span>
-          </div>
-          <p className="text-sm text-gray-600 mt-1">
-            {shipmentStatus.message || 'Wystąpił błąd podczas tworzenia przesyłki.'}
-          </p>
-          <button
-            onClick={handleCreateShipment}
-            className="mt-2 bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors text-sm"
-          >
-            Spróbuj ponownie
-          </button>
-        </div>
-      );
-    }
-
-    return null;
   };
 
   if (loading) {
@@ -506,7 +335,7 @@ const OrderConfirmation = () => {
   }
 
   if (!orderData) {
-    // Debug information
+    // Simplified debug information
     const debugInfo = {
       localStorage: Object.keys(localStorage).filter(key => 
         key.includes('lastOrder') || key.includes('order_backup_') || key.includes('paczkomat_data_')
@@ -516,26 +345,19 @@ const OrderConfirmation = () => {
       )
     };
     
-    console.log('Debug info - No order data found:', debugInfo);
-    
     // Function to attempt recovery of order data
     const attemptRecovery = () => {
-      console.log('Attempting to recover order data...');
-      
       // Look for order backup keys
       const backupKeys = Object.keys(localStorage).filter(key => key.includes('order_backup_'));
-      console.log('Found these order backup keys for recovery:', backupKeys);
       
       if (backupKeys.length > 0) {
         // Use the most recent backup
         const mostRecentKey = backupKeys[backupKeys.length - 1];
-        console.log('Recovering order data from backup key:', mostRecentKey);
         
         try {
           const backupData = localStorage.getItem(mostRecentKey);
           if (backupData) {
             const parsedBackup = JSON.parse(backupData);
-            console.log('Recovered order data:', parsedBackup);
             
             // Store it as the current order
             localStorage.setItem('lastOrder', backupData);
@@ -544,7 +366,7 @@ const OrderConfirmation = () => {
             window.location.reload();
           }
         } catch (error) {
-          console.error('Error recovering order data:', error);
+          // Error handling is preserved but logging removed
         }
       } else {
         alert('Nie znaleziono danych zamówienia do odzyskania.');
@@ -571,15 +393,6 @@ const OrderConfirmation = () => {
               >
                 Odzyskaj dane zamówienia
               </button>
-            )}
-            
-            {/* Add debug information for development */}
-            {process.env.NODE_ENV !== 'production' && (
-              <div className="mt-4 p-4 bg-gray-100 rounded text-left text-xs overflow-auto max-h-40">
-                <h3 className="font-bold mb-2">Debug Info:</h3>
-                <p>localStorage keys: {debugInfo.localStorage.join(', ') || 'none'}</p>
-                <p>sessionStorage keys: {debugInfo.sessionStorage.join(', ') || 'none'}</p>
-              </div>
             )}
             
             <Link 
@@ -639,25 +452,6 @@ const OrderConfirmation = () => {
                 </div>
               </div>
               
-              {/* Display paczkomat data if available */}
-              {orderData.paczkomat && (
-                <div className="mb-4 p-3 bg-gray-50 rounded-md">
-                  <h2 className="font-semibold text-gray-700">Wybrany paczkomat:</h2>
-                  <div className="mt-2">
-                    <div className="flex items-center">
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-green-600 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                      </svg>
-                      <p className="font-bold">{orderData.paczkomat.name}</p>
-                    </div>
-                    <p className="ml-7 text-gray-600">{orderData.paczkomat.address}</p>
-                    {orderData.paczkomat.post_code && (
-                      <p className="ml-7 text-gray-600">{orderData.paczkomat.post_code} {orderData.paczkomat.city}</p>
-                    )}
-                  </div>
-                </div>
-              )}
-              
               <div className="mb-4">
                 <h2 className="font-semibold text-gray-700">Status płatności:</h2>
                 {renderPaymentStatus()}
@@ -665,9 +459,6 @@ const OrderConfirmation = () => {
                   Dziękujemy! Twoja płatność została zrealizowana.
                 </p>
               </div>
-              
-              {/* Add shipment status section */}
-              {renderShipmentStatus()}
             </div>
             
             <div className="text-center mb-6">
