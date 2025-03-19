@@ -75,21 +75,16 @@ const LoginForm = ({ login }) => {
     setLoginLoading(true);
     
     try {
-      // Attempt to login - IMPORTANT: We're preventing the default navigation
+      // Attempt to login
       const result = await login(formData.email, formData.password, false);
       
       if (result.success) {
-        // Show success notification
-        setNotification({
-          type: 'success',
-          message: 'Logowanie zakończone sukcesem! Zaraz zostaniesz przekierowany do swojego konta.'
-        });
+        // Store login success in sessionStorage for AccountPage to show message
+        sessionStorage.setItem('loginSuccess', 'true');
+        sessionStorage.setItem('loginTime', Date.now().toString());
         
-        // Ensure UI updates before redirect
-        // This is critical to show the success message
-        await new Promise(resolve => setTimeout(resolve, 1500));
-        
-        // Navigate to account page
+        // Navigate to account page immediately - 
+        // we'll show the success message there instead
         navigate('/account');
       } else {
         // Handle different error cases
@@ -109,6 +104,7 @@ const LoginForm = ({ login }) => {
           message: errorMessage
         });
         setShowError(true);
+        setLoginLoading(false);
       }
     } catch (error) {
       console.error('Login error:', error);
@@ -117,7 +113,6 @@ const LoginForm = ({ login }) => {
         message: 'Wystąpił błąd podczas logowania. Sprawdź połączenie internetowe i spróbuj ponownie.'
       });
       setShowError(true);
-    } finally {
       setLoginLoading(false);
     }
   };

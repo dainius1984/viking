@@ -9,6 +9,7 @@ import { Query } from 'appwrite';
 import products from '../../Data/products-data';
 import { FaChevronDown } from 'react-icons/fa';
 import ProductModal from '../Pages/ProductModal';
+import EnhancedAlert from './components/Alert';
 
 const AccountPage = () => {
   const { user, logout } = useAuth();
@@ -18,6 +19,7 @@ const AccountPage = () => {
   const [expandedOrders, setExpandedOrders] = useState(new Set());
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [showModal, setShowModal] = useState(false);
+  const [showLoginSuccess, setShowLoginSuccess] = useState(false);
 
   const getProductDetails = useCallback((productId) => {
     // Try to find product by ID first
@@ -72,6 +74,36 @@ const AccountPage = () => {
     }
     fetchOrders();
   }, [user, navigate, fetchOrders]);
+
+  useEffect(() => {
+    const loginSuccess = sessionStorage.getItem('loginSuccess');
+    const loginTime = sessionStorage.getItem('loginTime');
+    
+    if (loginSuccess === 'true' && loginTime) {
+      const now = Date.now();
+      const loginTimeMs = parseInt(loginTime, 10);
+      
+      if (now - loginTimeMs < 3000) {
+        setShowLoginSuccess(true);
+        
+        sessionStorage.removeItem('loginSuccess');
+        sessionStorage.removeItem('loginTime');
+        
+        const timer = setTimeout(() => {
+          setShowLoginSuccess(false);
+        }, 5000);
+        
+        return () => clearTimeout(timer);
+      } else {
+        sessionStorage.removeItem('loginSuccess');
+        session.removeItem('loginTime');
+      }
+    }
+  }, []);
+
+  const handleDismissSuccess = () => {
+    setShowLoginSuccess(false);
+  };
 
   const handleLogout = async () => {
     await logout();
@@ -161,6 +193,16 @@ const AccountPage = () => {
     <>
       <TopNavBar />
       <Header />
+      {showLoginSuccess && (
+        <div className="max-w-7xl mx-auto px-4 pt-4">
+          <EnhancedAlert
+            type="success"
+            message="Logowanie zakończone sukcesem! Witamy w Twoim koncie."
+            duration={5000}
+            onDismiss={handleDismissSuccess}
+          />
+        </div>
+      )}
       <div className="max-w-6xl mx-auto my-10 px-5">
         <div className="flex justify-between items-center mb-8">
           <h1 className="text-3xl text-gray-800 font-semibold">Moje konto</h1>
