@@ -200,7 +200,7 @@ const products = [
     id: 12,
     name: 'Xtend',
     price: '129.00',
-    image: '/img/products/12.jpg', 
+    image: '/img/products/12.jpg',
     category: categories.find(category => category.slug === 'suplementy-na-odpornosc').slug,
     description: `<div class="product-description">
       <h2 class="product-title">XTEND</h2>
@@ -362,58 +362,13 @@ const products = [
     price: '249.00',
     image: '/img/products/15.png',
     category: categories.find(category => category.slug === 'suplementy-przywracajace-zdrowie').slug,
-    description: `<div class="product-description">
-      <h2 class="product-title">ZinoGene+</h2>
-      <h3 class="product-subtitle">SUPLEMENT DIETY</h3>
-      <h4 class="product-campaign">WIOSENNE OCZYSZCZENIE Z ZINOGENE</h4>
-
-      <div class="intro-section">
-        <p>ZinoGene+ to suplementy diety bazujące na przełomowej i innowacyjnej technologii. To przełomowe odkrycie naukowe bazujące na złożonej formule fukoidyny czyli naturalnych polisacharydach z wodorostów morskich, polifenolach, witaminie C oraz cynku wspomagającego syntezę DNA i podział komórek. Nagromadzenie niewłaściwie funkcjonujących komórek oraz pogarszające się właściwości regeneracyjne to nieodzowna część procesu starzenia. Tempo starzenia się zależy od ilości składników odżywczych w naszej diecie. Dlatego opracowaliśmy suplement ZinoGene+.</p>
-      </div>
-
-      <div class="ingredients-section">
-        <div class="ingredient">
-          <h3>WYCIĄG Z KURKUMINY</h3>
-          <p>Kurkumina o intensywnym żółtym kolorze jest podstawą formuły ZinoGene+. Należąca do rodziny imbirowatych, kurkumina jest produkowana przez rośliny z gatunku Curcuma longa. Kurkumina jest stosowana w Indiach od tysięcy lat, zarówno jako przyprawa, jak i w ramach tradycji ajurwedyjskich. Obecnie jest powszechnie stosowana na całym świecie w suplementach, kosmetykach, produktach i barwnikach spożywczych. Na rynku dostępnych jest wiele różnych ekstraktów z kurkuminy, ale istnieje znaczna rozbieżność w zakresie ich biodostępności, a w związku z tym różnią się one znacznie pod względem ilości składnika potrzebnego do uzyskania aktywnego efektu. Ekstrakt z kurkuminy stosowany w naszych produktach, jest bardzo starannie dobierany i zawiera pełne spektrum kurkuminoidów. Wybraliśmy nagradzany na całym świecie składnik HydroCurc®, który jest najbardziej biodostępną kurkuminą na świecie. Oznacza to zwiększoną absorpcję, a w konsekwencji lepszą skuteczność i funkcjonalność.</p>
-        </div>
-
-        <div class="ingredient">
-          <h3>KWERCETYNA</h3>
-          <p>Kwercetyna to naturalny pigment występujący w wielu owocach, warzywach i ziarnach. Ma właściwości przeciwutleniające i należy do podgrupy polifenoli zwanych flawonoidami. Szacuje się, że przeciętna osoba spożywa 10–100 mg kwercytyny dziennie ze źródeł pokarmowych, takich jak cebula, jabłka, kapary, jagody, brokuły, owoce cytrusowe, wiśnie, kawa, winogrona, zielona herbata i czerwone wino. Należy pamiętać, że ilość kwercetyny w żywności może zależeć od warunków, w jakich żywność była uprawiana. W związku z tym, aby zoptymalizować biodostępność i funkcjonalność, stworzyliśmy własną, zastrzeżoną mieszankę kwercetyny z wykorzystaniem trzech różnych składników z dwóch różnych źródeł roślinnych: perełkowca japońskiego i cebuli. Jak zawsze, jakość naszych składników jest równie ważna jak ich ilość, a to pozostaje naszym priorytetem, jeśli chodzi o źródła kwercetyny, które wybraliśmy dla tej formuły.</p>
-        </div>
-
-        <div class="ingredient">
-          <h3>FUKOIDYNA</h3>
-          <p>Brązowe wodorosty zawierają składnik nazywany fukoidyną. Fukoidyna z wodorostów to związki nieprzywierające (należy o nich myśleć jak o biologicznym odpowiedniku teflonu). Występują one w różnych gatunkach brązowych alg i znajdują się w ścianach komórkowych wodorostów, które chronią je przed stresem z zewnątrz. Właściwości odżywcze fukoidyny nie są niczym nowym. Wodorosty morskie zawierające fukoidynę są stosowane od tysięcy lat. Najwcześniejsze wzmianki o ich stosowaniu pochodzą z 12000 lat p.n.e., z tego okresu pochodzą archeologiczne wykopaliska w Monte Verde w Chile zawierające dowody na ich stosowanie.Obecnie fukoidyna, zaliczana do składników o wysokiej wartości, jest stosowana w produktach żywieniowych. Wiemy, że jakość i cena różnią się znacznie między różnymi dostawcami i zdecydowaliśmy się na zastosowanie ekskluzywnej fukoidynyw naszym preparacie ZinoGene+.</p>
-        </div>
-
-        <div class="ingredient">
-          <h3>FISETYNA</h3>
-          <p>Fisetyna, będąca środkiem barwiącym w wielu roślinach, należy do grupy flawonoidów z grupy polifenoli. W ZinoGene+ stworzyliśmy własną, zastrzeżoną mieszankę fisetiny z ekstraktu z perukowca podolskiego i ekstraktu z truskawek. Ten bioflawanoid ma właściwości przeciwutleniające i chociaż występuje w różnych owocach i warzywach, takich jak truskawki, jabłka, persymony, winogrona, cebula, kiwi i jarmuż, jego zawartość jest niska. Szacuje się, że średnie dzienne spożycie fisetiny z różnych warzyw wynosi około 0,4 mg. Dla porównania, tylko 1 tabletka ZinoGene+ dostarcza 25 mg</p>
-        </div>
-      </div>
-
-      <div class="dosage-section">
-        <h3>ZALECANA DZIENNA DAWKA:</h3>
-        <p>Dorośli: Przyjmować 1 tabletkę dziennie. Nie przekraczać zalecanej dawki dziennej. Suplement diety nie może zastąpić zrównoważonej i zbilansowanej diety.</p>
-      </div>
-
-      <div class="warning-section">
-        <h3>UWAGA:</h3>
-        <p>W przypadku ciąży należy skonsultować się z lekarzem przed rozpoczęciem przyjmowania tego suplementu.</p>
-      </div>
-
-      <div class="storage-section">
-        <h3>PRZECHOWYWANIE:</h3>
-        <p>W suchym miejscu w temperaturze pokojowej. Przechowywać w miejscu niedostępnym dla dzieci.</p>
-      </div>
-    </div>`
+    description: 'ZinoGene+ to suplementy diety bazujące na przełomowej i innowacyjnej technologii. To przełomowe odkrycie naukowe bazujące na złożonej formule fukoidyny czyli naturalnych polisacharydach z wodorostów morskich, polifenolach, witaminie C oraz cynku wspomagającego syntezę DNA i podział komórek. Nagromadzenie niewłaściwie funkcjonujących komórek oraz pogarszające się właściwości regeneracyjne to nieodzowna część procesu starzenia. Tempo starzenia się zależy od ilości składników odżywczych w naszej diecie. Dlatego opracowaliśmy suplement ZinoGene+.'
   },
   {
     id: 16,
     name: 'Zinoshine +',
     price: '75.00',
-    image: '/img/products/16.png', 
+    image: '/img/products/16.png',
     category: categories.find(category => category.slug === 'suplementy-na-odpornosc').slug,
     description: `<div class="product-description">
       <div class="intro-section">

@@ -51,17 +51,6 @@ const PaymentButton = ({
 
   const handlePayment = async () => {
     try {
-      // Check if there's a form element we can submit directly
-      const checkoutForm = document.querySelector('form');
-      if (checkoutForm) {
-        // If we found the checkout form, submit it directly
-        console.log('PaymentButton: Submitting checkout form directly');
-        // Use form.submit() instead of dispatching an event
-        checkoutForm.submit();
-        return; // Exit early after submitting the form
-      }
-      
-      // If no form was found, continue with existing logic
       setError(null);
       const missingFields = validateFormData();
       

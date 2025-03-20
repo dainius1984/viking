@@ -25,8 +25,7 @@ const OrderSummary = ({
   setShipping,
   loading = false,
   onApplyDiscount,
-  formData,
-  onPlaceOrder
+  formData
 }) => {
   const [discountCode, setDiscountCode] = useState('');
   const [selectedPaczkomat, setSelectedPaczkomat] = useState(null);
@@ -369,26 +368,12 @@ const OrderSummary = ({
         </div>
 
         {renderOrderSummary()}
-        
-        {/* Payment button that uses the original form submission */}
-        <div className="mt-4">
-          <button
-            type="button"
-            disabled={loading || (shipping.includes('PACZKOMATY') && !selectedPaczkomat)}
-            onClick={(e) => {
-              e.preventDefault();
-              // Find and submit the checkout form
-              const checkoutForm = document.querySelector('form');
-              if (checkoutForm) checkoutForm.submit();
-            }}
-            className="w-full py-3 px-4 bg-green-800 text-white rounded-lg font-medium
-              hover:bg-green-900 transition-all duration-200
-              disabled:bg-gray-400 disabled:cursor-not-allowed
-              active:transform active:scale-[0.99]"
-          >
-            {loading ? 'Przetwarzanie...' : 'Kupuję i płacę'}
-          </button>
-        </div>
+        <PaymentButton 
+          orderData={orderData}
+          formData={enhancedFormData}
+          loading={loading}
+          isDisabled={cart.length === 0}
+        />
       </div>
     </div>
   );
