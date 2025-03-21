@@ -238,7 +238,7 @@ const OrderPage = () => {
                   handleInputChange={handleInputChange}
                 />
                 
-                <div className="mt-8">
+                {/* <div className="mt-8">
                   <button
                     type="submit"
                     disabled={loading}
@@ -249,7 +249,7 @@ const OrderPage = () => {
                   >
                     {loading ? 'Przetwarzanie...' : 'Kupuję i płacę'}
                   </button>
-                </div>
+                </div> */}
               </form>
             </div>
             

@@ -17,58 +17,98 @@ import { API_URL } from './OrderUtils';
  
 export const initiatePayment = async (paymentData) => {
   try {
-    console.log('Initiating payment with data:', {
+    console.log('=== PAYMENT INITIATION START ===');
+    console.log('1. Payment Data:', {
       orderNumber: paymentData.orderData.orderNumber,
       total: paymentData.orderData.total,
+      customerEmail: paymentData.customerData.Email,
+      shipping: paymentData.orderData.shipping,
       time: new Date().toISOString()
     });
     
-    // Add a timeout to the fetch to prevent hanging
+    // Log the API URL being used
+    console.log('2. Using API URL:', API_URL);
+    
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 15000); // 15 seconds timeout
+    console.log('3. Created AbortController');
     
-    const response = await fetch('https://healthapi-zvfk.onrender.com/api/create-payment', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        // Add an Origin header explicitly
-        'Origin': 'https://familybalance.pl'
-      },
-      body: JSON.stringify(paymentData),
-      signal: controller.signal
-    });
+    const timeoutId = setTimeout(() => {
+      console.log('TIMEOUT TRIGGERED - Aborting request after 15 seconds');
+      controller.abort();
+    }, 15000);
     
-    clearTimeout(timeoutId);
+    console.log('4. Sending fetch request to:', `${API_URL}/api/create-payment`);
     
-    if (!response.ok) {
-      console.error('Payment API error response:', {
-        status: response.status,
-        statusText: response.statusText,
-        orderNumber: paymentData.orderData.orderNumber,
-        time: new Date().toISOString()
+    try {
+      const response = await fetch(`${API_URL}/api/create-payment`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Origin': 'https://familybalance.pl'
+        },
+        body: JSON.stringify(paymentData),
+        signal: controller.signal,
+        mode: 'cors',
+        credentials: 'include'
       });
       
-      // Try to get the error message from the response
-      let errorText = 'Server responded with an error';
-      try {
-        const errorData = await response.json();
-        errorText = errorData.message || errorText;
-      } catch (e) {
-        // Ignore JSON parsing errors
+      console.log('5. Received response:', {
+        ok: response.ok,
+        status: response.status,
+        statusText: response.statusText,
+        headers: Object.fromEntries(response.headers.entries())
+      });
+      
+      clearTimeout(timeoutId);
+      console.log('6. Cleared timeout');
+      
+      if (!response.ok) {
+        console.error('7. ERROR: Payment API error response:', {
+          status: response.status,
+          statusText: response.statusText,
+          orderNumber: paymentData.orderData.orderNumber,
+          time: new Date().toISOString()
+        });
+        
+        // Try to get the error message from the response
+        let errorText = 'Server responded with an error';
+        try {
+          const errorData = await response.json();
+          console.log('8. Error response body:', errorData);
+          errorText = errorData.message || errorText;
+        } catch (e) {
+          console.error('9. Failed to parse error response:', e);
+        }
+        
+        throw new Error(errorText);
       }
       
-      throw new Error(errorText);
+      console.log('7. SUCCESS: Parsing response body');
+      const data = await response.json();
+      console.log('8. Parsed response data:', {
+        hasRedirectUrl: !!data.redirectUrl,
+        orderId: data.orderId,
+        orderNumber: data.orderNumber
+      });
+      
+      return data;
+    } catch (fetchError) {
+      console.error('FETCH ERROR:', {
+        name: fetchError.name,
+        message: fetchError.message,
+        type: fetchError.type,
+        stack: fetchError.stack
+      });
+      throw fetchError;
     }
     
-    const data = await response.json();
-    return data;
   } catch (error) {
-    console.error('Payment error:', {
+    console.error('=== PAYMENT ERROR ===', {
+      errorType: error.constructor.name,
       message: error.message,
       orderNumber: paymentData.orderData.orderNumber,
       time: new Date().toISOString(),
-      response: undefined,
-      data: undefined
+      stack: error.stack
     });
     
     // For CORS errors, provide a more helpful error message
@@ -76,6 +116,12 @@ export const initiatePayment = async (paymentData) => {
       throw new Error('Problem z połączeniem z serwerem płatności. Prosimy spróbować później lub skontaktować się z obsługą.');
     }
     
+    if (error.name === 'AbortError') {
+      throw new Error('Przekroczono czas oczekiwania na odpowiedź serwera. Prosimy spróbować ponownie.');
+    }
+    
     throw error;
+  } finally {
+    console.log('=== PAYMENT INITIATION END ===');
   }
 };
