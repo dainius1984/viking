@@ -82,18 +82,12 @@ export const calculateTotals = (cart = [], isDiscountApplied = false) => {
   const discountAmount = isDiscountApplied ? 
     (subtotal * DISCOUNT_CONFIG.percentage) / 100 : 0;
 
-  const totalBeforeShipping = subtotal - discountAmount;
-  
-  // Check for free shipping
-  const shippingCost = subtotal >= DISCOUNT_CONFIG.freeShippingThreshold ? 0 : DISCOUNT_CONFIG.shippingCost;
-  const total = totalBeforeShipping + shippingCost;
+  const total = subtotal - discountAmount;
 
   return {
     subtotal,
     discountAmount,
-    totalBeforeShipping,
     total,
-    shippingCost,
     isFreeShipping: subtotal >= DISCOUNT_CONFIG.freeShippingThreshold
   };
 };

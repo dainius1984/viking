@@ -20,7 +20,7 @@ const OrderSummary = ({
   discountApplied,
   discountAmount = 0,
   discountPercentage = 10,
-  total = 0,
+  total = 0,  // This is now without shipping
   shipping = 'DPD', 
   setShipping,
   loading = false,
@@ -97,35 +97,56 @@ const OrderSummary = ({
     }
   };
 
+  const shippingCost = getShippingCost(subtotal, shipping);
+  const finalTotal = total + shippingCost;  // Add shipping cost here
+
+  const renderOrderSummary = () => (
+    <div className="space-y-3 sm:space-y-4 mt-4 sm:mt-6">
+      <div className="flex justify-between text-sm sm:text-base">
+        <span>Suma częściowa:</span>
+        <span>{formatPrice(subtotal)}</span>
+      </div>
+
+      {discountApplied && (
+        <div className="flex justify-between text-green-600 text-sm sm:text-base">
+          <span>Rabat ({discountPercentage}%):</span>
+          <span>-{formatPrice(discountAmount)}</span>
+        </div>
+      )}
+
+      <div className="flex justify-between text-sm sm:text-base">
+        <span>Dostawa:</span>
+        <span>{isFreeShipping ? 'Darmowa' : formatPrice(shippingCost)}</span>
+      </div>
+
+      {!isFreeShipping && (
+        <div className="text-sm text-gray-600 italic">
+          * Darmowa dostawa dla zamówień powyżej {formatPrice(DISCOUNT_CONFIG.freeShippingThreshold)}
+        </div>
+      )}
+
+      {!discountApplied && (
+        <DiscountInput 
+          discountCode={discountCode}
+          setDiscountCode={setDiscountCode}
+          onApplyDiscount={handleApplyDiscount}
+        />
+      )}
+
+      {renderShippingOptions()}
+
+      <div className="flex justify-between font-bold text-base sm:text-lg pt-4 border-t">
+        <span>Razem:</span>
+        <span>{formatPrice(finalTotal)}</span>
+      </div>
+
+      {/* Display selected paczkomat in the order summary */}
+      {renderSelectedPaczkomatSummary()}
+    </div>
+  );
+
   const prepareOrderData = () => {
-    const shippingCost = getShippingCost(subtotal, shipping);
-    const finalTotal = total + shippingCost;
-    
-    // Store cart items in window for emergency access
-    window._cartState = { cart };
-    
-    // Get paczkomat details if using InPost Paczkomat
-    const isPaczkomatShipping = shipping.includes('PACZKOMATY');
-    const paczkomatDetails = isPaczkomatShipping && selectedPaczkomat 
-      ? {
-          name: selectedPaczkomat.name,
-          address: selectedPaczkomat.address,
-          city: selectedPaczkomat.city || '',
-          post_code: selectedPaczkomat.post_code || '',
-          point_id: selectedPaczkomat.point_id || selectedPaczkomat.name
-        }
-      : null;
-    
-    // Format paczkomat details for display
-    const paczkomatDisplayText = isPaczkomatShipping && selectedPaczkomat
-      ? `Paczkomat: ${selectedPaczkomat.name} - ${selectedPaczkomat.address}`
-      : '';
-    
-    // Format cart items as a string
-    const formattedItems = cart.map(item => 
-      `${item.name} (${item.quantity}x po ${formatPrice(item.price)})`
-    ).join('\n');
-    
+    // Use the finalTotal that includes shipping
     return {
       orderNumber: generateOrderNumber(),
       date: formatDate(new Date()),
@@ -137,13 +158,13 @@ const OrderSummary = ({
       postalCode: formData.postalCode,
       shipping: SHIPPING_OPTIONS[shipping] || shipping,
       shippingMethod: shipping,
-      paczkomatDetails: paczkomatDisplayText,
-      paczkomat: paczkomatDetails,
-      paczkomatId: selectedPaczkomat?.point_id || selectedPaczkomat?.name || '',
+      paczkomatDetails: '',
+      paczkomat: null,
+      paczkomatId: '',
       subtotal: subtotal.toString(),
       discount: discountApplied ? discountAmount.toString() : '0',
-      total: finalTotal.toString(),
-      items: formattedItems,
+      total: finalTotal.toString(),  // Use finalTotal here
+      items: '',
       cart: cart,
       paymentStatus: 'PENDING',
       lastUpdateTime: new Date().toISOString(),
@@ -251,51 +272,6 @@ const OrderSummary = ({
 
       {/* Always render the InPost Paczkomat widget if either Paczkomat option is selected */}
       {renderInPostPaczkomatSection()}
-    </div>
-  );
-
-  const renderOrderSummary = () => (
-    <div className="space-y-3 sm:space-y-4 mt-4 sm:mt-6">
-      <div className="flex justify-between text-sm sm:text-base">
-        <span>Suma częściowa:</span>
-        <span>{formatPrice(subtotal)}</span>
-      </div>
-
-      {discountApplied && (
-        <div className="flex justify-between text-green-600 text-sm sm:text-base">
-          <span>Rabat ({discountPercentage}%):</span>
-          <span>-{formatPrice(discountAmount)}</span>
-        </div>
-      )}
-
-      <div className="flex justify-between text-sm sm:text-base">
-        <span>Dostawa:</span>
-        <span>{isFreeShipping ? 'Darmowa' : formatPrice(getShippingCost(subtotal, shipping))}</span>
-      </div>
-
-      {!isFreeShipping && (
-        <div className="text-sm text-gray-600 italic">
-          * Darmowa dostawa dla zamówień powyżej {formatPrice(DISCOUNT_CONFIG.freeShippingThreshold)}
-        </div>
-      )}
-
-      {!discountApplied && (
-        <DiscountInput 
-          discountCode={discountCode}
-          setDiscountCode={setDiscountCode}
-          onApplyDiscount={handleApplyDiscount}
-        />
-      )}
-
-      {renderShippingOptions()}
-
-      <div className="flex justify-between font-bold text-base sm:text-lg pt-4 border-t">
-        <span>Razem:</span>
-        <span>{formatPrice(total + getShippingCost(subtotal, shipping))}</span>
-      </div>
-
-      {/* Display selected paczkomat in the order summary */}
-      {renderSelectedPaczkomatSummary()}
     </div>
   );
 
