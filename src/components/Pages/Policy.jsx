@@ -44,7 +44,7 @@ const PrivacyPolicy = () => {
                 <h3 className="text-xl font-bold text-gray-800 mb-4">§ 1 Postanowienia ogólne</h3>
                 <div className="space-y-4 text-gray-600">
                   <ol className="list-decimal pl-6 space-y-2">
-                    <li>Administratorem danych osobowych jest Tobmar, wpisaną do Centralnej Ewidencji i Informacji o Działalności Gospodarczej, 
+                    <li>Administratorem danych osobowych jest Tobmar Mariusz Kołodziej, wpisaną do Centralnej Ewidencji i Informacji o Działalności Gospodarczej, 
                     z siedzibą przy ul. Długa 99, 41-409 Mysłowice, NIP: 2220791571, REGON: 381147080, zwany dalej "Administratorem".</li>
                     <li>Administrator przetwarza dane osobowe zgodnie z obowiązującymi przepisami prawa, w szczególności 
                     z Rozporządzeniem Parlamentu Europejskiego i Rady (UE) 2016/679 z dnia 27 kwietnia 2016 r. w sprawie 
