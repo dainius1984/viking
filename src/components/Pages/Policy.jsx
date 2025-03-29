@@ -32,7 +32,7 @@ const PrivacyPolicy = () => {
           <div className="prose prose-base sm:prose-lg mx-auto text-gray-700 space-y-4 sm:space-y-6 px-4 sm:px-0">
             <div className="text-base sm:text-lg leading-relaxed space-y-4 sm:space-y-6">
               <h2 className="text-2xl sm:text-3xl font-bold text-gray-800 mt-8 mb-4">
-                POLITYKA PRYWATNOŚCI TOBMAR
+                POLITYKA PRYWATNOŚCI Tobmar Mariusz Kołodziej
               </h2>
 
               <p className="text-gray-600">

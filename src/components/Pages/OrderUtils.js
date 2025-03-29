@@ -24,7 +24,7 @@ export const SHIPPING_OPTIONS = {
   INPOST_PACZKOMATY_DARMOWA_WYSYLKA: {
     id: 'INPOST_PACZKOMATY_DARMOWA_WYSYLKA',
     name: 'InPost Paczkomaty - Darmowa wysyłka',
-    cost: 0
+    cost: 0 
   }
 };
 

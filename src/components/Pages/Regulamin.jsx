@@ -24,7 +24,7 @@ const Regulamin = () => {
             <section className="mb-8">
               <h2 className="text-xl font-bold mb-4">§ 1 Postanowienia ogólne</h2>
               <ol className="list-decimal pl-5 space-y-2">
-                <li>Sklep internetowy Familybalance, działający pod adresem https://familybalance.pl, jest prowadzony przez firmę Tobmar, wpisaną do Centralnej Ewidencji i Informacji o Działalności Gospodarczej, z siedzibą przy ul. Długa 99, 41-409 Mysłowice, NIP: 2220791571, REGON: 381147080.</li>
+                <li>Sklep internetowy Familybalance, działający pod adresem https://familybalance.pl, jest prowadzony przez firmę Tobmar Mariusz Kołodziej, wpisaną do Centralnej Ewidencji i Informacji o Działalności Gospodarczej, z siedzibą przy ul. Długa 99, 41-409 Mysłowice, NIP: 2220791571, REGON: 381147080.</li>
                 <li>Regulamin określa zasady korzystania ze sklepu internetowego, składania zamówień, realizacji umów sprzedaży, odstąpienia od umowy oraz procedur reklamacyjnych.</li>
                 <li>Wszystkie ceny podane w sklepie są cenami brutto (zawierają podatek VAT).</li>
               </ol>
@@ -89,7 +89,7 @@ const Regulamin = () => {
             <section className="mb-8">
               <h2 className="text-xl font-bold mb-4">§ 7 Polityka prywatności</h2>
               <ol className="list-decimal pl-5 space-y-2">
-                <li>Administratorem danych osobowych klientów jest firma Tobmar, z siedzibą przy ul. Długa 99, 41-409 Mysłowice.</li>
+                <li>Administratorem danych osobowych klientów jest firma Tobmar Mariusz Kołodziej, z siedzibą przy ul. Długa 99, 41-409 Mysłowice.</li>
                 <li>Dane osobowe są przetwarzane wyłącznie w celu realizacji zamówień, zgodnie z RODO.</li>
                 <li>Klient ma prawo wglądu, poprawiania i żądania usunięcia swoich danych osobowych.</li>
                 <li>Szczegóły dotyczące plików cookies i przetwarzania danych osobowych znajdują się w zakładce „Polityka prywatności".</li>
