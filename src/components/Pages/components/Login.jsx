@@ -75,7 +75,7 @@ const LoginForm = ({ login }) => {
     setLoginLoading(true);
     
     try {
-      // Attempt to login
+      // Attempt to login with autoRedirect set to false
       const result = await login(formData.email, formData.password, false);
       
       if (result.success) {
@@ -83,9 +83,10 @@ const LoginForm = ({ login }) => {
         sessionStorage.setItem('loginSuccess', 'true');
         sessionStorage.setItem('loginTime', Date.now().toString());
         
-        // Navigate to account page immediately - 
-        // we'll show the success message there instead
-        navigate('/account');
+        // Small delay before navigation to ensure state updates are complete
+        setTimeout(() => {
+          navigate('/account');
+        }, 100);
       } else {
         // Handle different error cases
         let errorMessage = 'Nieprawidłowe dane logowania. Sprawdź email i hasło.';
@@ -104,7 +105,6 @@ const LoginForm = ({ login }) => {
           message: errorMessage
         });
         setShowError(true);
-        setLoginLoading(false);
       }
     } catch (error) {
       console.error('Login error:', error);
@@ -113,6 +113,7 @@ const LoginForm = ({ login }) => {
         message: 'Wystąpił błąd podczas logowania. Sprawdź połączenie internetowe i spróbuj ponownie.'
       });
       setShowError(true);
+    } finally {
       setLoginLoading(false);
     }
   };

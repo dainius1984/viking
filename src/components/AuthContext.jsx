@@ -150,8 +150,7 @@ export const AuthProvider = ({ children }) => {
 
   return (
     <AuthContext.Provider value={value}>
-      {/* Render children only after initial loading is complete */}
-      {!loading && children}
+      {children}
     </AuthContext.Provider>
   );
 };
