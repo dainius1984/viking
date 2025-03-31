@@ -262,7 +262,70 @@ const products = [
     price: '175.00',
     image: '/img/products/10.jpg',
     category: categories.find(category => category.slug === 'suplementy-na-odpornosc').slug,
-    description: protectDescription
+    description: `<div class="product-description">
+      <h2 class="product-title">PROTECT+</h2>
+      <h3 class="product-subtitle">NATURALNY SUPLEMENT DIETY WSPOMAGAJĄCY ODPORNOŚĆ</h3>
+
+      <div class="intro-section">
+        <h3>TYLKO NATURALNE SKŁADNIKI</h3>
+        <ul class="ingredients-list">
+          <li><span class="check-icon">✓</span> 1-3, 1-6 beta-glukany pochodzące z drożdży piekarskich</li>
+          <li><span class="check-icon">✓</span> Witamina C pochodząca z owoców aceroli</li>
+          <li><span class="check-icon">✓</span> Witamina D3 pochodząca z porostów</li>
+          <li><span class="check-icon">✓</span> Substancje pomocnicze z kokosa, ryżu i kukurydzy</li>
+        </ul>
+      </div>
+
+      <div class="main-features">
+        <h3>DWA TYPY ODPORNOŚCI</h3>
+        <p>Człowiek posiada dwa typy odporności: nieswoistą i swoistą. Przeważnie to odporność nieswoista chroni nas przed infekcjami. Składa się ze wyspecjalizowanych komórek i enzymów, które pozostają w gotowości do walki z drobnoustrojami w miejscu infekcji, gdy tylko pojawi się zagrożenie. Odporność swoista zapamiętuje określone patogeny, dzięki czemu zapewnia długotrwałą obronę i ochronę przed nawracającymi infekcjami.</p>
+        <div class="feature-box">
+          <p><strong>Witamina D jest niezbędna do aktywacji naszej odpowiedzi immunologicznej.</strong> Bez wystarczającego spożycia witaminy D układ odpornościowy ma mniejsze szanse, aby właściwie walczyć z infekcjami.</p>
+        </div>
+      </div>
+
+      <div class="ingredients-section">
+        <div class="ingredient-item">
+          <h3>WITAMINA D</h3>
+          <p>Najważniejszą formą witaminy D dla zdrowia jest witamina D3 (cholekalcyferol). Jest syntetyzowana w skórze, gdy otrzymuje ona wystarczającą ilość światła słonecznego, lecz występuje również w potrawach wegańskich, takich jak grzyby oraz potrawach niewegańskich, takich jak tłuste ryby, krewetki, jaja i wątroba wołowa.</p>
+          <p>Na półkuli północnej ekspozycja na słońce jest ograniczona w trakcie sezonu zimowego, dlatego skóra nie wytwarza wystarczającej ilości witaminy D3. Niedobór witaminy D stanowi powszechny problem. Suplementy odgrywają kluczową rolę w zapobieganiu i leczeniu niskiego poziomu witaminy D.</p>
+          <p><strong>Istnieje tylko jedno wegańskie źródło witaminy D3, a mianowicie porosty.</strong> Wegańska witamina D3 w Protect+ pochodzi z ekologicznie uprawianych porostów wolnych od GMO.</p>
+        </div>
+
+        <div class="ingredient-item">
+          <h3>WITAMINA C</h3>
+          <p>Stres oksydacyjny w naszym ciele zmienia się zarówno w różnych okresach życia, jak i z dnia na dzień. W sytuacjach, w których wzrasta stres oksydacyjny, na przykład w wyniku zanieczyszczenia powietrza, ciepła, wystawienia na słońce, podróży i intensywnych ćwiczeń, nasz organizm potrzebuje więcej przeciwutleniaczy.</p>
+          <p>Przeciwutleniacze odgrywają ważną rolę jako wewnętrzne neutralizatory, które chronią nasze komórki przed uszkodzeniem oksydacyjnym (korozją). Protect+ zawiera bardzo silny przeciwutleniacz znany jako witamina C, która przyczynia się do ochrony komórek przed stresem oksydacyjnym.</p>
+        </div>
+
+        <div class="ingredient-item">
+          <h3>1-3, 1-6 BETA-GLUKANY</h3>
+          <p>Protect+ zawiera wyspecjalizowane i znormalizowane formy 1-3, 1-6 beta-glukanów pochodzących z opatentowanego szczepu drożdży piekarskich. 1-3, 1-6 beta-glukany pobudzają komórki odporności nieswoistej, umożliwiając im bardziej efektywną pracę.</p>
+          <p>1-3, 1-6 beta-glukany naturalnie występują w żywności takiej jak drożdże piekarskie, grzyby shiitake i niektóre ziarna zbóż, lecz we współczesnej diecie są stosowane jedynie sporadycznie.</p>
+        </div>
+      </div>
+
+      <div class="composition-section">
+        <h3>SKŁAD</h3>
+        <p>Substancja zagęszczająca (żelowana skrobia z kukurydzy), mieszanka 1-3, 1-6 beta-glukanów z drożdży (Saccharomyces cerevisiae), otoczka kapsułki (hydroksypropylometyloceluloza), witamina C z ekstraktu z aceroli (Malpighia glabra), wegańska witamina D3 (cholekalcyferol), substancje przeciwzbrylające (trójglicerydy średniołańcuchowe (MCT) olej kokosowy, koncentrat z łupin ryżu).</p>
+      </div>
+
+      <div class="usage-section">
+        <h3>ZALECANA DZIENNA PORCJA</h3>
+        <p>Dorośli i dzieci powyżej 12 lat: 1 kapsułka dziennie.</p>
+        <p class="warning">Nie przekraczać zalecanej porcji dziennej. Suplement diety nie może zastąpić zrównoważonej i zróżnicowanej diety.</p>
+      </div>
+
+      <div class="storage-section">
+        <h3>PRZECHOWYWANIE</h3>
+        <p>W suchym miejscu w temperaturze pokojowej. Należy trzymać w miejscu niedostępnym dla dzieci.</p>
+      </div>
+
+      <div class="blend-section">
+        <h3>ZINZINO PROTECT BLEND</h3>
+        <p>1-3, 1-6 beta-glukany pochodzące z Norwegii, USA i Azji, wegańska witamina D3 (cholekalcyferol) z porostów i witamina C z aceroli.</p>
+      </div>
+    </div>`
   },
   {
     id: 11,
@@ -310,7 +373,7 @@ const products = [
 
       <div class="dosage-section">
         <h3>ZALECANA DZIENNA DAWKA:</h3>
-        <p>Dorośli i dzieci w wieku powyżej 12 lat: Spożywać z jedzeniem. 2–4 tabletki dziennie. Nie przekraczać zalecanej dawki dziennej. Suplement diety nie może zastąpić zrównoważonej i zróżnicowanej diety.</p>
+        <p>Dorośli i dzieci w wieku powyżej 12 lat: Spożywać z jedzeniem. 2–4 tabletki dziennie. Nie przekraczać zalecanej dawki dziennej. Suplement diety nie może zastąpić zrównoważonej i zbilansowanej diety.</p>
       </div>
 
       <div class="warning-section">
@@ -723,7 +786,7 @@ const products = [
 
         <div class="ingredient-section">
           <h4>OLIWA Z OLIWEK Z PIERWSZEGO TŁOCZENIA</h4>
-          <p>Suplement diety z Hiszpańskich oliwek odmiany Picual wybierane są ponieważ mają wysoką zawartość kwasów Omega-9 oraz antyoksydantów. Z niedojrzałych jeszcze oliwek w trakcie procesu produkcyjnego usuwa się pestki i na zimno tłoczy same owoce, co w rezultacie daje oliwę extra virgin, bogatą w kwasy Omega-9 (kwas oleinowy) i antyoksydanty zwane polifenolami (powyżej 750 mg/kg5), które mają pozytywny wpływ na organizm.15 Polifenole chronią BalanceOil przed upływem czasu, lecz, co ważniejsze, zapewniają ochronę również Twoim komórkom.</p>
+          <p>Suplement diety z Hiszpańskich oliwek odmiany Picual wybierane są ponieważ mają wysoką zawartość kwasów Omega-9 oraz antyoksydantów. Z niedojrzałych jeszcze oliwek w trakcie procesu produkcyjnego usuwa się pestki i na zimno tłoczy same owoce, co w rezultacie daje oliwę extra virgin, bogatą w kwasy Omega-9 (kwas oleinowy) i antyoksydanty zwane polifenolami (powyżej 750 mg/kg).</p>
         </div>
 
         <div class="ingredient-section">
