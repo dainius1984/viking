@@ -178,7 +178,83 @@ const products = [
     price: '250.00',
     image: '/img/products/9.png',
     category: categories.find(category => category.slug === 'testy').slug,
-    description: 'BalanceTest jest testem suchej kropli krwi, którego dokładność potwierdzona w badaniach klinicznych odpowiada dokładności pomiarów stężenia kwasów tłuszczowych w próbkach krwi żylnej. Test wymaga jedynie pobrania kilku kropli krwi z opuszki palca i naniesienia ich na bibułę filtracyjną, a cała procedura zajmuje mniej niż minutę. Laboratorium VITAS Analytical Services przeprowadza anonimowo analizę stężenia 11 kwasów tłuszczowych we krwi z pewnością pomiaru na poziomie 98%. Następnie, po upływie około 20 dni wynik jest wyświetlany na stronie internetowej zinzinotest.com wraz ze informacjami szczegółowymi obejmującymi m.in. równowagę kwasów tłuszczowych omega-6:3, zawartość kwasów tłuszczowych omega 3 oraz profil ochrony kwasów tłuszczowych.'
+    description: `<div class="product-description">
+      <h2 class="product-title">BALANCETEST</h2>
+      <h3 class="product-subtitle">INNOWACYJNY TEST SUCHEJ KROPLI KRWI</h3>
+
+      <div class="intro-section">
+        <p>BalanceTest to innowacyjny test suchej kropli krwi, który pozwala na precyzyjne określenie profilu kwasów tłuszczowych w organizmie. Jego dokładność została potwierdzona w badaniach klinicznych, gdzie wykazano, że wyniki uzyskane za pomocą tej metody są równie wiarygodne, co pomiary stężenia kwasów tłuszczowych w próbkach krwi żylnej. Procedura jest niezwykle prosta i wygodna – wystarczy pobrać kilka kropli krwi z opuszki palca, nanieść je na specjalną bibułę filtracyjną, a cały proces zajmuje mniej niż minutę.</p>
+      </div>
+
+      <div class="main-features">
+        <h3>KLUCZOWE CECHY</h3>
+        <div class="benefits-container">
+          <div class="benefit-card">
+            <span class="benefit-icon">🏠</span>
+            <h4>Łatwy w użyciu</h4>
+            <p>Test do samodzielnej analizy suchej kropli krwi – prostota i wygoda pozwalają na wykonanie testu w domowym zaciszu bez konieczności wizyty w laboratorium.</p>
+          </div>
+
+          <div class="benefit-card">
+            <span class="benefit-icon">🔬</span>
+            <h4>Kompleksowa analiza</h4>
+            <p>Mierzy poziom 11 kwasów tłuszczowych we krwi – dostarcza kompleksowych danych na temat składu lipidowego organizmu, odzwierciedlając dietę z ostatnich 120 dni.</p>
+          </div>
+
+          <div class="benefit-card">
+            <span class="benefit-icon">⚖️</span>
+            <h4>Balans omega-6:3</h4>
+            <p>Pozwala ocenić, czy stosunek omega-6 do omega-3 jest na poziomie poniżej 3:1, co jest uznawane za optymalne dla utrzymania prawidłowego rozwoju komórek i tkanek.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="analysis-section">
+        <h3>ANALIZA PRÓBKI</h3>
+        <p>Analiza próbki jest przeprowadzana anonimowo przez renomowane laboratorium VITAS Analytical Services w Oslo, w Norwegii, które specjalizuje się w badaniach chromatograficznych i posiada certyfikat GMP (Good Manufacturing Practices). VITAS, z ponad 25-letnim doświadczeniem, jest uznawane za lidera w dziedzinie analizy suchej kropli krwi, a jego usługi są zgodne z najwyższymi standardami jakości.</p>
+        
+        <div class="feature-box">
+          <h4>Badane kwasy tłuszczowe:</h4>
+          <ul class="ingredients-list">
+            <li><span class="check-icon">✓</span> Kwasy nasycone</li>
+            <li><span class="check-icon">✓</span> Kwasy jednonienasycone (omega-9)</li>
+            <li><span class="check-icon">✓</span> Kwasy wielonienasycone (omega-6 i omega-3)</li>
+            <li><span class="check-icon">✓</span> EPA, DPA i DHA</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="results-section">
+        <h3>WYNIKI I RAPORT</h3>
+        <p>Po około 10-20 dniach od wysłania próbki wyniki są dostępne na stronie internetowej zinzinotest.com. Użytkownik otrzymuje szczegółowy raport, który obejmuje:</p>
+        <ul class="benefits-list">
+          <li><span class="benefit-icon">📊</span> Równowagę kwasów tłuszczowych omega-6:3</li>
+          <li><span class="benefit-icon">🔍</span> Poziom omega-3 w organizmie</li>
+          <li><span class="benefit-icon">🛡️</span> Profil ochrony kwasów tłuszczowych</li>
+          <li><span class="benefit-icon">🧠</span> Indeks omega-3 i siłę mentalną</li>
+          <li><span class="benefit-icon">💪</span> Płynność błon komórkowych</li>
+        </ul>
+      </div>
+
+      <div class="security-section">
+        <h3>BEZPIECZEŃSTWO I ANONIMOWOŚĆ</h3>
+        <div class="security-features">
+          <div class="feature-item">
+            <h4>Anonimowość</h4>
+            <p>Próbka jest analizowana anonimowo, a wyniki są dostępne tylko dla użytkownika po wprowadzeniu unikalnego kodu testowego.</p>
+          </div>
+          <div class="feature-item">
+            <h4>Zaufane źródło</h4>
+            <p>VITAS Analytical Services współpracuje z międzynarodowymi instytucjami, takimi jak Światowa Organizacja Zdrowia (WHO).</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="conclusion-section">
+        <h3>PIERWSZY KROK DO ZDROWIA</h3>
+        <p>BalanceTest to nie tylko narzędzie diagnostyczne, ale także pierwszy krok w kierunku świadomego budowania zdrowego stylu życia. Dzięki szczegółowym wynikom i wskazówkom użytkownicy mogą lepiej zrozumieć swoje potrzeby żywieniowe, a w razie potrzeby wprowadzić zmiany, takie jak zwiększenie spożycia omega-3 lub ograniczenie nadmiaru omega-6, co przyczynia się do poprawy ogólnego stanu zdrowia i samopoczucia.</p>
+      </div>
+    </div>`
   },
   {
     id: 10,
@@ -443,7 +519,7 @@ const products = [
         <p>Podobnie jak większość czynników żywieniowych i zdrowotnych, istnieją istotne indywidualne różnice, jeśli chodzi o zaspokajanie potrzeb związanych z witaminą D. Wiele czynników społecznych 
         i behawioralnych wywiera wpływ na naszą zdolność do dostarczania wystarczającej ilości witaminy D poprzez samo światło słoneczne. Czynniki takie jak przebywanie w obszarze o wysokim 
         zanieczyszczeniu, stosowanie kremów przeciwsłonecznych, czas spędzany w pomieszczeniach, mieszkanie i praca w dużych miastach, w których budynki blokują dostęp światła słonecznego 
-        odgrywają rolę w tym, jak nasz organizm reaguje na słońce i wytwarza tę niezbędną „słoneczną witaminę". Należy również uwzględnić masę ciała. Witamina D to witamina rozpuszczalna 
+        odgrywają rolę w tym, jak nasz organizm reaguje na słońce i wytwarza tę niezbędną "słoneczną witaminę". Należy również uwzględnić masę ciała. Witamina D to witamina rozpuszczalna 
         w tłuszczach, a zatem im większa masa ciała, tym więcej musimy produkować i spożywać, aby osiągnąć i utrzymać odpowiedni poziom tej witaminy we krwi.</p>
 
         <p>Na całym świecie niedobór witaminy D występuje u około 1 miliarda osób. Dlatego ważne jest, aby monitorować poziom witaminy D i w razie potrzeby korzystać z dodatkowych źródeł 

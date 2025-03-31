@@ -71,7 +71,7 @@ const AboutUs = () => {
                 <div className="absolute inset-0 bg-emerald-100 rounded-lg transform transition-transform duration-300 group-hover:scale-105"></div>
                 <div className="relative h-[300px] rounded-lg overflow-hidden">
                   <img 
-                    src="https://placehold.co/800x400/4ade80/ffffff?text=Nasza+wizja"
+                    src="/img/about1.jpg"
                     alt="Nasza wizja"
                     className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
                   />
