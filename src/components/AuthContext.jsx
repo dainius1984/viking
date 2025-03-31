@@ -103,6 +103,7 @@ export const AuthProvider = ({ children }) => {
       const result = await registerUser(email, password, name);
       if (result.success && result.user) {
         setUser(result.user);
+        // Don't auto-redirect, let the Register component handle it
         return { success: true };
       }
       return result;

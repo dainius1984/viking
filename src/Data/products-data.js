@@ -264,9 +264,75 @@ const products = [
     category: categories.find(category => category.slug === 'suplementy-na-odpornosc').slug,
     description: `<div class="product-description">
       <h2 class="product-title">PROTECT+</h2>
-      <h3 class="product-subtitle">NATURALNY SUPLEMENT DIETY WSPOMAGAJĄCY ODPORNOŚĆ</h3>
-
+      
       <div class="intro-section">
+        <p>Protect+ to innowacyjny suplement diety, który łączy w sobie naturalne składniki wspierające układ odpornościowy. Produkt zawiera 1-3, 1-6 beta-glukany pochodzące z drożdży piekarskich, witaminę C z owoców aceroli oraz wegańską witaminę D3 z porostów. Protect+ wspomaga naturalne mechanizmy obronne organizmu i chroni komórki przed stresem oksydacyjnym.</p>
+      </div>
+
+      <div class="main-features">
+        <h3 class="benefits-heading">NAJWAŻNIEJSZE KORZYŚCI</h3>
+        <div class="benefits-container">
+          <div class="benefit-card">
+            <span class="benefit-icon">🛡️</span>
+            <h4>Wspomaga układ odpornościowy</h4>
+            <p>Zawiera 1-3, 1-6 beta-glukany z drożdży piekarskich</p>
+          </div>
+
+          <div class="benefit-card">
+            <span class="benefit-icon">🌿</span>
+            <h4>Ochrona przed stresem oksydacyjnym</h4>
+            <p>Witamina C z owoców aceroli chroni komórki</p>
+          </div>
+
+          <div class="benefit-card">
+            <span class="benefit-icon">☀️</span>
+            <h4>Wegańska witamina D3</h4>
+            <p>Pochodzi z ekologicznie uprawianych porostów</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="additional-benefits">
+        <ul class="features-list">
+          <li><span class="benefit-icon">⚡</span> <strong>Wspomaga naturalną odporność</strong> poprzez aktywację komórek odpornościowych</li>
+          <li><span class="benefit-icon">🛡️</span> <strong>Chroni komórki</strong> przed uszkodzeniem oksydacyjnym</li>
+          <li><span class="benefit-icon">🌱</span> <strong>100% wegańskie</strong> składniki pochodzenia naturalnego</li>
+          <li><span class="benefit-icon">🔬</span> <strong>Naukowo potwierdzone</strong> działanie składników</li>
+          <li><span class="benefit-icon">🌿</span> <strong>Bez GMO</strong> - wszystkie składniki są naturalnego pochodzenia</li>
+          <li><span class="benefit-icon">💪</span> <strong>Wspiera ogólne zdrowie</strong> i dobre samopoczucie</li>
+        </ul>
+      </div>
+
+      <div class="evidence-section">
+        <h3>DWA TYPY ODPORNOŚCI</h3>
+        <p>Człowiek posiada dwa typy odporności: nieswoistą i swoistą. Przeważnie to odporność nieswoista chroni nas przed infekcjami. Składa się ze wyspecjalizowanych komórek i enzymów, które pozostają w gotowości do walki z drobnoustrojami w miejscu infekcji, gdy tylko pojawi się zagrożenie. Odporność swoista zapamiętuje określone patogeny, dzięki czemu zapewnia długotrwałą obronę i ochronę przed nawracającymi infekcjami.</p>
+        <div class="feature-box">
+          <p><strong>Witamina D jest niezbędna do aktywacji naszej odpowiedzi immunologicznej.</strong> Bez wystarczającego spożycia witaminy D układ odpornościowy ma mniejsze szanse, aby właściwie walczyć z infekcjami.</p>
+        </div>
+      </div>
+
+      <div class="features-grid">
+        <div class="feature-item">
+          <h4>WITAMINA D</h4>
+          <p>Najważniejszą formą witaminy D dla zdrowia jest witamina D3 (cholekalcyferol). Jest syntetyzowana w skórze, gdy otrzymuje ona wystarczającą ilość światła słonecznego, lecz występuje również w potrawach wegańskich, takich jak grzyby oraz potrawach niewegańskich, takich jak tłuste ryby, krewetki, jaja i wątroba wołowa.</p>
+          <p>Na półkuli północnej ekspozycja na słońce jest ograniczona w trakcie sezonu zimowego, dlatego skóra nie wytwarza wystarczającej ilości witaminy D3. Niedobór witaminy D stanowi powszechny problem. Suplementy odgrywają kluczową rolę w zapobieganiu i leczeniu niskiego poziomu witaminy D.</p>
+          <p><strong>Istnieje tylko jedno wegańskie źródło witaminy D3, a mianowicie porosty.</strong> Wegańska witamina D3 w Protect+ pochodzi z ekologicznie uprawianych porostów wolnych od GMO.</p>
+        </div>
+
+        <div class="feature-item">
+          <h4>WITAMINA C</h4>
+          <p>Stres oksydacyjny w naszym ciele zmienia się zarówno w różnych okresach życia, jak i z dnia na dzień. W sytuacjach, w których wzrasta stres oksydacyjny, na przykład w wyniku zanieczyszczenia powietrza, ciepła, wystawienia na słońce, podróży i intensywnych ćwiczeń, nasz organizm potrzebuje więcej przeciwutleniaczy.</p>
+          <p>Przeciwutleniacze odgrywają ważną rolę jako wewnętrzne neutralizatory, które chronią nasze komórki przed uszkodzeniem oksydacyjnym (korozją). Protect+ zawiera bardzo silny przeciwutleniacz znany jako witamina C, która przyczynia się do ochrony komórek przed stresem oksydacyjnym.</p>
+        </div>
+
+        <div class="feature-item">
+          <h4>1-3, 1-6 BETA-GLUKANY</h4>
+          <p>Protect+ zawiera wyspecjalizowane i znormalizowane formy 1-3, 1-6 beta-glukanów pochodzących z opatentowanego szczepu drożdży piekarskich. 1-3, 1-6 beta-glukany pobudzają komórki odporności nieswoistej, umożliwiając im bardziej efektywną pracę.</p>
+          <p>1-3, 1-6 beta-glukany naturalnie występują w żywności takiej jak drożdże piekarskie, grzyby shiitake i niektóre ziarna zbóż, lecz we współczesnej diecie są stosowane jedynie sporadycznie.</p>
+        </div>
+      </div>
+
+      <div class="ingredients-section">
         <h3>TYLKO NATURALNE SKŁADNIKI</h3>
         <ul class="ingredients-list">
           <li><span class="check-icon">✓</span> 1-3, 1-6 beta-glukany pochodzące z drożdży piekarskich</li>
@@ -276,54 +342,42 @@ const products = [
         </ul>
       </div>
 
-      <div class="main-features">
-        <h3>DWA TYPY ODPORNOŚCI</h3>
-        <p>Człowiek posiada dwa typy odporności: nieswoistą i swoistą. Przeważnie to odporność nieswoista chroni nas przed infekcjami. Składa się ze wyspecjalizowanych komórek i enzymów, które pozostają w gotowości do walki z drobnoustrojami w miejscu infekcji, gdy tylko pojawi się zagrożenie. Odporność swoista zapamiętuje określone patogeny, dzięki czemu zapewnia długotrwałą obronę i ochronę przed nawracającymi infekcjami.</p>
-        <div class="feature-box">
-          <p><strong>Witamina D jest niezbędna do aktywacji naszej odpowiedzi immunologicznej.</strong> Bez wystarczającego spożycia witaminy D układ odpornościowy ma mniejsze szanse, aby właściwie walczyć z infekcjami.</p>
+      <div class="features-grid">
+        <div class="feature-item">
+          <h4>ZINZINO PROTECT BLEND</h4>
+          <p>1-3, 1-6 beta-glukany pochodzące z Norwegii, USA i Azji, wegańska witamina D3 (cholekalcyferol) z porostów i witamina C z aceroli.</p>
+        </div>
+
+        <div class="feature-item">
+          <h4>ULTRACZYSTOŚĆ</h4>
+          <p>Produkt molekularnie testowany pod kątem toksyn w celu zapewnienia świeżości, bezpieczeństwa i czystości, którym można zaufać.</p>
+        </div>
+
+        <div class="feature-item">
+          <h4>WEGAŃSKI</h4>
+          <p>Wszystkie składniki są pochodzenia roślinnego, w tym wegańska witamina D3 z porostów.</p>
+        </div>
+
+        <div class="feature-item">
+          <h4>BEZ GMO</h4>
+          <p>Produkt nie zawiera składników modyfikowanych genetycznie.</p>
         </div>
       </div>
 
-      <div class="ingredients-section">
-        <div class="ingredient-item">
-          <h3>WITAMINA D</h3>
-          <p>Najważniejszą formą witaminy D dla zdrowia jest witamina D3 (cholekalcyferol). Jest syntetyzowana w skórze, gdy otrzymuje ona wystarczającą ilość światła słonecznego, lecz występuje również w potrawach wegańskich, takich jak grzyby oraz potrawach niewegańskich, takich jak tłuste ryby, krewetki, jaja i wątroba wołowa.</p>
-          <p>Na półkuli północnej ekspozycja na słońce jest ograniczona w trakcie sezonu zimowego, dlatego skóra nie wytwarza wystarczającej ilości witaminy D3. Niedobór witaminy D stanowi powszechny problem. Suplementy odgrywają kluczową rolę w zapobieganiu i leczeniu niskiego poziomu witaminy D.</p>
-          <p><strong>Istnieje tylko jedno wegańskie źródło witaminy D3, a mianowicie porosty.</strong> Wegańska witamina D3 w Protect+ pochodzi z ekologicznie uprawianych porostów wolnych od GMO.</p>
-        </div>
-
-        <div class="ingredient-item">
-          <h3>WITAMINA C</h3>
-          <p>Stres oksydacyjny w naszym ciele zmienia się zarówno w różnych okresach życia, jak i z dnia na dzień. W sytuacjach, w których wzrasta stres oksydacyjny, na przykład w wyniku zanieczyszczenia powietrza, ciepła, wystawienia na słońce, podróży i intensywnych ćwiczeń, nasz organizm potrzebuje więcej przeciwutleniaczy.</p>
-          <p>Przeciwutleniacze odgrywają ważną rolę jako wewnętrzne neutralizatory, które chronią nasze komórki przed uszkodzeniem oksydacyjnym (korozją). Protect+ zawiera bardzo silny przeciwutleniacz znany jako witamina C, która przyczynia się do ochrony komórek przed stresem oksydacyjnym.</p>
-        </div>
-
-        <div class="ingredient-item">
-          <h3>1-3, 1-6 BETA-GLUKANY</h3>
-          <p>Protect+ zawiera wyspecjalizowane i znormalizowane formy 1-3, 1-6 beta-glukanów pochodzących z opatentowanego szczepu drożdży piekarskich. 1-3, 1-6 beta-glukany pobudzają komórki odporności nieswoistej, umożliwiając im bardziej efektywną pracę.</p>
-          <p>1-3, 1-6 beta-glukany naturalnie występują w żywności takiej jak drożdże piekarskie, grzyby shiitake i niektóre ziarna zbóż, lecz we współczesnej diecie są stosowane jedynie sporadycznie.</p>
-        </div>
-      </div>
-
-      <div class="composition-section">
-        <h3>SKŁAD</h3>
+      <div class="ingredients-details">
+        <h3>SKŁADNIKI:</h3>
         <p>Substancja zagęszczająca (żelowana skrobia z kukurydzy), mieszanka 1-3, 1-6 beta-glukanów z drożdży (Saccharomyces cerevisiae), otoczka kapsułki (hydroksypropylometyloceluloza), witamina C z ekstraktu z aceroli (Malpighia glabra), wegańska witamina D3 (cholekalcyferol), substancje przeciwzbrylające (trójglicerydy średniołańcuchowe (MCT) olej kokosowy, koncentrat z łupin ryżu).</p>
       </div>
 
-      <div class="usage-section">
-        <h3>ZALECANA DZIENNA PORCJA</h3>
+      <div class="dosage-section">
+        <h3>ZALECANA DZIENNA PORCJA:</h3>
         <p>Dorośli i dzieci powyżej 12 lat: 1 kapsułka dziennie.</p>
         <p class="warning">Nie przekraczać zalecanej porcji dziennej. Suplement diety nie może zastąpić zrównoważonej i zróżnicowanej diety.</p>
       </div>
 
       <div class="storage-section">
-        <h3>PRZECHOWYWANIE</h3>
+        <h3>PRZECHOWYWANIE:</h3>
         <p>W suchym miejscu w temperaturze pokojowej. Należy trzymać w miejscu niedostępnym dla dzieci.</p>
-      </div>
-
-      <div class="blend-section">
-        <h3>ZINZINO PROTECT BLEND</h3>
-        <p>1-3, 1-6 beta-glukany pochodzące z Norwegii, USA i Azji, wegańska witamina D3 (cholekalcyferol) z porostów i witamina C z aceroli.</p>
       </div>
     </div>`
   },

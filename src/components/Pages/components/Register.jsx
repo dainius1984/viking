@@ -74,10 +74,11 @@ const RegisterForm = ({ register }) => {
           message: 'Konto zostało utworzone pomyślnie! Witamy w naszym sklepie. Zaraz zostaniesz przekierowany.'
         });
         
-        // Add a small delay before redirect happens (handled by AuthContext)
+        // Add a delay before redirect to show the success message
         setTimeout(() => {
-          // The redirect is handled by the AuthContext
-        }, 1500);
+          // Navigate to account page
+          window.location.href = '/account';
+        }, 2000);
       } else {
         let errorMessage = 'Wystąpił błąd podczas rejestracji. Spróbuj ponownie.';
         
