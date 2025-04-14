@@ -1,6 +1,6 @@
 import categories from './category-data';
 import './product-styles.css';
-import { balanceOilDescription, protectDescription } from './balanceoil-description';
+import { balanceOilDescription } from './balanceoil-description';
 
 const products = [
   {
@@ -422,7 +422,7 @@ const products = [
 
       <div class="ingredients-section">
         <h3>SKŁADNIKI:</h3>
-        <p>Substancje wypełniające (celuloza mikrokrystaliczna, beta-cyklodekstryna, fosforan triwapniowy), wyciąg z liści drzewa oliwnego (Olea europaea)*, magnez (wodorotlenek magnezu)*, wyciąg z alg brunatnych (Ascophyllum nodosum)*, mieszanina 1-3, 1-6 betaglukanów z drożdży (Saccharomyces cerevisiae)*, wyciąg z kurkumy dlugiej (Curcuma longa)*, witamina C (kwas askorbinowy)*, substancje przeciwzbrylające (dwutlenek krzemu, fosforan triwapniowy, sole magnezowe kwasów tłuszczowych, poliwinylopirolidon), cynk (chelat bisglicynianu cynku), wyciąg z brokułów (Brassica oleracea), witamina E (mieszanina tokoferoli i tokotrienoli), wyciąg z liści zielonej herbaty (Camellia sinensis), wyciąg z pomidorów (Solanum lycopersicum), luteina i zeaksantyna z wyciągu z kwiatów aksamitki wzniesionej (Tagetes erecta), witamina K2 (menachinon jako MK-7), żelazo (chelat bisglicynianu żelaza), witamina B3 (niacynamid), selen (metionina selenu), koenzym Q10 (ubidekarenon), molibden (molibdenian sodu), mangan (chelat bisglicynianu manganu), wyciąg z mikroalg (Dunaliella salina), witamina D3 (cholekalcyferol), miedź (bisglicynian miedzi), witamina B5 (kwas pantotenowy), witamina B12 (cyjanokobalamina), chrom (chlorek chromu), witamina B6 (chlorowodorek pirydoksyny), witamina B1 (chlorowodorek tiaminy), witamina B2 (ryboflawina), witamina K1 (filochinon), folian ((6S)- 5-metylotetrahydrofoliowy jako Quatrefolic), biotyna. Pochodzenie: UE i spoza UE.</p>
+        <p>Substancje wypełniające (celuloza mikrokrystaliczna, beta-cyklodekstryna, fosforan triwapniowy), wyciąg z liści drzewa oliwnego (Olea europaea)*, magnez (wodorotlenek magnezu)*, wyciąg z alg brunatnych (Ascophyllum nodosum)*, mieszanina 1-3, 1-6 betaglukanów z drożdży (Saccharomyces cerevisiae)*, wyciąg z kurkumy dlugiej (Curcuma longa)*, witamina C (kwas askorbinowy)*, substancje przeciwzbrylające (dwutlenek krzemu, fosforan triwapniowy, sole magnezowe kwasów tłuszczowych, poliwinylopirolidon), cynk (chelat bisglicynianu cynku), wyciąg z brokułów (Brassica oleracea), witamina E (mieszanina tokoferoli i tokotrienoli), wyciąg z liści zielonej herbaty (Camellia sinensis), wyciąg z pomidorów (Solanum lycopersicum), luteina i zeaksantyna z wyciągu z kwiatów aksamitki wzniesionej (Tagetes erecta), witamina K2 (menachinon jako MK-7), żelazo (chelat bisglicynianu żelaza), witamina B3 (niacynamid), selen (metionina selenu), koenzym Q10 (ubidekarenon), molibden (molibdenian sodu), mangan (chelat bisglicynian manganu), wyciąg z mikroalg (Dunaliella salina), witamina D3 (cholekalcyferol), miedź (bisglicynian miedzi), witamina B5 (kwas pantotenowy), witamina B12 (cyjanokobalamina), chrom (chlorek chromu), witamina B6 (chlorowodorek pirydoksyny), witamina B1 (chlorowodorek tiaminy), witamina B2 (ryboflawina), witamina K1 (filochinon), folian ((6S)- 5-metylotetrahydrofoliowy jako Quatrefolic), biotyna. Pochodzenie: UE i spoza UE.</p>
       </div>
 
       <div class="dosage-section">

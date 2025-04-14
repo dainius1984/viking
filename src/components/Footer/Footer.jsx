@@ -8,6 +8,7 @@ const Footer = () => {
       { name: 'O nas', href: '/o-nas' },
       { name: 'Regulamin', href: '/regulamin' },
       { name: 'Zamówienia', href: '/category' },
+      { name: 'Kontakt', href: '/contact' },
       { name: 'Polityka Prywatności', href: '/policy' }
     ]
   };
@@ -42,10 +43,10 @@ const Footer = () => {
               </div>
               <div className="flex items-center gap-3">
                 <Mail size={24} className="text-green-400" />
-                <a href="mailto:sklep@familybalance.pl" 
+                <Link to="/contact" 
                    className="text-white/90 hover:text-white hover:underline transition-colors">
                   sklep@familybalance.pl
-                </a>
+                </Link>
               </div>
               <div className="flex items-center gap-3">
                 <Phone size={24} className="text-green-400" />

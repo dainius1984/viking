@@ -21,6 +21,7 @@ import PrivateRoute, { RedirectIfAuthenticated } from './PrivateRoute';
 import ProductPage from './components/Pages/ProductPage';
 import SessionManager from './SessionManager'; // Import the session manager
 import EnvTest from './components/EnvTest'; // Import the EnvTest component
+import ContactPage from './components/Pages/ContactPage';
 
 const App = () => {
   return (
@@ -41,6 +42,7 @@ const App = () => {
             <Route path="/o-nas" element={<AboutUs />} />
             <Route path="/regulamin" element={<Regulamin />} />
             <Route path="/policy" element={<PrivacyPolicy />} />
+            <Route path="/contact" element={<ContactPage />} />
             <Route path="/article/:id" element={<Article />} />
             <Route path="/health-protocol" element={<HealthProtocolPage />} />
             <Route path="/product/:id" element={<ProductPage />} />

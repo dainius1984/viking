@@ -1,6 +1,6 @@
 import React, { useState, useCallback, useRef } from 'react';
 import { AiOutlineShoppingCart, AiOutlineHeart } from 'react-icons/ai';
-import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useCart } from '../../context/CartContext';
 import categories from '../../Data/category-data';
 
@@ -9,7 +9,6 @@ const Header = () => {
   const dropdownRef = useRef(null);
   const { state } = useCart();
   const navigate = useNavigate();
-  const location = useLocation();
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
@@ -198,6 +197,7 @@ const Header = () => {
           <div className="flex justify-center gap-6 mt-4 md:hidden">
             <Link to="/" className={navLinkStyles}>Strona główna</Link>
             <Link to="/blog" className={navLinkStyles}>Blog</Link>
+            <Link to="/contact" className={navLinkStyles}>Kontakt</Link>
             <Link to="/auth" className={navLinkStyles}>Moje konto</Link>
           </div>
 
@@ -213,8 +213,7 @@ const Header = () => {
                 onMouseEnter={handleMouseEnter}
                 onMouseLeave={handleMouseLeave}
               >
-                <a 
-                  href="#" 
+                <button 
                   onClick={handleShopClick}
                   className={`${navLinkStyles} flex items-center`}
                 >
@@ -222,7 +221,7 @@ const Header = () => {
                   <span className={`ml-1 transition-transform duration-200 ease-in-out ${isDropdownVisible ? 'rotate-180' : ''}`}>
                     ▾
                   </span>
-                </a>
+                </button>
                 
                 <ul className={`absolute left-0 w-[300px] bg-white border border-gray-200 rounded-lg shadow-lg 
                   transition-all duration-300 ease-in-out z-50 mt-2
@@ -250,6 +249,7 @@ const Header = () => {
               
               <li><Link to="/koszyk" className={navLinkStyles}>Zamówienie</Link></li>
               <li><Link to="/blog" className={navLinkStyles}>Blog</Link></li>
+              <li><Link to="/contact" className={navLinkStyles}>Kontakt</Link></li>
               <li><Link to="/auth" className={navLinkStyles}>Moje konto</Link></li>
             </ul>
           </nav>

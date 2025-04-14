@@ -215,50 +215,50 @@ const OrderConfirmation = () => {
     }
   }, [clearCart, hasCleared]);
 
-  // Preserve the function to handle shipment creation for logic consistency
-  const handleCreateShipment = async () => {
-    if (!orderData || !orderData.paczkomat) {
-      return;
-    }
-
-    // Only create shipment if payment is complete
-    if (paymentStatus !== 'Opłacone') {
-      return;
-    }
-
-    try {
-      const shipmentData = {
-        ...orderData,
-        firstName: orderData.firstName || 'Klient',
-        lastName: orderData.lastName || 'Sklepu',
-        email: orderData.email || 'klient@example.com',
-        phone: orderData.phone || '123456789'
-      };
-      
-      const result = await createInPostShipment(shipmentData);
-
-      if (result.success) {
-        setShipmentStatus({
-          status: 'success',
-          trackingNumber: result.data.trackingNumber,
-          labelUrl: result.data.labelUrl
-        });
-      } else {
-        setShipmentStatus({
-          status: 'error',
-          message: result.error
-        });
-      }
-    } catch (error) {
-      setShipmentStatus({
-        status: 'error',
-        message: error.message
-      });
-    }
-  };
-
   // Preserve effect to create shipment when payment is complete
   useEffect(() => {
+    // Define handleCreateShipment inside the effect
+    const handleCreateShipment = async () => {
+      if (!orderData || !orderData.paczkomat) {
+        return;
+      }
+
+      // Only create shipment if payment is complete
+      if (paymentStatus !== 'Opłacone') {
+        return;
+      }
+
+      try {
+        const shipmentData = {
+          ...orderData,
+          firstName: orderData.firstName || 'Klient',
+          lastName: orderData.lastName || 'Sklepu',
+          email: orderData.email || 'klient@example.com',
+          phone: orderData.phone || '123456789'
+        };
+        
+        const result = await createInPostShipment(shipmentData);
+
+        if (result.success) {
+          setShipmentStatus({
+            status: 'success',
+            trackingNumber: result.data.trackingNumber,
+            labelUrl: result.data.labelUrl
+          });
+        } else {
+          setShipmentStatus({
+            status: 'error',
+            message: result.error
+          });
+        }
+      } catch (error) {
+        setShipmentStatus({
+          status: 'error',
+          message: error.message
+        });
+      }
+    };
+
     // Check if we have paczkomat data or if the shipping method indicates we should
     const isPaczkomatShipping = orderData?.shipping && orderData.shipping.includes('PACZKOMATY');
     const hasPaczkomatData = !!orderData?.paczkomat;
@@ -288,7 +288,7 @@ const OrderConfirmation = () => {
         } catch (error) {
           // Error handling is preserved but logging removed
         }
-      } else {
+      
         // No paczkomat data found, create dummy data for testing
         const dummyPaczkomatData = {
           name: 'POP-WAW123',
@@ -357,8 +357,6 @@ const OrderConfirmation = () => {
         try {
           const backupData = localStorage.getItem(mostRecentKey);
           if (backupData) {
-            const parsedBackup = JSON.parse(backupData);
-            
             // Store it as the current order
             localStorage.setItem('lastOrder', backupData);
             

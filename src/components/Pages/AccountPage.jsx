@@ -126,7 +126,7 @@ const AccountPage = () => {
       if (typeof orderItems === 'string' && !orderItems.startsWith('[')) {
         const match = orderItems.match(/(.*?)\s*\((\d+)x po\s*([\d.]+)/);
         if (match) {
-          const [_, name, quantity, price] = match;
+          const [, name, quantity, price] = match;
           return [{
             id: name.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
             n: name.trim(),
