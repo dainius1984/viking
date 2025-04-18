@@ -1,6 +1,7 @@
 // App.jsx
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { HelmetProvider } from 'react-helmet-async';
 import { CartProvider } from './context/CartContext';
 import HomePage from './pages/HomePage';
 import CategoryPage from './components/Pages/CategoryPage';
@@ -25,48 +26,50 @@ import ContactPage from './components/Pages/ContactPage';
 
 const App = () => {
   return (
-    <Router>
-      <AuthProvider>
-        {/* Add SessionManager to handle logout on tab close and inactivity */}
-        <SessionManager />
-        <CartProvider>
-          <Routes>
-            <Route path="/" element={<HomePage />} />
-            <Route path="/category" element={<CategoryPage />} />
-            <Route path="/category/:categorySlug" element={<CategoryPage />} />
-            <Route path="/koszyk" element={<Cart />} />
-            <Route path="/order" element={<OrderPage />} />
-            <Route path="/order-confirmation" element={<OrderConfirmation />} />
-            <Route path="/wishlist" element={<Wishlist />} />
-            <Route path="/blog" element={<Blog />} />
-            <Route path="/o-nas" element={<AboutUs />} />
-            <Route path="/regulamin" element={<Regulamin />} />
-            <Route path="/policy" element={<PrivacyPolicy />} />
-            <Route path="/contact" element={<ContactPage />} />
-            <Route path="/article/:id" element={<Article />} />
-            <Route path="/health-protocol" element={<HealthProtocolPage />} />
-            <Route path="/product/:id" element={<ProductPage />} />
-            <Route path="/env-test" element={<EnvTest />} />
-            <Route 
-              path="/auth" 
-              element={
-                <RedirectIfAuthenticated>
-                  <AuthPage />
-                </RedirectIfAuthenticated>
-              } 
-            />
-            <Route 
-              path="/account" 
-              element={
-                <PrivateRoute>
-                  <AccountPage />
-                </PrivateRoute>
-              } 
-            />
-          </Routes>
-        </CartProvider>
-      </AuthProvider>
-    </Router>
+    <HelmetProvider>
+      <Router>
+        <AuthProvider>
+          {/* Add SessionManager to handle logout on tab close and inactivity */}
+          <SessionManager />
+          <CartProvider>
+            <Routes>
+              <Route path="/" element={<HomePage />} />
+              <Route path="/category" element={<CategoryPage />} />
+              <Route path="/category/:categorySlug" element={<CategoryPage />} />
+              <Route path="/koszyk" element={<Cart />} />
+              <Route path="/order" element={<OrderPage />} />
+              <Route path="/order-confirmation" element={<OrderConfirmation />} />
+              <Route path="/wishlist" element={<Wishlist />} />
+              <Route path="/blog" element={<Blog />} />
+              <Route path="/o-nas" element={<AboutUs />} />
+              <Route path="/regulamin" element={<Regulamin />} />
+              <Route path="/policy" element={<PrivacyPolicy />} />
+              <Route path="/contact" element={<ContactPage />} />
+              <Route path="/article/:id" element={<Article />} />
+              <Route path="/health-protocol" element={<HealthProtocolPage />} />
+              <Route path="/product/:id" element={<ProductPage />} />
+              <Route path="/env-test" element={<EnvTest />} />
+              <Route 
+                path="/auth" 
+                element={
+                  <RedirectIfAuthenticated>
+                    <AuthPage />
+                  </RedirectIfAuthenticated>
+                } 
+              />
+              <Route 
+                path="/account" 
+                element={
+                  <PrivateRoute>
+                    <AccountPage />
+                  </PrivateRoute>
+                } 
+              />
+            </Routes>
+          </CartProvider>
+        </AuthProvider>
+      </Router>
+    </HelmetProvider>
   );
 };
 

@@ -29,7 +29,7 @@ export const SHIPPING_OPTIONS = {
 };
 
 export const DISCOUNT_CONFIG = {
-  code: 'rabat10'',
+  code: 'rabat10',
   percentage: 10,
   shippingCost: 14.99,
   freeShippingThreshold: 300

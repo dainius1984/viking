@@ -2,6 +2,20 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 
 const HeroSection = () => {
+  const scrollToProducts = () => {
+    const productsSection = document.getElementById('products-section');
+    if (productsSection) {
+      const headerOffset = 100; // Adjust this value based on your header height
+      const elementPosition = productsSection.getBoundingClientRect().top;
+      const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+
+      window.scrollTo({
+        top: offsetPosition,
+        behavior: 'smooth'
+      });
+    }
+  };
+
   return (
     <div 
       className="w-full h-[calc(100vh-100px)] md:h-[80vh] min-h-[500px] bg-cover bg-center bg-no-repeat 
@@ -44,8 +58,18 @@ const HeroSection = () => {
           </Link>
         </div>
         
-        <div className="mt-8 animate-bounce opacity-70">
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mx-auto">
+        <div 
+          className="mt-8 animate-bounce opacity-70 cursor-pointer hover:opacity-100 transition-opacity"
+          onClick={scrollToProducts}
+          role="button"
+          tabIndex={0}
+          onKeyPress={(e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              scrollToProducts();
+            }
+          }}
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mx-auto">
             <path d="M7 13l5 5 5-5"></path>
             <path d="M7 7l5 5 5-5"></path>
           </svg>

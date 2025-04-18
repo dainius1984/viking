@@ -44,7 +44,7 @@ const ProductGrid = () => {
   }, []);
 
   return (
-    <section className="w-full max-w-[1200px] mx-auto my-6 sm:my-8 lg:my-10 px-4 sm:px-5">
+    <section id="products-section" className="w-full max-w-[1200px] mx-auto my-6 sm:my-8 lg:my-10 px-4 sm:px-5">
       <h2 className="text-center text-2xl sm:text-3xl mb-6 sm:mb-8 lg:mb-10">
         <span className="text-[#006400]">Nasze Najnowsze Produkty</span>
       </h2>

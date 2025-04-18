@@ -20,13 +20,17 @@ const HomePage = () => {
   }, []);
 
   return (
-    <div>
+    <div className="flex flex-col min-h-screen">
       {!isMobile && <TopNavBar />}
       <Header />
-      <HeroSection />
-      <HealthyLifestyleBanner />
-      <ProductGrid />
-      <InfoSection />
+      <main className="flex-grow">
+        <HeroSection />
+        <HealthyLifestyleBanner />
+        <div className="py-8">
+          <ProductGrid />
+        </div>
+        <InfoSection />
+      </main>
       <Footer />
     </div>
   );

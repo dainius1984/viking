@@ -127,8 +127,8 @@ const ContactForm = () => {
   };
 
   return (
-    <div className="bg-white p-4 sm:p-6 md:p-8 rounded-lg shadow-sm max-w-xl mx-auto w-full">
-      <h2 className="text-xl sm:text-2xl text-emerald-800 mb-4 sm:mb-6 text-center font-semibold">
+    <div className="bg-white p-6 sm:p-8 rounded-xl shadow-lg max-w-xl mx-auto w-full border border-gray-100">
+      <h2 className="text-2xl sm:text-3xl text-emerald-800 mb-6 text-center font-bold">
         Formularz kontaktowy
       </h2>
 
@@ -142,18 +142,18 @@ const ContactForm = () => {
         </div>
       )}
 
-      <form className="flex flex-col gap-4 sm:gap-5" onSubmit={handleSubmit}>
-        <div className="flex flex-col gap-1 sm:gap-2">
-          <label className="text-sm sm:text-base text-gray-700 font-medium">
+      <form className="flex flex-col gap-6" onSubmit={handleSubmit}>
+        <div className="flex flex-col gap-2">
+          <label className="text-base sm:text-lg text-gray-700 font-medium">
             Imię i nazwisko
           </label>
           <input
             type="text"
             name="name"
-            className={`p-2.5 sm:p-3 border rounded-md text-sm sm:text-base focus:outline-none transition-colors ${
+            className={`p-3 sm:p-4 border-2 rounded-lg text-base focus:outline-none transition-colors ${
               formData.errors.name
                 ? 'border-red-300 focus:border-red-500'
-                : 'border-gray-200 focus:border-emerald-800'
+                : 'border-gray-200 focus:border-emerald-500'
             }`}
             value={formData.name}
             onChange={(e) => setFormData({
@@ -163,25 +163,26 @@ const ContactForm = () => {
             })}
             disabled={isSubmitting}
             required
+            placeholder="Wprowadź swoje imię i nazwisko"
           />
           {formData.errors.name && (
-            <span className="text-red-500 text-xs sm:text-sm mt-1">
+            <span className="text-red-500 text-sm mt-1">
               {formData.errors.name}
             </span>
           )}
         </div>
 
-        <div className="flex flex-col gap-1 sm:gap-2">
-          <label className="text-sm sm:text-base text-gray-700 font-medium">
+        <div className="flex flex-col gap-2">
+          <label className="text-base sm:text-lg text-gray-700 font-medium">
             Email
           </label>
           <input
             type="email"
             name="email"
-            className={`p-2.5 sm:p-3 border rounded-md text-sm sm:text-base focus:outline-none transition-colors ${
+            className={`p-3 sm:p-4 border-2 rounded-lg text-base focus:outline-none transition-colors ${
               formData.errors.email
                 ? 'border-red-300 focus:border-red-500'
-                : 'border-gray-200 focus:border-emerald-800'
+                : 'border-gray-200 focus:border-emerald-500'
             }`}
             value={formData.email}
             onChange={(e) => setFormData({
@@ -191,25 +192,26 @@ const ContactForm = () => {
             })}
             disabled={isSubmitting}
             required
+            placeholder="Wprowadź swój email"
           />
           {formData.errors.email && (
-            <span className="text-red-500 text-xs sm:text-sm mt-1">
+            <span className="text-red-500 text-sm mt-1">
               {formData.errors.email}
             </span>
           )}
         </div>
 
-        <div className="flex flex-col gap-1 sm:gap-2">
-          <label className="text-sm sm:text-base text-gray-700 font-medium">
+        <div className="flex flex-col gap-2">
+          <label className="text-base sm:text-lg text-gray-700 font-medium">
             Temat
           </label>
           <input
             type="text"
             name="subject"
-            className={`p-2.5 sm:p-3 border rounded-md text-sm sm:text-base focus:outline-none transition-colors ${
+            className={`p-3 sm:p-4 border-2 rounded-lg text-base focus:outline-none transition-colors ${
               formData.errors.subject
                 ? 'border-red-300 focus:border-red-500'
-                : 'border-gray-200 focus:border-emerald-800'
+                : 'border-gray-200 focus:border-emerald-500'
             }`}
             value={formData.subject}
             onChange={(e) => setFormData({
@@ -219,24 +221,25 @@ const ContactForm = () => {
             })}
             disabled={isSubmitting}
             required
+            placeholder="Wprowadź temat wiadomości"
           />
           {formData.errors.subject && (
-            <span className="text-red-500 text-xs sm:text-sm mt-1">
+            <span className="text-red-500 text-sm mt-1">
               {formData.errors.subject}
             </span>
           )}
         </div>
 
-        <div className="flex flex-col gap-1 sm:gap-2">
-          <label className="text-sm sm:text-base text-gray-700 font-medium">
+        <div className="flex flex-col gap-2">
+          <label className="text-base sm:text-lg text-gray-700 font-medium">
             Wiadomość
           </label>
           <textarea
             name="message"
-            className={`p-2.5 sm:p-3 border rounded-md text-sm sm:text-base focus:outline-none transition-colors ${
+            className={`p-3 sm:p-4 border-2 rounded-lg text-base focus:outline-none transition-colors ${
               formData.errors.message
                 ? 'border-red-300 focus:border-red-500'
-                : 'border-gray-200 focus:border-emerald-800'
+                : 'border-gray-200 focus:border-emerald-500'
             }`}
             value={formData.message}
             onChange={(e) => setFormData({
@@ -245,11 +248,12 @@ const ContactForm = () => {
               errors: { ...formData.errors, message: '' }
             })}
             disabled={isSubmitting}
-            rows={4}
+            rows={5}
             required
+            placeholder="Wprowadź treść wiadomości"
           />
           {formData.errors.message && (
-            <span className="text-red-500 text-xs sm:text-sm mt-1">
+            <span className="text-red-500 text-sm mt-1">
               {formData.errors.message}
             </span>
           )}
@@ -257,7 +261,7 @@ const ContactForm = () => {
 
         <button
           type="submit"
-          className="bg-emerald-800 hover:bg-emerald-900 text-white py-3 sm:py-3.5 px-4 rounded-md text-sm sm:text-base font-semibold cursor-pointer transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0 disabled:hover:shadow-none w-full sm:w-auto mt-2"
+          className="bg-emerald-800 hover:bg-emerald-900 text-white py-4 px-6 rounded-lg text-lg font-semibold cursor-pointer transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0 disabled:hover:shadow-none w-full sm:w-auto mt-4"
           disabled={isSubmitting}
         >
           {isSubmitting ? (
