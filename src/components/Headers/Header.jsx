@@ -182,13 +182,35 @@ const Header = () => {
             
             {/* Mobile Icons */}
             <div className="flex items-center gap-4">
-              <Link to="/koszyk" className={iconStyles}>
-                <AiOutlineShoppingCart />
-                {cartItemsCount > 0 && <span className={counterStyles}>{cartItemsCount}</span>}
+              <Link 
+                to="/koszyk" 
+                className={iconStyles}
+                aria-label={`Koszyk${cartItemsCount > 0 ? `, ${cartItemsCount} ${cartItemsCount === 1 ? 'produkt' : 'produktów'}` : ''}`}
+              >
+                <AiOutlineShoppingCart aria-hidden="true" />
+                {cartItemsCount > 0 && (
+                  <span className={counterStyles} aria-hidden="true">
+                    {cartItemsCount}
+                  </span>
+                )}
+                <span className="sr-only">
+                  Koszyk{cartItemsCount > 0 ? `, ${cartItemsCount} ${cartItemsCount === 1 ? 'produkt' : 'produktów'}` : ''}
+                </span>
               </Link>
-              <Link to="/wishlist" className={iconStyles}>
-                <AiOutlineHeart />
-                {wishlistCount > 0 && <span className={counterStyles}>{wishlistCount}</span>}
+              <Link 
+                to="/wishlist" 
+                className={iconStyles}
+                aria-label={`Lista życzeń${wishlistCount > 0 ? `, ${wishlistCount} ${wishlistCount === 1 ? 'produkt' : 'produktów'}` : ''}`}
+              >
+                <AiOutlineHeart aria-hidden="true" />
+                {wishlistCount > 0 && (
+                  <span className={counterStyles} aria-hidden="true">
+                    {wishlistCount}
+                  </span>
+                )}
+                <span className="sr-only">
+                  Lista życzeń{wishlistCount > 0 ? `, ${wishlistCount} ${wishlistCount === 1 ? 'produkt' : 'produktów'}` : ''}
+                </span>
               </Link>
             </div>
           </div>
@@ -255,14 +277,36 @@ const Header = () => {
           </nav>
 
           {/* Desktop Icons */}
-          <div className="hidden md:flex gap-5">
-            <Link to="/koszyk" className={iconStyles}>
-              <AiOutlineShoppingCart />
-              {cartItemsCount > 0 && <span className={counterStyles}>{cartItemsCount}</span>}
+          <div className="hidden md:flex items-center gap-6">
+            <Link 
+              to="/koszyk" 
+              className={iconStyles}
+              aria-label={`Koszyk${cartItemsCount > 0 ? `, ${cartItemsCount} ${cartItemsCount === 1 ? 'produkt' : 'produktów'}` : ''}`}
+            >
+              <AiOutlineShoppingCart aria-hidden="true" />
+              {cartItemsCount > 0 && (
+                <span className={counterStyles} aria-hidden="true">
+                  {cartItemsCount}
+                </span>
+              )}
+              <span className="sr-only">
+                Koszyk{cartItemsCount > 0 ? `, ${cartItemsCount} ${cartItemsCount === 1 ? 'produkt' : 'produktów'}` : ''}
+              </span>
             </Link>
-            <Link to="/wishlist" className={iconStyles}>
-              <AiOutlineHeart />
-              {wishlistCount > 0 && <span className={counterStyles}>{wishlistCount}</span>}
+            <Link 
+              to="/wishlist" 
+              className={iconStyles}
+              aria-label={`Lista życzeń${wishlistCount > 0 ? `, ${wishlistCount} ${wishlistCount === 1 ? 'produkt' : 'produktów'}` : ''}`}
+            >
+              <AiOutlineHeart aria-hidden="true" />
+              {wishlistCount > 0 && (
+                <span className={counterStyles} aria-hidden="true">
+                  {wishlistCount}
+                </span>
+              )}
+              <span className="sr-only">
+                Lista życzeń{wishlistCount > 0 ? `, ${wishlistCount} ${wishlistCount === 1 ? 'produkt' : 'produktów'}` : ''}
+              </span>
             </Link>
           </div>
         </div>

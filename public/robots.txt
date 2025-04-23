@@ -1,0 +1,31 @@
+# https://www.familybalance.pl robots.txt
+User-agent: *
+Allow: /
+
+# Main pages
+Allow: /index.html
+Allow: /category
+Allow: /blog
+Allow: /contact
+Allow: /auth
+Allow: /koszyk
+Allow: /wishlist
+
+# Static resources
+Allow: /static/
+Allow: /img/
+Allow: /manifest.json
+
+# Sitemaps
+Sitemap: https://www.familybalance.pl/sitemap.xml
+
+# Crawl delay
+Crawl-delay: 10
+
+# Disallow
+Disallow: /api/
+Disallow: /admin/
+Disallow: /private/
+Disallow: /*?*
+Disallow: /*/search
+Disallow: /cgi-bin/ 
