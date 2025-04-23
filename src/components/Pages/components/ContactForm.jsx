@@ -127,13 +127,9 @@ const ContactForm = () => {
   };
 
   return (
-    <div className="bg-white p-6 sm:p-8 rounded-xl shadow-lg max-w-xl mx-auto w-full border border-gray-100">
-      <h2 className="text-2xl sm:text-3xl text-emerald-800 mb-6 text-center font-bold">
-        Formularz kontaktowy
-      </h2>
-
+    <div className="w-full">
       {notification.message && (
-        <div className="mb-6">
+        <div className="mb-8">
           <EnhancedAlert
             type={notification.type}
             message={notification.message}
@@ -144,16 +140,16 @@ const ContactForm = () => {
 
       <form className="flex flex-col gap-6" onSubmit={handleSubmit}>
         <div className="flex flex-col gap-2">
-          <label className="text-base sm:text-lg text-gray-700 font-medium">
+          <label className="text-lg font-medium text-gray-700">
             Imię i nazwisko
           </label>
           <input
             type="text"
             name="name"
-            className={`p-3 sm:p-4 border-2 rounded-lg text-base focus:outline-none transition-colors ${
+            className={`p-4 border-2 rounded-lg text-base focus:outline-none transition-colors ${
               formData.errors.name
-                ? 'border-red-300 focus:border-red-500'
-                : 'border-gray-200 focus:border-emerald-500'
+                ? 'border-red-300 focus:border-red-500 bg-red-50'
+                : 'border-gray-200 focus:border-emerald-500 hover:border-gray-300'
             }`}
             value={formData.name}
             onChange={(e) => setFormData({
@@ -173,16 +169,16 @@ const ContactForm = () => {
         </div>
 
         <div className="flex flex-col gap-2">
-          <label className="text-base sm:text-lg text-gray-700 font-medium">
+          <label className="text-lg font-medium text-gray-700">
             Email
           </label>
           <input
             type="email"
             name="email"
-            className={`p-3 sm:p-4 border-2 rounded-lg text-base focus:outline-none transition-colors ${
+            className={`p-4 border-2 rounded-lg text-base focus:outline-none transition-colors ${
               formData.errors.email
-                ? 'border-red-300 focus:border-red-500'
-                : 'border-gray-200 focus:border-emerald-500'
+                ? 'border-red-300 focus:border-red-500 bg-red-50'
+                : 'border-gray-200 focus:border-emerald-500 hover:border-gray-300'
             }`}
             value={formData.email}
             onChange={(e) => setFormData({
@@ -202,16 +198,16 @@ const ContactForm = () => {
         </div>
 
         <div className="flex flex-col gap-2">
-          <label className="text-base sm:text-lg text-gray-700 font-medium">
+          <label className="text-lg font-medium text-gray-700">
             Temat
           </label>
           <input
             type="text"
             name="subject"
-            className={`p-3 sm:p-4 border-2 rounded-lg text-base focus:outline-none transition-colors ${
+            className={`p-4 border-2 rounded-lg text-base focus:outline-none transition-colors ${
               formData.errors.subject
-                ? 'border-red-300 focus:border-red-500'
-                : 'border-gray-200 focus:border-emerald-500'
+                ? 'border-red-300 focus:border-red-500 bg-red-50'
+                : 'border-gray-200 focus:border-emerald-500 hover:border-gray-300'
             }`}
             value={formData.subject}
             onChange={(e) => setFormData({
@@ -231,15 +227,15 @@ const ContactForm = () => {
         </div>
 
         <div className="flex flex-col gap-2">
-          <label className="text-base sm:text-lg text-gray-700 font-medium">
+          <label className="text-lg font-medium text-gray-700">
             Wiadomość
           </label>
           <textarea
             name="message"
-            className={`p-3 sm:p-4 border-2 rounded-lg text-base focus:outline-none transition-colors ${
+            className={`p-4 border-2 rounded-lg text-base focus:outline-none transition-colors ${
               formData.errors.message
-                ? 'border-red-300 focus:border-red-500'
-                : 'border-gray-200 focus:border-emerald-500'
+                ? 'border-red-300 focus:border-red-500 bg-red-50'
+                : 'border-gray-200 focus:border-emerald-500 hover:border-gray-300'
             }`}
             value={formData.message}
             onChange={(e) => setFormData({
@@ -248,7 +244,7 @@ const ContactForm = () => {
               errors: { ...formData.errors, message: '' }
             })}
             disabled={isSubmitting}
-            rows={5}
+            rows={6}
             required
             placeholder="Wprowadź treść wiadomości"
           />
@@ -261,11 +257,11 @@ const ContactForm = () => {
 
         <button
           type="submit"
-          className="bg-emerald-800 hover:bg-emerald-900 text-white py-4 px-6 rounded-lg text-lg font-semibold cursor-pointer transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0 disabled:hover:shadow-none w-full sm:w-auto mt-4"
+          className="bg-emerald-600 hover:bg-emerald-700 text-white py-4 px-8 rounded-lg text-lg font-semibold cursor-pointer transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0 disabled:hover:shadow-none w-full mt-4"
           disabled={isSubmitting}
         >
           {isSubmitting ? (
-            <span className="flex items-center justify-center gap-2">
+            <span className="flex items-center justify-center gap-3">
               <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
                 <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
                 <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
