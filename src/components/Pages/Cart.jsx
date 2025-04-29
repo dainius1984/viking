@@ -85,7 +85,9 @@ const Cart = () => {
     }
   };
 
-  const { subtotal, discountAmount, total } = calculateTotals(state.cart, state.isDiscountApplied);
+  const { subtotal, discountAmount, total, isFreeShipping } = calculateTotals(state.cart, state.isDiscountApplied);
+  const shippingCost = isFreeShipping ? 0 : DISCOUNT_CONFIG.shippingCost;
+  const finalTotal = total + shippingCost;
 
   const renderCart = () => {
     if (state.cart.length === 0) {
@@ -224,12 +226,22 @@ const Cart = () => {
 
               <div className="flex justify-between py-2.5 border-b border-gray-100">
                 <span>Dostawa:</span>
-                <span>{formatPrice(DISCOUNT_CONFIG.shippingCost)}</span>
+                {isFreeShipping ? (
+                  <span className="text-green-600 font-medium">Za darmo</span>
+                ) : (
+                  <span>{formatPrice(DISCOUNT_CONFIG.shippingCost)}</span>
+                )}
               </div>
+
+              {!isFreeShipping && (
+                <div className="text-sm text-gray-500 -mt-2 mb-2">
+                  Darmowa dostawa dla zamówień powyżej {formatPrice(DISCOUNT_CONFIG.freeShippingThreshold)}
+                </div>
+              )}
 
               <div className="flex justify-between py-2.5 font-semibold text-lg">
                 <span>Suma:</span>
-                <span>{formatPrice(total)}</span>
+                <span>{formatPrice(finalTotal)}</span>
               </div>
 
               {!state.isDiscountApplied && (
