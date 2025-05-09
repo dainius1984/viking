@@ -1,7 +1,9 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { Link } from 'react-router-dom';
 
 const HeroSection = () => {
+  const containerRef = useRef(null);
+  
   const scrollToProducts = () => {
     const productsSection = document.getElementById('products-section');
     if (productsSection) {
@@ -18,15 +20,21 @@ const HeroSection = () => {
 
   return (
     <div 
-      className="w-full h-[calc(100vh-100px)] md:h-[80vh] min-h-[500px] bg-cover bg-center bg-no-repeat 
-        flex items-center justify-center relative bg-fixed text-white text-center z-0 py-12"
-      style={{ backgroundImage: `url('/img/main.jpeg')` }}
+      ref={containerRef}
+      className="w-full h-screen min-h-[500px] relative flex items-center justify-center z-0"
     >
+      {/* Background Image */}
+      <div 
+        className="absolute top-0 left-0 w-full h-full bg-cover bg-center bg-no-repeat z-0" 
+        style={{ backgroundImage: `url('/img/main.jpeg')` }}
+        aria-hidden="true"
+      />
+
       {/* Dark overlay */}
-      <div className="absolute inset-0 bg-black/50 z-[1]" />
+      <div className="absolute inset-0 bg-black/40 z-[1]" aria-hidden="true" />
 
       {/* Content */}
-      <div className="relative z-[2] max-w-[800px] px-5 animate-fadeInUp">
+      <div className="relative z-[2] max-w-[800px] px-5 animate-fadeInUp text-white text-center">
         <h1 className="text-[clamp(2rem,5vw,3rem)] font-bold mb-5">
           Naturalne Suplementy Diety
         </h1>

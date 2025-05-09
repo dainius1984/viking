@@ -16,17 +16,32 @@ const HomePage = () => {
     };
 
     window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
+    
+    // Make header transparent on mount
+    const header = document.querySelector('header');
+    if (header) {
+      header.classList.add('bg-transparent', 'border-none', 'absolute', 'top-0', 'left-0', 'w-full', 'z-10');
+    }
+    
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      // Restore header style when unmounting
+      if (header) {
+        header.classList.remove('bg-transparent', 'border-none', 'absolute', 'top-0', 'left-0', 'w-full', 'z-10');
+      }
+    };
   }, []);
 
   return (
-    <div className="flex flex-col min-h-screen">
-      {!isMobile && <TopNavBar />}
-      <Header />
+    <div className="flex flex-col min-h-screen relative">
+      {/* No TopNavBar - hidden as requested */}
+      <div className="absolute top-0 left-0 w-full z-10 pointer-events-auto">
+        <Header />
+      </div>
       <main className="flex-grow">
         <HeroSection />
         <HealthyLifestyleBanner />
-        <div className="py-8">
+        <div className="py-8" id="products-section">
           <ProductGrid />
         </div>
         <InfoSection />

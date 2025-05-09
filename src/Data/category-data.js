@@ -27,7 +27,8 @@ const categories = [
     slug: 'suplementy-przywracajace-zdrowie',
     products: [
       { name: 'Zinogene +', path: '/category/supplements-health-restoration' },
-      { name: 'Zinoshine +', path: '/category/supplements-health-restoration' }
+      { name: 'Zinoshine +', path: '/category/supplements-health-restoration' },
+      { name: 'Viva +', path: '/category/supplements-health-restoration' }
     ]
   },
   {
