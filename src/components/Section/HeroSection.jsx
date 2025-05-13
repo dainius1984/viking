@@ -1,8 +1,18 @@
-import React, { useRef } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 
 const HeroSection = () => {
-  const containerRef = useRef(null);
+  const [videoLoaded, setVideoLoaded] = useState(false);
+  
+  // Load video with lower priority to improve initial performance
+  useEffect(() => {
+    // Small delay before loading video to prioritize other page elements
+    const timer = setTimeout(() => {
+      setVideoLoaded(true);
+    }, 100);
+    
+    return () => clearTimeout(timer);
+  }, []);
   
   const scrollToProducts = () => {
     const productsSection = document.getElementById('products-section');
@@ -20,18 +30,33 @@ const HeroSection = () => {
 
   return (
     <div 
-      ref={containerRef}
       className="w-full h-screen min-h-[500px] relative flex items-center justify-center z-0"
     >
-      {/* Background Image */}
-      <div 
-        className="absolute top-0 left-0 w-full h-full bg-cover bg-center bg-no-repeat z-0" 
-        style={{ backgroundImage: `url('/img/main.jpeg')` }}
-        aria-hidden="true"
-      />
+      {/* Video Background with optimization */}
+      {videoLoaded ? (
+        <video 
+          className="absolute top-0 left-0 w-full h-full object-cover z-0"
+          autoPlay
+          muted
+          loop
+          playsInline
+          preload="auto"
+          poster="/img/main.jpeg" // Show image while video loads
+          src="/videos/sport.mp4"
+        >
+          {/* Fallback for browsers that don't support MP4 */}
+          <source src="/videos/sport.mp4" type="video/mp4" />
+          <img src="/img/main.jpeg" alt="Background" className="absolute top-0 left-0 w-full h-full object-cover" />
+        </video>
+      ) : (
+        <div 
+          className="absolute top-0 left-0 w-full h-full bg-cover bg-center bg-no-repeat z-0" 
+          style={{ backgroundImage: `url('/img/main.jpeg')` }}
+        />
+      )}
 
       {/* Dark overlay */}
-      <div className="absolute inset-0 bg-black/40 z-[1]" aria-hidden="true" />
+      <div className="absolute inset-0 bg-black/40 z-[1]" />
 
       {/* Content */}
       <div className="relative z-[2] max-w-[800px] px-5 animate-fadeInUp text-white text-center">
