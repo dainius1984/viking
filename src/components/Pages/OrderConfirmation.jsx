@@ -1,4 +1,4 @@
-// OrderConfirmation.jsx
+// OrderConfirmation.jsx z dodanym kodem śledzenia konwersji Google Ads
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useCart } from '../../context/CartContext';
@@ -9,8 +9,29 @@ import Footer from '../Footer/Footer';
 import { useAuth } from '../AuthContext';
 import { API_URL } from './OrderUtils'; // Import API_URL from OrderUtils
 
+// Funkcja dodająca kod śledzenia konwersji Google Ads
+const addGoogleAdsConversion = (orderData) => {
+  if (!window.gtag) {
+    console.error('Google Tag Manager not loaded');
+    return;
+  }
+
+  try {
+    // Konwersja Google Ads
+    window.gtag('event', 'conversion', {
+      'send_to': 'AW-17058670203/y2uUCMa8t8MaEPvMmsY_',
+      'value': orderData?.total || 1.0,
+      'currency': 'PLN',
+      'transaction_id': orderData?.orderNumber || ''
+    });
+  } catch (error) {
+    console.error('Error sending conversion data to Google Ads', error);
+  }
+};
+
 // Function to create InPost shipments
 const createInPostShipment = async (orderData) => {
+  // Reszta kodu bez zmian
   try {
     if (!orderData.paczkomat) {
       return { success: false, error: 'Missing paczkomat data' };
@@ -96,6 +117,7 @@ const OrderConfirmation = () => {
   const [hasCleared, setHasCleared] = useState(false);
   const [paymentStatus] = useState('Opłacone');
   const [shipmentStatus, setShipmentStatus] = useState(null);
+  const [conversionTracked, setConversionTracked] = useState(false);
 
   useEffect(() => {
     try {
@@ -215,8 +237,18 @@ const OrderConfirmation = () => {
     }
   }, [clearCart, hasCleared]);
 
+  // Dodany efekt dla śledzenia konwersji
+  useEffect(() => {
+    // Wywołaj Google Ads conversion tracking gdy orderData jest dostępne
+    if (orderData && !conversionTracked) {
+      addGoogleAdsConversion(orderData);
+      setConversionTracked(true);
+    }
+  }, [orderData, conversionTracked]);
+
   // Preserve effect to create shipment when payment is complete
   useEffect(() => {
+    // Reszta kodu bez zmian
     // Define handleCreateShipment inside the effect
     const handleCreateShipment = async () => {
       if (!orderData || !orderData.paczkomat) {

@@ -9,7 +9,7 @@ const Header = () => {
   const dropdownRef = React.useRef(null);
   const { state } = useCart();
   const navigate = useNavigate();
-  const location = useLocation();
+  const locationPath = useLocation().pathname; // Renamed to avoid ESLint warning
   const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false);
 
   const cartItemsCount = state?.cart?.reduce((sum, item) => sum + (item.quantity || 0), 0) || 0;
@@ -137,20 +137,21 @@ const Header = () => {
     <>
       <header className="bg-white border-b border-gray-200 relative z-20">
         <div className="container mx-auto px-4">
-          <div className="flex justify-between items-center py-3">
-            {/* Logo - Adjusted for better alignment and sizing */}
+          {/* Desktop layout */}
+          <div className="hidden md:flex justify-between items-center py-3">
+            {/* Logo */}
             <div className="flex items-center justify-center">
               <Link to="/" className="flex items-center">
                 <img 
                   src="/img/logo.jpg" 
                   alt="Family Balance" 
-                  className="h-10 md:h-12 w-auto object-contain"
+                  className="h-12 w-auto object-contain"
                 />
               </Link>
             </div>
 
             {/* Desktop Navigation */}
-            <nav className="hidden md:block">
+            <nav>
               <ul className="flex items-center space-x-8">
                 <li><Link to="/" className={navLinkStyles}>Strona główna</Link></li>
                 
@@ -203,7 +204,7 @@ const Header = () => {
             </nav>
 
             {/* Desktop Icons */}
-            <div className="hidden md:flex items-center space-x-6">
+            <div className="flex items-center space-x-6">
               <Link 
                 to="/koszyk" 
                 className={iconStyles}
@@ -229,53 +230,71 @@ const Header = () => {
                 )}
               </Link>
             </div>
-
-            {/* Mobile Navigation Button */}
-            <div className="md:hidden flex items-center">
-              <button 
-                onClick={handleShopClick}
-                className="px-4 py-2 bg-emerald-100 text-emerald-800 rounded-lg font-bold text-base flex items-center gap-1"
-              >
-                Sklep
-                <span className="text-lg">▾</span>
-              </button>
-            </div>
           </div>
           
-          {/* Mobile Secondary Navigation */}
-          <div className="md:hidden flex justify-between pb-3">
-            <div className="flex space-x-4 items-center">
+          {/* Mobile layout - Redesigned to match screenshot */}
+          <div className="md:hidden py-3">
+            {/* Top row with logo in center */}
+            <div className="flex justify-center items-center mb-4">
+              <Link to="/" className="flex items-center">
+                <img 
+                  src="/img/logo.jpg" 
+                  alt="Family Balance" 
+                  className="h-12 w-auto object-contain"
+                />
+              </Link>
+            </div>
+            
+            {/* Middle row with navigation links */}
+            <div className="flex justify-center space-x-6 mb-4">
               <Link to="/" className={navLinkStyles}>Strona główna</Link>
               <Link to="/blog" className={navLinkStyles}>Blog</Link>
               <Link to="/contact" className={navLinkStyles}>Kontakt</Link>
             </div>
             
-            {/* Mobile Icons */}
-            <div className="flex items-center space-x-4">
-              <Link 
-                to="/koszyk" 
-                className={iconStyles}
-                aria-label={`Koszyk${cartItemsCount > 0 ? `, ${cartItemsCount} ${cartItemsCount === 1 ? 'produkt' : 'produktów'}` : ''}`}
-              >
-                <AiOutlineShoppingCart aria-hidden="true" />
-                {cartItemsCount > 0 && (
-                  <span className={counterStyles} aria-hidden="true">
-                    {cartItemsCount}
-                  </span>
-                )}
-              </Link>
-              <Link 
-                to="/wishlist" 
-                className={iconStyles}
-                aria-label={`Lista życzeń${wishlistCount > 0 ? `, ${wishlistCount} ${wishlistCount === 1 ? 'produkt' : 'produktów'}` : ''}`}
-              >
-                <AiOutlineHeart aria-hidden="true" />
-                {wishlistCount > 0 && (
-                  <span className={counterStyles} aria-hidden="true">
-                    {wishlistCount}
-                  </span>
-                )}
-              </Link>
+            {/* Bottom row with shop button, cart and wishlist icons */}
+            <div className="flex justify-between items-center">
+              {/* Empty spacer div for alignment */}
+              <div className="w-10"></div>
+              
+              {/* Centered Sklep button */}
+              <div className="flex justify-center">
+                <button 
+                  onClick={handleShopClick}
+                  className="px-5 py-2 bg-emerald-50 text-emerald-800 font-bold text-lg rounded-full flex items-center space-x-1"
+                >
+                  <span>Sklep</span>
+                  <span className="text-lg">▾</span>
+                </button>
+              </div>
+              
+              {/* Cart and Wishlist icons */}
+              <div className="flex items-center space-x-3">
+                <Link 
+                  to="/koszyk" 
+                  className={iconStyles}
+                  aria-label={`Koszyk${cartItemsCount > 0 ? `, ${cartItemsCount} ${cartItemsCount === 1 ? 'produkt' : 'produktów'}` : ''}`}
+                >
+                  <AiOutlineShoppingCart aria-hidden="true" />
+                  {cartItemsCount > 0 && (
+                    <span className={counterStyles} aria-hidden="true">
+                      {cartItemsCount}
+                    </span>
+                  )}
+                </Link>
+                <Link 
+                  to="/wishlist" 
+                  className={iconStyles}
+                  aria-label={`Lista życzeń${wishlistCount > 0 ? `, ${wishlistCount} ${wishlistCount === 1 ? 'produkt' : 'produktów'}` : ''}`}
+                >
+                  <AiOutlineHeart aria-hidden="true" />
+                  {wishlistCount > 0 && (
+                    <span className={counterStyles} aria-hidden="true">
+                      {wishlistCount}
+                    </span>
+                  )}
+                </Link>
+              </div>
             </div>
           </div>
         </div>
