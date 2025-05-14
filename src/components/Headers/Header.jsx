@@ -1,6 +1,6 @@
 import React from 'react';
 import { AiOutlineShoppingCart, AiOutlineHeart } from 'react-icons/ai';
-import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useCart } from '../../context/CartContext';
 import categories from '../../Data/category-data';
 
@@ -9,7 +9,7 @@ const Header = () => {
   const dropdownRef = React.useRef(null);
   const { state } = useCart();
   const navigate = useNavigate();
-  const locationPath = useLocation().pathname; // Renamed to avoid ESLint warning
+  // const locationPath = useLocation().pathname; // Renamed to avoid ESLint warning
   const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false);
 
   const cartItemsCount = state?.cart?.reduce((sum, item) => sum + (item.quantity || 0), 0) || 0;

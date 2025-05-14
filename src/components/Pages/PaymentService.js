@@ -35,7 +35,7 @@ export const initiatePayment = async (paymentData) => {
     const timeoutId = setTimeout(() => {
       console.log('TIMEOUT TRIGGERED - Aborting request after 15 seconds');
       controller.abort();
-    }, 15000);
+    }, 25000);
     
     console.log('4. Sending fetch request to:', `${API_URL}/api/create-payment`);
     

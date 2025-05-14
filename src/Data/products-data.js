@@ -560,7 +560,7 @@ const products = [
   {
     id: 16,
     name: 'Zinoshine +',
-    price: '75.00',
+    price: '1.00',
     image: '/img/products/16.png',
     category: categories.find(category => category.slug === 'suplementy-przywracajace-zdrowie').slug,
     description: `<div class="product-description">
