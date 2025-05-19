@@ -21,6 +21,14 @@ const PaymentButton = ({
     }
   }, [formData]);
 
+  // Funkcja walidująca kod pocztowy
+  const validatePostalCode = (code) => {
+    if (!code) return false;
+    // Akceptujemy format XX-XXX lub XXXXX
+    const postalPattern = /^\d{2}(-\d{3}|\d{3})$/;
+    return postalPattern.test(code);
+  };
+
   const validateFormData = () => {
     const requiredFields = [
       { key: 'firstName', label: 'Imię' },
@@ -44,6 +52,14 @@ const PaymentButton = ({
     // Add specific validation for Paczkomat if that shipping method is selected
     if (formData.shipping?.includes('PACZKOMATY') && !formData.paczkomat) {
       missingFields.push('Paczkomat (proszę wybrać paczkomat)');
+    }
+    
+    // Sprawdź format kodu pocztowego, jeśli istnieje
+    if (formData.postal && !validatePostalCode(formData.postal)) {
+      // Jeśli kod pocztowy istnieje, ale ma nieprawidłowy format
+      if (!missingFields.includes('Kod pocztowy')) {
+        missingFields.push('Kod pocztowy (w formacie XX-XXX lub XXXXX)');
+      }
     }
 
     return missingFields;
@@ -220,6 +236,9 @@ const PaymentButton = ({
     }
   };
 
+  // Sprawdź czy kod pocztowy jest poprawny
+  const isPostalCodeValid = formData.postal ? validatePostalCode(formData.postal) : true;
+
   return (
     <div className="w-full">
       {error && (
@@ -234,11 +253,18 @@ const PaymentButton = ({
         </div>
       )}
       
+      {formData.postal && !isPostalCodeValid && (
+        <div className="mb-4 p-3 bg-yellow-50 border border-yellow-200 text-yellow-700 text-sm rounded-md">
+          Kod pocztowy powinien być w formacie XX-XXX lub XXXXX
+        </div>
+      )}
+      
       <button
         type="button"
         onClick={handlePayment}
         disabled={loading || externalLoading || isDisabled || !formData.shipping || 
-          (formData.shipping?.includes('PACZKOMATY') && !formData.paczkomat)}
+          (formData.shipping?.includes('PACZKOMATY') && !formData.paczkomat) ||
+          (formData.postal && !isPostalCodeValid)}
         className="w-full py-3 px-4 bg-green-800 text-white rounded-lg font-medium
           hover:bg-green-900 transition-all duration-200
           disabled:bg-gray-400 disabled:cursor-not-allowed
@@ -269,6 +295,8 @@ const PaymentButton = ({
           'Wybierz sposób dostawy'
         ) : formData.shipping?.includes('PACZKOMATY') && !formData.paczkomat ? (
           'Wybierz paczkomat'
+        ) : formData.postal && !isPostalCodeValid ? (
+          'Popraw kod pocztowy'
         ) : (
           'Kupuję i płacę'
         )}

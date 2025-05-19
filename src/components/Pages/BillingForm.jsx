@@ -1,6 +1,38 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 
 const BillingForm = ({ formData, handleInputChange }) => {
+  const [postalError, setPostalError] = useState('');
+  
+  // Funkcja walidująca kod pocztowy
+  const validatePostalCode = (code) => {
+    // Akceptujemy format XX-XXX lub XXXXX
+    const postalPattern = /^\d{2}(-\d{3}|\d{3})$/;
+    return postalPattern.test(code);
+  };
+  
+  // Niestandardowy handler dla kodu pocztowego
+  const handlePostalChange = (e) => {
+    // Najpierw wywołaj oryginalny handler przekazany przez props
+    handleInputChange(e);
+    
+    // Następnie wykonaj walidację
+    const value = e.target.value;
+    if (value && !validatePostalCode(value)) {
+      setPostalError('Wprowadź kod pocztowy w formacie XX-XXX lub XXXXX');
+    } else {
+      setPostalError('');
+    }
+  };
+  
+  // Sprawdź kod pocztowy przy załadowaniu lub zmianie
+  useEffect(() => {
+    if (formData.postal && !validatePostalCode(formData.postal)) {
+      setPostalError('Wprowadź kod pocztowy w formacie XX-XXX lub XXXXX');
+    } else {
+      setPostalError('');
+    }
+  }, [formData.postal]);
+  
   return (
     <div className="bg-white p-6 sm:p-8 rounded-lg shadow-md">
       <h2 className="text-xl font-semibold mb-6">Dane rozliczeniowe</h2>
@@ -38,7 +70,7 @@ const BillingForm = ({ formData, handleInputChange }) => {
         <input
           type="text"
           name="street"
-          placeholder="Ulica *"
+          placeholder="Ulica i numer *"
           required
           value={formData.street}
           onChange={handleInputChange}
@@ -46,15 +78,24 @@ const BillingForm = ({ formData, handleInputChange }) => {
         />
         
         <div className="grid grid-cols-2 gap-4">
-          <input
-            type="text"
-            name="postal"
-            placeholder="Kod pocztowy *"
-            required
-            value={formData.postal}
-            onChange={handleInputChange}
-            className="w-full p-3 border border-gray-200 rounded-md focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"
-          />
+          <div>
+            <input
+              type="text"
+              name="postal"
+              placeholder="Kod pocztowy *"
+              required
+              pattern="\d{2}(-\d{3}|\d{3})"
+              title="Wprowadź kod pocztowy w formacie XX-XXX lub XXXXX"
+              value={formData.postal}
+              onChange={handlePostalChange}
+              className={`w-full p-3 border ${postalError ? 'border-red-500' : 'border-gray-200'} rounded-md focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all`}
+              onInvalid={(e) => e.target.setCustomValidity('Wprowadź kod pocztowy w formacie XX-XXX lub XXXXX')}
+              onInput={(e) => e.target.setCustomValidity('')}
+            />
+            {postalError && (
+              <p className="text-red-500 text-xs mt-1">{postalError}</p>
+            )}
+          </div>
           
           <input
             type="text"
