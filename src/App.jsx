@@ -11,6 +11,7 @@ import OrderConfirmation from './components/Pages/OrderConfirmation';
 import Wishlist from './components/Pages/Wishlist';
 import Blog from './components/Pages/Blog';
 import HealthProtocolPage from './components/Pages/HealthProtocolPage';
+import BalanceOilLandingPage from './components/Pages/BalanceOilLandingPage';
 import Article from './components/Pages/Article';
 import AuthPage from './components/Pages/AuthPage';
 import AccountPage from './components/Pages/AccountPage';
@@ -47,8 +48,10 @@ const App = () => {
               <Route path="/contact" element={<ContactPage />} />
               <Route path="/article/:id" element={<Article />} />
               <Route path="/health-protocol" element={<HealthProtocolPage />} />
+              <Route path="/balance-oil" element={<BalanceOilLandingPage />} />
               <Route path="/product/:id" element={<ProductPage />} />
               <Route path="/env-test" element={<EnvTest />} />
+              
               <Route 
                 path="/auth" 
                 element={
