@@ -12,8 +12,8 @@ const BalanceOilLandingPage = () => {
   // BalanceOil+ product data (ID: 1 as per your URL)
   const balanceOilProduct = {
     id: 1,
-    name: 'BalanceOil+ 300 ml',
-    price: 229,
+    name: 'BalanceOil+300ml Cytrynowy',
+    price: 175,
     image: '/img/products/1.png',
     category: 'Suplementy',
     subtitle: 'Naturalny olej omega-3 o działaniu przeciwzapalnym'
