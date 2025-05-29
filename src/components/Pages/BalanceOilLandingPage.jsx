@@ -170,7 +170,7 @@ const BalanceOilLandingPage = () => {
             <div className="flex items-center justify-center mb-8">
               <span className="text-3xl mr-4">💰</span>
               <div className="text-4xl font-bold text-emerald-800">
-                Cena: 229 zł
+                Cena: 175 zł
               </div>
             </div>
             
