@@ -14,7 +14,7 @@ const BalanceOilLandingPage = () => {
     id: 1,
     name: 'BalanceOil+ 300 ml',
     price: 229,
-    image: '/img/products/balance-oil.jpg', // Update with actual image path
+    image: '/img/products/1.png',
     category: 'Suplementy',
     subtitle: 'Naturalny olej omega-3 o działaniu przeciwzapalnym'
   };
