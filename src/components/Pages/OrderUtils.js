@@ -28,6 +28,18 @@ export const SHIPPING_OPTIONS = {
   }
 };
 
+export const DISCOUNT_CODES = {
+  rabat10: {
+    type: 'percentage',
+    percentage: 10,
+    label: 'rabat10',
+  },
+  wysylka: {
+    type: 'free_shipping',
+    label: 'wysylka',
+  },
+};
+
 export const DISCOUNT_CONFIG = {
   code: 'rabat10',
   percentage: 10,
@@ -64,23 +76,41 @@ export const validateForm = (formData) => {
 };
 
 export const validateDiscountCode = (code) => {
-  if (!code) return false;
-  return code.trim().toLowerCase() === DISCOUNT_CONFIG.code.toLowerCase();
+  if (!code) return { valid: false, type: null, code: null };
+  const normalized = code.trim().toLowerCase();
+  if (normalized === DISCOUNT_CONFIG.code.toLowerCase()) {
+    return { valid: true, type: 'percentage', code: 'rabat10' };
+  }
+  if (normalized === 'wysylka') {
+    return { valid: true, type: 'free_shipping', code: 'wysylka' };
+  }
+  return { valid: false, type: null, code: null };
 };
 
-export const calculateTotals = (cart = [], isDiscountApplied = false) => {
+export const calculateTotals = (cart = [], discount = null) => {
   if (!Array.isArray(cart)) {
     cart = [];
   }
-
   const subtotal = cart.reduce((sum, item) => {
     const price = Number(item?.price) || 0;
     const quantity = Number(item?.quantity) || 0;
     return sum + (price * quantity);
   }, 0);
 
-  const discountAmount = isDiscountApplied ? 
-    (subtotal * DISCOUNT_CONFIG.percentage) / 100 : 0;
+  let discountAmount = 0;
+  let isFreeShipping = subtotal >= DISCOUNT_CONFIG.freeShippingThreshold;
+  let discountType = null;
+  let discountCode = null;
+
+  if (discount && discount.type === 'percentage') {
+    discountAmount = (subtotal * DISCOUNT_CONFIG.percentage) / 100;
+    discountType = 'percentage';
+    discountCode = discount.code;
+  } else if (discount && discount.type === 'free_shipping') {
+    isFreeShipping = true;
+    discountType = 'free_shipping';
+    discountCode = discount.code;
+  }
 
   const total = subtotal - discountAmount;
 
@@ -88,16 +118,19 @@ export const calculateTotals = (cart = [], isDiscountApplied = false) => {
     subtotal,
     discountAmount,
     total,
-    isFreeShipping: subtotal >= DISCOUNT_CONFIG.freeShippingThreshold
+    isFreeShipping,
+    discountType,
+    discountCode,
   };
 };
 
-export const isEligibleForFreeShipping = (subtotal) => {
+export const isEligibleForFreeShipping = (subtotal, discount = null) => {
+  if (discount && discount.type === 'free_shipping') return true;
   return subtotal >= DISCOUNT_CONFIG.freeShippingThreshold;
 };
 
-export const getShippingCost = (subtotal, selectedShipping) => {
-  if (isEligibleForFreeShipping(subtotal)) {
+export const getShippingCost = (subtotal, selectedShipping, discount = null) => {
+  if (isEligibleForFreeShipping(subtotal, discount)) {
     return 0;
   }
   return SHIPPING_OPTIONS[selectedShipping]?.cost || DISCOUNT_CONFIG.shippingCost;
@@ -333,10 +366,10 @@ export const createBasicOrderData = (orderNumber, subtotal, total, state, formDa
     orderNumber,
     status: 'pending',
     subtotal: Number(subtotal).toFixed(2),
-    total: (Number(total) + (isEligibleForFreeShipping(subtotal) ? 0 : getShippingCost(subtotal, formData.shipping))).toFixed(2),
+    total: (Number(total) + (isEligibleForFreeShipping(subtotal, state.discount) ? 0 : getShippingCost(subtotal, formData.shipping, state.discount))).toFixed(2),
     discountApplied: state.isDiscountApplied,
     discountAmount: Number(state.discountAmount || 0).toFixed(2),
-    shippingCost: (isEligibleForFreeShipping(subtotal) ? 0 : getShippingCost(subtotal, formData.shipping)).toFixed(2),
+    shippingCost: (isEligibleForFreeShipping(subtotal, state.discount) ? 0 : getShippingCost(subtotal, formData.shipping, state.discount)).toFixed(2),
     createdAt: new Date().toISOString(),
     lastUpdateTime: new Date().toISOString(),
     items: formatOrderItems(state.cart),

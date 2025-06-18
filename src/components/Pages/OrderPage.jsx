@@ -45,7 +45,7 @@ const OrderPage = () => {
   // Calculate order totals with shipping
   const { subtotal, discountAmount, total } = calculateTotals(
     state.cart,
-    state.isDiscountApplied
+    state.discount
   );
 
   // Update notification handler to use the utility function
@@ -70,13 +70,22 @@ const OrderPage = () => {
       return;
     }
 
-    if (validateDiscountCode(code)) {
-      dispatch({ type: 'APPLY_DISCOUNT', payload: code });
-      displayNotification(
-        `Kod rabatowy ${DISCOUNT_CONFIG.percentage}% został pomyślnie zastosowany!`,
-        'success',
-        3000
-      );
+    const validation = validateDiscountCode(code);
+    if (validation.valid) {
+      dispatch({ type: 'APPLY_DISCOUNT', payload: { type: validation.type, code: validation.code } });
+      if (validation.type === 'percentage') {
+        displayNotification(
+          `Kod rabatowy ${DISCOUNT_CONFIG.percentage}% został pomyślnie zastosowany!`,
+          'success',
+          3000
+        );
+      } else if (validation.type === 'free_shipping') {
+        displayNotification(
+          'Kod rabatowy na darmową dostawę został pomyślnie zastosowany!',
+          'success',
+          3000
+        );
+      }
     } else {
       displayNotification('Nieprawidłowy kod rabatowy.', 'error', 3000);
     }
@@ -266,6 +275,7 @@ const OrderPage = () => {
                 loading={loading}
                 onApplyDiscount={handleApplyDiscount}
                 formData={formData}
+                discount={state.discount}
               />
             </div>
           </div>

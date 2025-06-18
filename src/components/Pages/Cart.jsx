@@ -13,6 +13,7 @@ import {
   validateDiscountCode 
 } from './OrderUtils';
 import './Cart.css';
+import Confetti from 'react-confetti';
 
 const Cart = () => {
   const { state, dispatch } = useCart();
@@ -21,6 +22,7 @@ const Cart = () => {
   const [notification, setNotification] = useState(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [discountCode, setDiscountCode] = useState('');
+  const [showConfetti, setShowConfetti] = useState(false);
 
   const showNotification = (message, isSuccess = true) => {
     setNotification({ message, isSuccess });
@@ -76,16 +78,23 @@ const Cart = () => {
       return;
     }
 
-    if (validateDiscountCode(discountCode)) {
-      dispatch({ type: 'APPLY_DISCOUNT', payload: discountCode });
-      showNotification(`Kod rabatowy ${DISCOUNT_CONFIG.percentage}% został pomyślnie zastosowany!`);
+    const validation = validateDiscountCode(discountCode);
+    if (validation.valid) {
+      dispatch({ type: 'APPLY_DISCOUNT', payload: { type: validation.type, code: validation.code } });
+      if (validation.type === 'percentage') {
+        showNotification(`Kod rabatowy ${DISCOUNT_CONFIG.percentage}% został pomyślnie zastosowany!`);
+      } else if (validation.type === 'free_shipping') {
+        showNotification('Kod rabatowy na darmową dostawę został pomyślnie zastosowany!');
+      }
       setDiscountCode('');
+      setShowConfetti(true);
+      setTimeout(() => setShowConfetti(false), 2000);
     } else {
       showNotification('Nieprawidłowy kod rabatowy.', false);
     }
   };
 
-  const { subtotal, discountAmount, total, isFreeShipping } = calculateTotals(state.cart, state.isDiscountApplied);
+  const { subtotal, discountAmount, total, isFreeShipping } = calculateTotals(state.cart, state.discount);
   const shippingCost = isFreeShipping ? 0 : DISCOUNT_CONFIG.shippingCost;
   const finalTotal = total + shippingCost;
 
@@ -217,10 +226,17 @@ const Cart = () => {
                 <span>{formatPrice(subtotal)}</span>
               </div>
 
-              {state.isDiscountApplied && (
+              {state.discount && state.discount.type === 'percentage' && (
                 <div className="flex justify-between py-2.5 border-b border-gray-100 text-green-600">
                   <span>Rabat ({DISCOUNT_CONFIG.percentage}%):</span>
                   <span>-{formatPrice(discountAmount)}</span>
+                </div>
+              )}
+
+              {state.discount && state.discount.type === 'free_shipping' && shippingCost > 0 && (
+                <div className="flex justify-between py-2.5 border-b border-gray-100 text-green-600 animate-fadeIn">
+                  <span className="font-semibold">Darmowa dostawa (kod: wysylka) 🎉</span>
+                  <span>-{formatPrice(shippingCost)}</span>
                 </div>
               )}
 
@@ -309,6 +325,15 @@ const Cart = () => {
         </div>
       )}
       <Footer />
+      {showConfetti && (
+        <Confetti
+          width={window.innerWidth}
+          height={window.innerHeight}
+          numberOfPieces={400}
+          gravity={0.4}
+          recycle={false}
+        />
+      )}
     </>
   );
 };

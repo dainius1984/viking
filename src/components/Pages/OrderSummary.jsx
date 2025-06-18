@@ -3,11 +3,11 @@ import {
   formatPrice, 
   DISCOUNT_CONFIG,
   SHIPPING_OPTIONS,
-  isEligibleForFreeShipping,
   getShippingCost,
   formatDate,
   generateOrderNumber,
-  cleanPhoneNumber
+  cleanPhoneNumber,
+  calculateTotals
 } from './OrderUtils';
 import { CartItem } from './CartItem';
 import { DiscountInput } from './DiscountInput';
@@ -25,11 +25,12 @@ const OrderSummary = ({
   setShipping,
   loading = false,
   onApplyDiscount,
-  formData
+  formData,
+  discount
 }) => {
   const [discountCode, setDiscountCode] = useState('');
   const [selectedPaczkomat, setSelectedPaczkomat] = useState(null);
-  const isFreeShipping = isEligibleForFreeShipping(subtotal);
+  const { isFreeShipping } = calculateTotals(cart, discount);
   
   // Log when shipping option changes
   useEffect(() => {
@@ -97,7 +98,7 @@ const OrderSummary = ({
     }
   };
 
-  const shippingCost = getShippingCost(subtotal, shipping);
+  const shippingCost = getShippingCost(subtotal, shipping, discount);
   const finalTotal = total + shippingCost;  // Add shipping cost here
 
   const renderOrderSummary = () => (
@@ -107,10 +108,19 @@ const OrderSummary = ({
         <span>{formatPrice(subtotal)}</span>
       </div>
 
-      {discountApplied && (
+      {/* Only show Rabat row for percentage discount */}
+      {discount && discount.type === 'percentage' && (
         <div className="flex justify-between text-green-600 text-sm sm:text-base">
           <span>Rabat ({discountPercentage}%):</span>
           <span>-{formatPrice(discountAmount)}</span>
+        </div>
+      )}
+
+      {/* Show animated free shipping row for wysylka code */}
+      {discount && discount.type === 'free_shipping' && (
+        <div className="flex justify-between text-green-600 text-sm sm:text-base animate-fadeIn">
+          <span className="font-semibold">Darmowa dostawa (kod: wysylka) 🎉</span>
+          <span>-{formatPrice(shippingCost)}</span>
         </div>
       )}
 
@@ -125,7 +135,7 @@ const OrderSummary = ({
         </div>
       )}
 
-      {!discountApplied && (
+      {!discount && (
         <DiscountInput 
           discountCode={discountCode}
           setDiscountCode={setDiscountCode}

@@ -17,7 +17,7 @@ const initialState = {
   cart: [],              // Stores cart items
   wishlist: [],          // Stores wishlist items
   isDiscountApplied: false,  // Discount flag
-  discountCode: null     // Active discount code
+  discount: null // { type, code } or null
 };
 
 // Cart Reducer - Handles all cart state modifications
@@ -76,7 +76,7 @@ const cartReducer = (state, action) => {
       newState = {
         ...state,
         isDiscountApplied: true,
-        discountCode: action.payload
+        discount: action.payload // should be { type, code }
       };
       break;
 
@@ -103,7 +103,7 @@ const cartReducer = (state, action) => {
         ...state,
         cart: [],
         isDiscountApplied: false,
-        discountCode: null
+        discount: null
       };
       break;
 
@@ -112,7 +112,7 @@ const cartReducer = (state, action) => {
         ...initialState,
         ...action.payload,
         isDiscountApplied: action.payload.isDiscountApplied || false,
-        discountCode: action.payload.discountCode || null
+        discount: action.payload.discount || null
       };
       break;
 
