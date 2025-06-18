@@ -34,9 +34,9 @@ export const DISCOUNT_CODES = {
     percentage: 10,
     label: 'rabat10',
   },
-  wysylka: {
+  Dostawa: {
     type: 'free_shipping',
-    label: 'wysylka',
+    label: 'Dostawa',
   },
 };
 
@@ -81,8 +81,8 @@ export const validateDiscountCode = (code) => {
   if (normalized === DISCOUNT_CONFIG.code.toLowerCase()) {
     return { valid: true, type: 'percentage', code: 'rabat10' };
   }
-  if (normalized === 'wysylka') {
-    return { valid: true, type: 'free_shipping', code: 'wysylka' };
+  if (normalized === 'dostawa') {
+    return { valid: true, type: 'free_shipping', code: 'Dostawa' };
   }
   return { valid: false, type: null, code: null };
 };
