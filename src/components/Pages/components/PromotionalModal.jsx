@@ -35,7 +35,7 @@ const PromotionalModal = ({ isOpen, onClose }) => {
 
   return (
     <div 
-      className={`fixed inset-0 z-50 flex items-center justify-center p-4 transition-all duration-300 ${
+      className={`fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 transition-all duration-300 ${
         isVisible ? 'opacity-100' : 'opacity-0'
       } animate-fade-in`}
       onClick={handleBackdropClick}
@@ -43,20 +43,22 @@ const PromotionalModal = ({ isOpen, onClose }) => {
       {/* Backdrop */}
       <div className="absolute inset-0 bg-black bg-opacity-50 backdrop-blur-sm"></div>
       
-      {/* Modal Content - Simple, clean frame */}
-      <div className={`relative w-full max-w-lg bg-white rounded-2xl border border-emerald-100 shadow-xl transform transition-all duration-300 ${
+      {/* Modal Content - Responsive frame */}
+      <div className={`relative w-full max-w-xs sm:max-w-lg bg-white rounded-2xl border border-emerald-100 shadow-xl transform transition-all duration-300 max-h-[90vh] overflow-y-auto flex flex-col ${
         isVisible ? 'scale-100 translate-y-0' : 'scale-95 translate-y-4'
-      }`}>
+      }`} style={{ minHeight: '340px' }}>
         {/* Close Button */}
         <button
           onClick={handleClose}
-          className="absolute top-3 right-3 z-10 p-2 rounded-full bg-white/80 backdrop-blur-sm hover:bg-emerald-50 transition-all duration-200 shadow group"
+          className="absolute top-2 right-2 sm:top-3 sm:right-3 z-10 p-3 sm:p-2 rounded-full bg-white/80 backdrop-blur-sm hover:bg-emerald-50 transition-all duration-200 shadow group"
+          style={{ minWidth: 40, minHeight: 40 }}
+          aria-label="Zamknij modal"
         >
-          <X className="w-4 h-4 text-gray-600 group-hover:text-emerald-700 transition-colors" />
+          <X className="w-6 h-6 sm:w-4 sm:h-4 text-gray-600 group-hover:text-emerald-700 transition-colors" />
         </button>
 
         {/* Content */}
-        <div className="relative overflow-hidden">
+        <div className="relative overflow-hidden mt-8 sm:mt-0">
           {/* Decorative Elements */}
           {/* Removed top-left square */}
           <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-br from-emerald-100/20 to-transparent rounded-full -translate-y-10 translate-x-10"></div>
@@ -66,7 +68,7 @@ const PromotionalModal = ({ isOpen, onClose }) => {
             <Sparkles className="absolute left-8 top-8 text-emerald-100 opacity-20 animate-pulse" />
             <Sparkles className="absolute right-8 bottom-8 text-yellow-100 opacity-10 animate-pulse" />
           </div>
-          <div className="relative p-6">
+          <div className="relative p-4 sm:p-6">
             {/* Header - More premium */}
             <div className="text-center mb-4">
               <div className="flex justify-center mb-3">
@@ -78,7 +80,7 @@ const PromotionalModal = ({ isOpen, onClose }) => {
                   </div>
                 </div>
               </div>
-              <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2 drop-shadow-sm">
+              <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900 mb-2 drop-shadow-sm">
                 <span className="bg-gradient-to-r from-emerald-600 to-emerald-800 bg-clip-text text-transparent">
                   Specjalna Oferta!
                 </span>
