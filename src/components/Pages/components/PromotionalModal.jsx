@@ -44,13 +44,13 @@ const PromotionalModal = ({ isOpen, onClose }) => {
       <div className="absolute inset-0 bg-black bg-opacity-50 backdrop-blur-sm"></div>
       
       {/* Modal Content - Responsive frame */}
-      <div className={`relative w-full max-w-xs sm:max-w-lg bg-white rounded-2xl border border-emerald-100 shadow-xl transform transition-all duration-300 max-h-[90vh] overflow-y-auto flex flex-col ${
+      <div className={`relative w-full max-w-xs sm:max-w-lg bg-white rounded-2xl border border-emerald-100 shadow-xl transform transition-all duration-300 flex flex-col ${
         isVisible ? 'scale-100 translate-y-0' : 'scale-95 translate-y-4'
-      }`} style={{ minHeight: '340px' }}>
+      }`} style={{ minHeight: '340px', maxHeight: '90vh' }}>
         {/* Close Button */}
         <button
           onClick={handleClose}
-          className="absolute top-2 right-2 sm:top-3 sm:right-3 z-10 p-3 sm:p-2 rounded-full bg-white/80 backdrop-blur-sm hover:bg-emerald-50 transition-all duration-200 shadow group"
+          className="sticky top-2 right-2 sm:top-3 sm:right-3 z-10 self-end p-3 sm:p-2 rounded-full bg-white/80 backdrop-blur-sm hover:bg-emerald-50 transition-all duration-200 shadow group"
           style={{ minWidth: 40, minHeight: 40 }}
           aria-label="Zamknij modal"
         >
@@ -58,7 +58,7 @@ const PromotionalModal = ({ isOpen, onClose }) => {
         </button>
 
         {/* Content */}
-        <div className="relative overflow-hidden mt-8 sm:mt-0">
+        <div className="flex-1 min-h-0 overflow-y-auto relative overflow-hidden mt-2 sm:mt-0">
           {/* Decorative Elements */}
           {/* Removed top-left square */}
           <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-br from-emerald-100/20 to-transparent rounded-full -translate-y-10 translate-x-10"></div>

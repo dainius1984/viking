@@ -7,16 +7,16 @@ const VivaPromoModal = ({ open, onClose, missingAmount }) => {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-black/40 backdrop-blur-sm animate-fade-in" onClick={e => { if (e.target === e.currentTarget) onClose(); }}>
-      <div className="relative w-full max-w-xs sm:max-w-md bg-white rounded-2xl border border-emerald-100 shadow-xl p-4 sm:p-6 max-h-[90vh] overflow-y-auto flex flex-col" style={{ minHeight: '320px' }}>
+      <div className="relative w-full max-w-xs sm:max-w-md bg-white rounded-2xl border border-emerald-100 shadow-xl flex flex-col" style={{ minHeight: '320px', maxHeight: '90vh' }}>
         <button
           onClick={onClose}
-          className="absolute top-2 right-2 sm:top-3 sm:right-3 z-10 p-3 sm:p-2 rounded-full bg-white/80 hover:bg-emerald-50 transition-all duration-200 shadow group"
+          className="sticky top-2 right-2 sm:top-3 sm:right-3 z-10 self-end p-3 sm:p-2 rounded-full bg-white/80 hover:bg-emerald-50 transition-all duration-200 shadow group"
           style={{ minWidth: 40, minHeight: 40 }}
           aria-label="Zamknij modal"
         >
           <X className="w-6 h-6 sm:w-4 sm:h-4 text-gray-600 group-hover:text-emerald-700 transition-colors" />
         </button>
-        <div className="flex flex-col items-center text-center mt-8 sm:mt-0">
+        <div className="flex-1 min-h-0 overflow-y-auto px-2 sm:px-4 pb-4 flex flex-col items-center text-center mt-2 sm:mt-0">
           <div className="mb-3">
             <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-100 text-emerald-800 font-bold text-sm">
               <Gift className="w-5 h-5" /> Viva+ ZA DARMO
