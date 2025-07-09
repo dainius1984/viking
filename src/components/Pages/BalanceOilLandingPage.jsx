@@ -41,9 +41,10 @@ const BalanceOilLandingPage = () => {
   };
 
     
-  const scrollToProduct = () => {
-    document.getElementById('product-section').scrollIntoView({ behavior: 'smooth' });
-  };
+  // Function to scroll to product section (unused but kept for future use)
+  // const scrollToProduct = () => {
+  //   document.getElementById('product-section').scrollIntoView({ behavior: 'smooth' });
+  // };
 
   return (
     <>

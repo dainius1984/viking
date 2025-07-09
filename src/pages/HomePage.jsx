@@ -6,21 +6,28 @@ import HealthyLifestyleBanner from '../components/Section/HealthyLifestyleBanner
 import ProductGrid from '../components/Section/ProductGrid';
 import InfoSection from '../components/Section/InfoSection';
 import Footer from '../components/Footer/Footer';
+import PromotionalModal from '../components/Pages/components/PromotionalModal';
+import PromotionalButton from '../components/Pages/components/PromotionalButton';
 
 const HomePage = () => {
-  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+  const [showModal, setShowModal] = useState(false);
 
   useEffect(() => {
-    const handleResize = () => {
-      setIsMobile(window.innerWidth <= 768);
-    };
+    // Show modal after 2 seconds
+    const timer = setTimeout(() => {
+      setShowModal(true);
+    }, 2000);
 
-    window.addEventListener('resize', handleResize);
-    
-    return () => {
-      window.removeEventListener('resize', handleResize);
-    };
+    return () => clearTimeout(timer);
   }, []);
+
+  const handleCloseModal = () => {
+    setShowModal(false);
+  };
+
+  const handleShowModal = () => {
+    setShowModal(true);
+  };
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -37,6 +44,12 @@ const HomePage = () => {
         <InfoSection />
       </main>
       <Footer />
+
+      {/* Promotional Modal */}
+      <PromotionalModal isOpen={showModal} onClose={handleCloseModal} />
+      
+      {/* Floating Promotional Button */}
+      <PromotionalButton onClick={handleShowModal} />
     </div>
   );
 };

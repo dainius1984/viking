@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useCart } from '../../context/CartContext';
 import { ShoppingCart, CheckCircle, X } from 'lucide-react';
@@ -14,6 +14,7 @@ import {
 } from './OrderUtils';
 import './Cart.css';
 import Confetti from 'react-confetti';
+import VivaPromoModal from './components/VivaPromoModal';
 
 const Cart = () => {
   const { state, dispatch } = useCart();
@@ -23,6 +24,8 @@ const Cart = () => {
   const [isProcessing, setIsProcessing] = useState(false);
   const [discountCode, setDiscountCode] = useState('');
   const [showConfetti, setShowConfetti] = useState(false);
+  const [showVivaModal, setShowVivaModal] = useState(false);
+  const [vivaModalShown, setVivaModalShown] = useState(false);
 
   const showNotification = (message, isSuccess = true) => {
     setNotification({ message, isSuccess });
@@ -98,6 +101,33 @@ const Cart = () => {
   const shippingCost = isFreeShipping ? 0 : DISCOUNT_CONFIG.shippingCost;
   const finalTotal = total + shippingCost;
 
+  // Show VivaPromoModal on first load if subtotal < 300
+  useEffect(() => {
+    if (subtotal < 300 && subtotal > 0 && !vivaModalShown) {
+      setShowVivaModal(true);
+      setVivaModalShown(true);
+    }
+  }, [subtotal, vivaModalShown]);
+
+  // Info bar logic
+  const renderVivaInfoBar = () => {
+    if (subtotal === 0) return null;
+    if (subtotal < 300) {
+      const missing = (300 - subtotal).toFixed(2);
+      return (
+        <div className="mb-4 p-3 rounded-lg bg-yellow-50 border border-yellow-200 text-yellow-900 text-center font-medium">
+          Brakuje Ci <span className="font-bold">{missing} zł</span> do otrzymania <span className="font-bold text-emerald-700">Viva+ za darmo!</span>
+        </div>
+      );
+    } else {
+      return (
+        <div className="mb-4 p-3 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-900 text-center font-medium">
+          <span className="font-bold">Gratulacje!</span> Otrzymasz <span className="font-bold text-emerald-700">Viva+ za darmo</span> do swojego zamówienia.
+        </div>
+      );
+    }
+  };
+
   const renderCart = () => {
     if (state.cart.length === 0) {
       return (
@@ -125,6 +155,7 @@ const Cart = () => {
     return (
       <div className="mb-12">
         <h1 className="text-xl sm:text-2xl font-bold mb-6">Koszyk</h1>
+        {renderVivaInfoBar()}
         <div className="grid grid-cols-1 lg:grid-cols-[1fr,380px] gap-6 lg:gap-8">
           <div className="flex flex-col gap-5">
             <div className="bg-white rounded-lg shadow-sm overflow-hidden">
@@ -314,6 +345,13 @@ const Cart = () => {
           <ProductGrid />
         </div>
       </div>
+
+      {/* Viva+ Promo Modal */}
+      <VivaPromoModal 
+        open={showVivaModal} 
+        onClose={() => setShowVivaModal(false)} 
+        missingAmount={(300 - subtotal).toFixed(2)} 
+      />
 
       {notification && (
         <div className={`fixed bottom-5 right-5 flex items-center gap-2.5 px-6 py-4 
