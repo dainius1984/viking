@@ -43,32 +43,37 @@ const PromotionalModal = ({ isOpen, onClose }) => {
       {/* Backdrop */}
       <div className="absolute inset-0 bg-black bg-opacity-50 backdrop-blur-sm"></div>
       
-      {/* Modal Content - Responsive frame */}
-      <div className={`relative w-full max-w-xs sm:max-w-lg bg-white rounded-2xl border border-emerald-100 shadow-xl transform transition-all duration-300 flex flex-col ${
+      {/* Modal Content - Responsive frame, no top-left icon, no scroll on desktop */}
+      <div className={`relative w-full max-w-xs sm:max-w-lg bg-white rounded-2xl border border-emerald-100 shadow-xl flex flex-col ${
         isVisible ? 'scale-100 translate-y-0' : 'scale-95 translate-y-4'
-      }`} style={{ minHeight: '340px', maxHeight: '90vh' }}>
-        {/* Close Button */}
+      }`} style={{ minHeight: '340px', maxHeight: '90vh', overflowY: 'auto' }}>
+        {/* Close Button - always visible, not cut off */}
         <button
           onClick={handleClose}
-          className="sticky top-2 right-2 sm:top-3 sm:right-3 z-10 self-end p-3 sm:p-2 rounded-full bg-white/80 backdrop-blur-sm hover:bg-emerald-50 transition-all duration-200 shadow group"
+          className="absolute top-2 right-2 sm:top-4 sm:right-4 z-10 p-3 sm:p-3 rounded-full bg-white/80 backdrop-blur-sm hover:bg-emerald-50 transition-all duration-200 shadow group"
           style={{ minWidth: 40, minHeight: 40 }}
           aria-label="Zamknij modal"
         >
-          <X className="w-6 h-6 sm:w-4 sm:h-4 text-gray-600 group-hover:text-emerald-700 transition-colors" />
+          <X className="w-6 h-6 text-gray-600 group-hover:text-emerald-700 transition-colors" />
         </button>
 
-        {/* Content */}
-        <div className="flex-1 min-h-0 overflow-y-auto relative overflow-hidden mt-2 sm:mt-0">
-          {/* Decorative Elements */}
-          {/* Removed top-left square */}
-          <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-br from-emerald-100/20 to-transparent rounded-full -translate-y-10 translate-x-10"></div>
-          <div className="absolute bottom-0 left-0 w-16 h-16 bg-gradient-to-tr from-emerald-100/10 to-transparent rounded-full translate-y-8 -translate-x-8"></div>
+        {/* Content - scroll only on mobile */}
+        <div className="relative overflow-hidden px-2 sm:px-6 py-4 sm:py-8 w-full"
+          style={{
+            maxHeight: 'calc(90vh - 32px)',
+            overflowY: 'auto',
+            WebkitOverflowScrolling: 'touch',
+          }}
+        >
+          {/* Decorative Elements (no top-left icon) */}
+          <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-br from-emerald-100/20 to-transparent rounded-full -translate-y-10 translate-x-10 pointer-events-none"></div>
+          <div className="absolute bottom-0 left-0 w-16 h-16 bg-gradient-to-tr from-emerald-100/10 to-transparent rounded-full translate-y-8 -translate-x-8 pointer-events-none"></div>
           <div className="absolute inset-0 pointer-events-none">
             {/* Subtle sparkles */}
             <Sparkles className="absolute left-8 top-8 text-emerald-100 opacity-20 animate-pulse" />
             <Sparkles className="absolute right-8 bottom-8 text-yellow-100 opacity-10 animate-pulse" />
           </div>
-          <div className="relative p-4 sm:p-6">
+          <div className="relative">
             {/* Header - More premium */}
             <div className="text-center mb-4">
               <div className="flex justify-center mb-3">
