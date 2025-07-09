@@ -25,12 +25,6 @@ const PromotionalModal = ({ isOpen, onClose }) => {
     }, 300);
   };
 
-  const handleBackdropClick = (e) => {
-    if (e.target === e.currentTarget) {
-      handleClose();
-    }
-  };
-
   if (!isOpen) return null;
 
   return (
@@ -38,21 +32,24 @@ const PromotionalModal = ({ isOpen, onClose }) => {
       className={`fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 transition-all duration-300 ${
         isVisible ? 'opacity-100' : 'opacity-0'
       } animate-fade-in`}
-      onClick={handleBackdropClick}
     >
-      {/* Backdrop */}
-      <div className="absolute inset-0 bg-black bg-opacity-50 backdrop-blur-sm"></div>
-      
-      {/* Modal Content - No top-left icon, no scroll on desktop */}
-      <div className={`relative w-full max-w-xs sm:max-w-lg bg-white rounded-2xl border border-emerald-100 shadow-xl flex flex-col ${
-        isVisible ? 'scale-100 translate-y-0' : 'scale-95 translate-y-4'
-      }`} 
+      {/* Backdrop as sibling, not parent of modal content */}
+      <div 
+        className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm z-0" 
+        onClick={handleClose}
+      ></div>
+      {/* Modal Content - not absolutely positioned, stops propagation */}
+      <div
+        className={`relative w-full max-w-xs sm:max-w-lg bg-white rounded-2xl border border-emerald-100 shadow-xl flex flex-col z-10 ${
+          isVisible ? 'scale-100 translate-y-0' : 'scale-95 translate-y-4'
+        }`}
         style={{ minHeight: '340px' }}
+        onClick={e => e.stopPropagation()}
       >
         {/* Close Button */}
         <button
           onClick={handleClose}
-          className="absolute top-2 right-2 sm:top-4 sm:right-4 z-10 p-3 sm:p-3 rounded-full bg-white/80 backdrop-blur-sm hover:bg-emerald-50 transition-all duration-200 shadow group"
+          className="absolute top-2 right-2 sm:top-4 sm:right-4 z-20 p-3 sm:p-3 rounded-full bg-white/80 backdrop-blur-sm hover:bg-emerald-50 transition-all duration-200 shadow group"
           style={{ minWidth: 40, minHeight: 40 }}
           aria-label="Zamknij modal"
         >
@@ -60,8 +57,7 @@ const PromotionalModal = ({ isOpen, onClose }) => {
         </button>
 
         {/* Content - scroll only on mobile, never on desktop */}
-        <div className="relative px-2 sm:px-6 py-4 sm:py-8 w-full overflow-y-auto max-h-[90vh] sm:overflow-visible sm:max-h-none"
-        >
+        <div className="relative px-2 sm:px-6 py-4 sm:py-8 w-full overflow-y-auto max-h-[90vh] sm:overflow-visible sm:max-h-none">
           {/* Decorative Elements (only right/bottom, no top-left) */}
           <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-br from-emerald-100/20 to-transparent rounded-full -translate-y-10 translate-x-10 pointer-events-none"></div>
           <div className="absolute bottom-0 left-0 w-16 h-16 bg-gradient-to-tr from-emerald-100/10 to-transparent rounded-full translate-y-8 -translate-x-8 pointer-events-none"></div>
