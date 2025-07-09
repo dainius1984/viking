@@ -43,11 +43,13 @@ const PromotionalModal = ({ isOpen, onClose }) => {
       {/* Backdrop */}
       <div className="absolute inset-0 bg-black bg-opacity-50 backdrop-blur-sm"></div>
       
-      {/* Modal Content - Responsive frame, no top-left icon, no scroll on desktop */}
+      {/* Modal Content - No top-left icon, no scroll on desktop */}
       <div className={`relative w-full max-w-xs sm:max-w-lg bg-white rounded-2xl border border-emerald-100 shadow-xl flex flex-col ${
         isVisible ? 'scale-100 translate-y-0' : 'scale-95 translate-y-4'
-      }`} style={{ minHeight: '340px', maxHeight: '90vh', overflowY: 'auto' }}>
-        {/* Close Button - always visible, not cut off */}
+      }`} 
+        style={{ minHeight: '340px' }}
+      >
+        {/* Close Button */}
         <button
           onClick={handleClose}
           className="absolute top-2 right-2 sm:top-4 sm:right-4 z-10 p-3 sm:p-3 rounded-full bg-white/80 backdrop-blur-sm hover:bg-emerald-50 transition-all duration-200 shadow group"
@@ -57,15 +59,10 @@ const PromotionalModal = ({ isOpen, onClose }) => {
           <X className="w-6 h-6 text-gray-600 group-hover:text-emerald-700 transition-colors" />
         </button>
 
-        {/* Content - scroll only on mobile */}
-        <div className="relative overflow-hidden px-2 sm:px-6 py-4 sm:py-8 w-full"
-          style={{
-            maxHeight: 'calc(90vh - 32px)',
-            overflowY: 'auto',
-            WebkitOverflowScrolling: 'touch',
-          }}
+        {/* Content - scroll only on mobile, never on desktop */}
+        <div className="relative px-2 sm:px-6 py-4 sm:py-8 w-full overflow-y-auto max-h-[90vh] sm:overflow-visible sm:max-h-none"
         >
-          {/* Decorative Elements (no top-left icon) */}
+          {/* Decorative Elements (only right/bottom, no top-left) */}
           <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-br from-emerald-100/20 to-transparent rounded-full -translate-y-10 translate-x-10 pointer-events-none"></div>
           <div className="absolute bottom-0 left-0 w-16 h-16 bg-gradient-to-tr from-emerald-100/10 to-transparent rounded-full translate-y-8 -translate-x-8 pointer-events-none"></div>
           <div className="absolute inset-0 pointer-events-none">
