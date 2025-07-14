@@ -148,7 +148,8 @@ const OrderPage = () => {
             lastName: updatedFormData.lastName,
             email: updatedFormData.email,
             phone: updatedFormData.phone,
-            hasPaczkomatData: !!updatedFormData.paczkomat
+            hasPaczkomatData: !!updatedFormData.paczkomat,
+            cart: state.cart // <-- dodane pole cart
           }));
 
           window.location.href = response.redirectUrl;

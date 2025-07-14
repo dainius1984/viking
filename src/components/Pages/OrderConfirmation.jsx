@@ -242,6 +242,22 @@ const OrderConfirmation = () => {
     // Wywołaj Google Ads conversion tracking gdy orderData jest dostępne
     if (orderData && !conversionTracked) {
       addGoogleAdsConversion(orderData);
+      // Dodaj event purchase do GA4
+      if (window.gtag && Array.isArray(orderData.cart)) {
+        const items = orderData.cart.map(item => ({
+          item_id: item.id || item.name, // lub inny unikalny identyfikator
+          item_name: item.name,
+          price: Number(item.price),
+          quantity: Number(item.quantity)
+        }));
+
+        window.gtag('event', 'purchase', {
+          transaction_id: orderData.orderNumber,
+          value: Number(orderData.total),
+          currency: 'PLN',
+          items
+        });
+      }
       setConversionTracked(true);
     }
   }, [orderData, conversionTracked]);
