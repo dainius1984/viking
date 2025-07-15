@@ -456,7 +456,7 @@ const products = [
   {
     id: 13,
     name: 'Xtend +',
-    price: '1.00',
+    price: '129.00',
     image: '/img/products/13.jpg',
     category: categories.find(category => category.slug === 'suplementy-na-odpornosc').slug,
     description: `<div class="product-description">
