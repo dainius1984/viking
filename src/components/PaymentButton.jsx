@@ -185,7 +185,8 @@ const PaymentButton = ({
           email: formData.email || '',
           phone: formData.phone || '',
           // Add paczkomat data flag
-          hasPaczkomatData: formData.shipping?.includes('PACZKOMATY')
+          hasPaczkomatData: formData.shipping?.includes('PACZKOMATY'),
+          cart: cartItems // <-- dodane pole cart
         }));
 
         // Store paczkomat data in localStorage if using paczkomat shipping
