@@ -244,6 +244,7 @@ const OrderConfirmation = () => {
       addGoogleAdsConversion(orderData);
       // Dodaj event purchase do GA4
       if (window.gtag && Array.isArray(orderData.cart)) {
+        console.log('purchase event', orderData.cart); // Dodane logowanie
         const items = orderData.cart.map(item => ({
           item_id: item.id || item.name, // lub inny unikalny identyfikator
           item_name: item.name,

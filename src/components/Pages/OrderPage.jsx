@@ -137,6 +137,7 @@ const OrderPage = () => {
         });
 
         if (response && response.redirectUrl) {
+          console.log('CART NA ORDERPAGE:', state.cart); // Dodane logowanie
           // Update the order data in localStorage before redirect
           localStorage.setItem('lastOrder', JSON.stringify({
             orderNumber,
