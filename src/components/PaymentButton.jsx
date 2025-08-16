@@ -3,6 +3,7 @@ import { useAuth } from './AuthContext';
 import { setPaymentFlowState } from './authService'; // Import the new function
 // Fix import paths - adjust these based on your actual file structure
 import { initiatePayment } from './Pages/PaymentService';
+import { createOrder } from './appwrite';
 
 const PaymentButton = ({ 
   orderData, 
@@ -20,7 +21,7 @@ const PaymentButton = ({
       orderData,
       formData,
       externalLoading,
-      isDisabled
+      isDisabled 
     });
   }, [orderData, formData, externalLoading, isDisabled]);
 
@@ -191,53 +192,95 @@ const PaymentButton = ({
       console.log('DEBUG: Checking if za pobraniem:', shippingMethod === 'DPD_ZA_POBRANIEM' || shippingMethod === 'DPD_DARMOWA_WYSYLKA');
       
       if (shippingMethod === 'DPD_ZA_POBRANIEM' || shippingMethod === 'DPD_DARMOWA_WYSYLKA') {
-        console.log('Processing cash on delivery order - using create-payment endpoint with COD flag');
+        console.log('Processing cash on delivery order');
         
         try {
-          // Add cash on delivery flag to payment data
-          const codPaymentData = {
-            ...paymentData,
-            orderData: {
-              ...paymentData.orderData,
-              isCashOnDelivery: true,
-              paymentMethod: 'Za pobraniem'
-            }
-          };
-
-          // Use the existing payment endpoint but with COD flag
-          const paymentResponse = await initiatePayment(codPaymentData);
+          // Determine shipping cost based on method
+          const shippingCost = shippingMethod === 'DPD_DARMOWA_WYSYLKA' ? '0' : '14.99';
           
-          if (paymentResponse.success) {
-            console.log('Cash on delivery order created successfully');
+          if (user) {
+            // Logged-in user - send to Appwrite
+            console.log('User is logged in, sending to Appwrite');
             
-            // Store order reference in localStorage
+            const appwriteOrderData = {
+              userId: user.$id,
+              orderNumber: paymentData.orderData.orderNumber,
+              orderData: {
+                ...paymentData.orderData,
+                shipping: shippingMethod,
+                shippingCost: shippingCost,
+                paymentMethod: 'Za pobraniem',
+                isCashOnDelivery: true
+              },
+              customerData: {
+                Imie: formData.firstName,
+                Nazwisko: formData.lastName,
+                Email: formData.email,
+                Telefon: formData.phone
+              },
+              isAuthenticated: true
+            };
+            
+            const result = await createOrder(appwriteOrderData);
+            console.log('Order created in Appwrite:', result);
+            
+            // Store order data in localStorage for OrderConfirmation to read
             localStorage.setItem('lastOrder', JSON.stringify({
               orderNumber: paymentData.orderData.orderNumber,
               payuOrderId: null, // No PayU for cash on delivery
               date: new Date().toISOString(),
               status: 'PENDING',
               shipping: shippingMethod,
-              isAuthenticated: !!user,
-              userId: user?.$id || null,
+              isAuthenticated: true,
+              userId: user.$id,
               firstName: formData.firstName || '',
               lastName: formData.lastName || '',
               email: formData.email || '',
               phone: formData.phone || '',
               hasPaczkomatData: false,
               cart: cartItems,
-              paymentMethod: 'Za pobraniem'
+              paymentMethod: 'Za pobraniem',
+              total: paymentData.orderData.total,
+              subtotal: paymentData.orderData.subtotal,
+              discountApplied: paymentData.orderData.discountApplied,
+              discountAmount: paymentData.orderData.discountAmount,
+              shippingCost: shippingCost
             }));
-
-            // Redirect to order confirmation page
-            window.location.href = '/order-confirmation';
+            
+            // Redirect to order confirmation
+            window.location.href = `/order-confirmation?orderNumber=${paymentData.orderData.orderNumber}`;
             return;
           } else {
-            throw new Error('Nie udało się utworzyć zamówienia za pobraniem');
+            // Guest user - use existing create-payment endpoint with COD flag
+            console.log('Guest user, using create-payment endpoint with COD flag');
+            
+            const codPaymentData = {
+              ...paymentData,
+              orderData: {
+                ...paymentData.orderData,
+                isCashOnDelivery: true,
+                paymentMethod: 'Za pobraniem',
+                shipping: shippingMethod,
+                shippingCost: shippingCost
+              }
+            };
+            
+            const response = await initiatePayment(codPaymentData);
+            console.log('Cash on delivery payment response:', response);
+            
+            if (response.success) {
+              // Redirect to order confirmation
+              window.location.href = `/order-confirmation?orderNumber=${paymentData.orderData.orderNumber}`;
+              return;
+            } else {
+              throw new Error(response.error || 'Błąd podczas składania zamówienia za pobraniem');
+            }
           }
-          
         } catch (error) {
-          console.error('Error creating cash on delivery order:', error);
-          throw new Error('Błąd podczas składania zamówienia za pobraniem. Spróbuj ponownie.');
+          console.error('Error processing cash on delivery order:', error);
+          setError(`Błąd podczas składania zamówienia za pobraniem: ${error.message}`);
+          setLoading(false);
+          return;
         }
       }
 
