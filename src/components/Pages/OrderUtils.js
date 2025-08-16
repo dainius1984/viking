@@ -11,10 +11,20 @@ export const SHIPPING_OPTIONS = {
     name: 'Kurier DPD - za pobraniem',
     cost: 14.99
   },
+  DPD_DARMOWA_WYSYLKA: {
+    id: 'DPD_ZA_POBRANIEM_DARMOWA_WYSYLKA',
+    name: 'Kurier DPD - za pobraniem - Darmowa wysyłka',
+    cost: 0
+  },
   INPOST: {
     id: 'INPOST',
     name: 'Kurier InPost',
     cost: 14.99
+  },
+  INPOST_DARMOWA_WYSYLKA: {
+    id: 'INPOST_DARMOWA_WYSYLKA',
+    name: 'Kurier InPost - Darmowa wysyłka',
+    cost: 0
   },
   INPOST_PACZKOMATY: {
     id: 'INPOST_PACZKOMATY',
@@ -199,12 +209,12 @@ export const formatOrderItems = (cart) => {
   ).join("\n");
 };
 
-export const prepareSheetData = (orderData, formData, paymentStatus = 'new') => {
+export const prepareSheetData = (orderData, formData, paymentStatus = 'new', paymentMethod = 'PayU') => {
   const now = new Date();
   
   return {
     "Data wpływu": formatDate(now),
-    "Forma płatności": "PayU",
+    "Forma płatności": paymentMethod,
     "Status płatności": paymentStatus,
     "PayU OrderId": orderData.payuOrderId || '',
     "PayU ExtOrderId": orderData.orderNumber || '',

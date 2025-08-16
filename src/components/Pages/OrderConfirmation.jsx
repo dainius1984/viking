@@ -362,6 +362,20 @@ const OrderConfirmation = () => {
 
   // Render the payment status with appropriate colors
   const renderPaymentStatus = () => {
+    // Check if it's a cash on delivery order
+    const isCashOnDelivery = orderData?.shipping === 'DPD_ZA_POBRANIEM' || 
+                            orderData?.shipping === 'DPD_DARMOWA_WYSYLKA' ||
+                            orderData?.paymentMethod === 'Za pobraniem';
+    
+    if (isCashOnDelivery) {
+      return (
+        <div className="flex items-center mt-1">
+          <span className="inline-block w-3 h-3 bg-blue-500 rounded-full mr-2"></span>
+          <span className="text-gray-600">Za Pobraniem</span>
+        </div>
+      );
+    }
+    
     return (
       <div className="flex items-center mt-1">
         <span className="inline-block w-3 h-3 bg-green-500 rounded-full mr-2"></span>
@@ -503,7 +517,12 @@ const OrderConfirmation = () => {
                 <h2 className="font-semibold text-gray-700">Status płatności:</h2>
                 {renderPaymentStatus()}
                 <p className="text-sm text-gray-500 mt-1">
-                  Dziękujemy! Twoja płatność została zrealizowana.
+                  {orderData?.shipping === 'DPD_ZA_POBRANIEM' || 
+                   orderData?.shipping === 'DPD_DARMOWA_WYSYLKA' || 
+                   orderData?.paymentMethod === 'Za pobraniem' 
+                    ? 'Zamówienie zostało przyjęte. Płatność zostanie pobrana przy odbiorze przesyłki.'
+                    : 'Dziękujemy! Twoja płatność została zrealizowana.'
+                  }
                 </p>
               </div>
             </div>

@@ -14,6 +14,16 @@ const PaymentButton = ({
   const [error, setError] = useState(null);
   const { user } = useAuth();  // Get authentication context
 
+  // Debug logging for props
+  useEffect(() => {
+    console.log('DEBUG: PaymentButton props received:', {
+      orderData,
+      formData,
+      externalLoading,
+      isDisabled
+    });
+  }, [orderData, formData, externalLoading, isDisabled]);
+
   useEffect(() => {
     // Debug logging when formData changes - helps track shipping selection
     if (formData && formData.shipping) {
@@ -68,6 +78,16 @@ const PaymentButton = ({
   const handlePayment = async () => {
     try {
       setError(null);
+      
+      // Debug logging for formData
+      console.log('DEBUG: handlePayment called with formData:', formData);
+      console.log('DEBUG: formData.shipping:', formData?.shipping);
+      
+      if (!formData) {
+        setError('Brak danych formularza');
+        return;
+      }
+      
       const missingFields = validateFormData();
       
       if (missingFields.length > 0) {
@@ -78,6 +98,11 @@ const PaymentButton = ({
       setLoading(true);
 
       const shippingMethod = formData.shipping || 'DPD';
+      
+      // Debug logging for shipping method
+      console.log('DEBUG: formData.shipping:', formData.shipping);
+      console.log('DEBUG: shippingMethod variable:', shippingMethod);
+      console.log('DEBUG: typeof shippingMethod:', typeof shippingMethod);
       
       // Get cart items from orderData
       console.log('OrderData received:', orderData);
@@ -160,6 +185,61 @@ const PaymentButton = ({
         cartItems: paymentData.orderData.cart.length,
         formattedItems: formattedItems
       });
+
+      // Check if it's cash on delivery (za pobraniem)
+      console.log('DEBUG: Shipping method received:', shippingMethod);
+      console.log('DEBUG: Checking if za pobraniem:', shippingMethod === 'DPD_ZA_POBRANIEM' || shippingMethod === 'DPD_DARMOWA_WYSYLKA');
+      
+      if (shippingMethod === 'DPD_ZA_POBRANIEM' || shippingMethod === 'DPD_DARMOWA_WYSYLKA') {
+        console.log('Processing cash on delivery order - using create-payment endpoint with COD flag');
+        
+        try {
+          // Add cash on delivery flag to payment data
+          const codPaymentData = {
+            ...paymentData,
+            orderData: {
+              ...paymentData.orderData,
+              isCashOnDelivery: true,
+              paymentMethod: 'Za pobraniem'
+            }
+          };
+
+          // Use the existing payment endpoint but with COD flag
+          const paymentResponse = await initiatePayment(codPaymentData);
+          
+          if (paymentResponse.success) {
+            console.log('Cash on delivery order created successfully');
+            
+            // Store order reference in localStorage
+            localStorage.setItem('lastOrder', JSON.stringify({
+              orderNumber: paymentData.orderData.orderNumber,
+              payuOrderId: null, // No PayU for cash on delivery
+              date: new Date().toISOString(),
+              status: 'PENDING',
+              shipping: shippingMethod,
+              isAuthenticated: !!user,
+              userId: user?.$id || null,
+              firstName: formData.firstName || '',
+              lastName: formData.lastName || '',
+              email: formData.email || '',
+              phone: formData.phone || '',
+              hasPaczkomatData: false,
+              cart: cartItems,
+              paymentMethod: 'Za pobraniem'
+            }));
+
+            // Redirect to order confirmation page
+            window.location.href = '/order-confirmation';
+            return;
+          } else {
+            throw new Error('Nie udało się utworzyć zamówienia za pobraniem');
+          }
+          
+        } catch (error) {
+          console.error('Error creating cash on delivery order:', error);
+          throw new Error('Błąd podczas składania zamówienia za pobraniem. Spróbuj ponownie.');
+        }
+      }
 
       // Mark that we're entering payment flow before initiating payment
       if (user) {
