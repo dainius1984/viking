@@ -11,13 +11,19 @@ const databases = new Databases(client);
 export const createOrder = async (orderData) => {
     try {
         // Format items in the exact required structure
-        const items = (orderData.orderData?.cart || []).map(item => ({
-            id: item.id?.toLowerCase() || item.name?.toLowerCase().replace(/[^a-z0-9]/g, ''),
-            n: item.name,
-            p: parseInt(Number(item.price)),
-            q: parseInt(item.quantity) || 1,
-            image: `/img/products/${item.id?.toLowerCase() || item.name?.toLowerCase().replace(/[^a-z0-9]/g, '')}.png`
-        }));
+        const items = (orderData.orderData?.cart || []).map(item => {
+            // Ensure id and name are strings and handle null/undefined cases
+            const itemId = item.id ? String(item.id).toLowerCase() : '';
+            const itemName = item.name ? String(item.name).toLowerCase().replace(/[^a-z0-9]/g, '') : '';
+            
+            return {
+                id: itemId || itemName,
+                n: item.name || '',
+                p: parseInt(Number(item.price)) || 0,
+                q: parseInt(item.quantity) || 1,
+                image: `/img/products/${itemId || itemName}.png`
+            };
+        });
 
         console.log('Creating order in Appwrite:', {
             orderNumber: orderData.orderNumber,
